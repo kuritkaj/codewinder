@@ -19,9 +19,6 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         throw new Error('OpenAI API Key not found.');
     }
     const bingApiKey = process.env.BING_API_KEY;
-    if (!Boolean(bingApiKey)) {
-        throw new Error('Bing API Key not found.');
-    }
 
     const model = new ChatOpenAI({
         openAIApiKey,
@@ -41,11 +38,13 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
     const memory = await MemoryStore.makeMemoryStore(embeddings);
 
     const tools: Tool[] = [
-        new BingSearch({ apiKey: bingApiKey, callbacks }),
-        new BingNews({ apiKey: bingApiKey, callbacks }),
         new WebBrowser({ model, embeddings, callbacks }),
         new JavascriptEvaluator()
     ];
+    if (Boolean(bingApiKey)) {
+        tools.push(new BingSearch({ apiKey: bingApiKey, callbacks }));
+        tools.push(new BingNews({ apiKey: bingApiKey, callbacks }));
+    }
     const multistep = new MultistepTool({ model, memory, creative, tools, callbacks, maxIterations: MAX_ITERATIONS});
     const toolset = [...tools, multistep];
 

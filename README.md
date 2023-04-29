@@ -3,6 +3,14 @@
 The server requires the following environment variables:
 - OPENAI_API_KEY - which can be found [here](https://platform.openai.com/account/api-keys).
 
+And optionally the following environment variables:
+- BING_API_KEY - which can be found [here](https://azure.microsoft.com/en-us/services/cognitive-services/bing-web-search-api/).
+- SUPABASE_URL - which can be found [here](https://app.supabase.io/).
+- SUPABASE_API_KEY - which can be found [here](https://app.supabase.io/).
+
+Note: without the Bing Search key, the search will use the Web Browser tool for searches, which is less efficient.
+Note: Supabase is experimental to add long-term memory to the autonomous agent.
+
 ### Running the Server
 
 Then, run the development server:
