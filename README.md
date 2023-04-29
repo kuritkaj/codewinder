@@ -8,8 +8,9 @@ And optionally the following environment variables:
 - SUPABASE_URL - which can be found [here](https://app.supabase.io/).
 - SUPABASE_API_KEY - which can be found [here](https://app.supabase.io/).
 
-Note: without the Bing Search key, the search will use the Web Browser tool for searches, which is less efficient.
-Note: Supabase is experimental to add long-term memory to the autonomous agent.
+Notes: 
+* without the Bing Search key, the search will use the Web Browser tool for searches, which is less efficient.
+* Supabase is experimental to add long-term memory to the autonomous agent.
 
 ### Running the Server
 
@@ -20,6 +21,11 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Contributions
+
+This repo is open to contributions. Please feel free to open a PR.  
+Note: package manager is yarn.
 
 ## Inspirations
 
