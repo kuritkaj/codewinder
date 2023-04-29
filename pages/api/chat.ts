@@ -1,6 +1,7 @@
 import { makeToolChain } from "@/lib/intelligence";
 import { CallbackManager } from "langchain/callbacks";
 import { NextApiHandler } from "next";
+import { CONTEXT_INPUT, OBJECTIVE_INPUT } from "@/lib/intelligence/react/ReActAgent";
 
 const Service: NextApiHandler = async (req, res) => {
     const { context, objective } = await req.body;
@@ -55,10 +56,11 @@ const Service: NextApiHandler = async (req, res) => {
     const chain = await makeToolChain(callbackManager);
 
     try {
-        const response = await chain.call({
-            objective,
-            context: context.map(inner => inner.join("")).join(""),
-        });
+        let inputs = {};
+        inputs[OBJECTIVE_INPUT] = objective;
+        inputs[CONTEXT_INPUT] = context.map(inner => inner.join("")).join("");
+
+        const response = await chain.call(inputs);
         sendClear();
         sendLine(response.output);
     } catch (error) {

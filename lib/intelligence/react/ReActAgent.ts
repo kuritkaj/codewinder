@@ -29,6 +29,11 @@ import { CallbackManager, Callbacks } from "langchain/callbacks";
 import { BaseLanguageModel } from "langchain/base_language";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
+export const CONTEXT_INPUT = "context";
+export const MEMORIES_INPUT = "memories";
+export const OBJECTIVE_INPUT = "objective";
+export const SCRATCHPAD_INPUT = "scratchpad";
+
 interface ReActAgentInput extends ChatAgentInput {
     memory: MemoryStore;
 }
@@ -89,8 +94,8 @@ ${ toolDetails }
 ${ TOOLING }
         `;
         const system = [ prefix, tooling, FORMAT_INSTRUCTIONS, suffix ].join("\n");
-        const assistant = [`This is the ${CONTEXT}:\n{context}`, `Which reminds you of this:\n{memories}`].join("\n\n");
-        const human = [ `${ OBJECTIVE }: {objective}`, "{agent_scratchpad}" ].join("\n");
+        const assistant = [`This is the ${CONTEXT}:\n{${CONTEXT_INPUT}}`, `Which reminds you of this:\n{${MEMORIES_INPUT}}`].join("\n\n");
+        const human = [ `${ OBJECTIVE }: {${OBJECTIVE_INPUT}}`, `{${SCRATCHPAD_INPUT}}` ].join("\n");
         const messages = [
             SystemMessagePromptTemplate.fromTemplate(system),
             AIMessagePromptTemplate.fromTemplate(assistant),
@@ -118,13 +123,13 @@ ${ TOOLING }
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
         const thoughts = await this.constructScratchPad(steps);
-        const memories = await this.memory.retrieve(inputs["objective"]);
+        const memories = await this.memory.retrieve(inputs[OBJECTIVE_INPUT]);
 
         const newInputs: ChainValues = {
-            ...inputs,
-            memories: memories.map((m) => m.pageContent).join("\n"),
-            agent_scratchpad: thoughts,
+            ...inputs
         };
+        newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
+        newInputs[SCRATCHPAD_INPUT] = thoughts;
 
         if (this._stop().length !== 0) {
             newInputs.stop = this._stop();

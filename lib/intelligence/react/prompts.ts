@@ -1,6 +1,7 @@
 export const ACTION = "Action";
 export const CONTEXT = "Context";
 export const FINAL_RESPONSE = "Final Response";
+export const HINT = "Hint";
 export const OBJECTIVE = "Objective";
 export const OBSERVATION = "Observation";
 export const THOUGHT = "Thought";
@@ -46,8 +47,8 @@ Here is an example of a valid $JSON_BLOB:
 
 ALWAYS use the following format:
 
-${OBJECTIVE}: reword the initial request to include increased specificity and detail
-${THOUGHT}: use a tool to meet the stated ${OBJECTIVE}
+${OBJECTIVE}: the initial request, greeting, question, or action to take
+${THOUGHT}: the tool to use to meet the stated ${OBJECTIVE}
 ${ACTION}: 
 \`\`\`
 $JSON_BLOB
@@ -65,7 +66,8 @@ Maintain markdown formatting from the ${OBSERVATION} or ${THOUGHT} in your ${FIN
 Avoid saying the tool name in your ${FINAL_RESPONSE}.
 Reminder to always use the exact characters \`${FINAL_RESPONSE}\` when responding.
 
-Note: If the ${OBJECTIVE} is a casual greating or conversation, then just respond in kind.
+Note: If the ${OBJECTIVE} is a casual greeting or conversation, then just respond in kind.
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended using the provided ${CONTEXT}.
 Note: If the ${OBJECTIVE} relies on information that is not available to you, use a tool to find learn more.
+Note: If the ${OBJECTIVE} is incomplete, or unclear, the ${CONTEXT} might be useful to clarify the intent.
 `;

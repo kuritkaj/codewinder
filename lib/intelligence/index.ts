@@ -2,7 +2,7 @@ import { Tool } from "langchain/tools";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { JavascriptEvaluator } from "@/lib/intelligence/tools/JavascriptEvaluator";
-import { MultistepTool } from "@/lib/intelligence/tools/MultistepTool";
+import { Multistep } from "@/lib/intelligence/tools/Multistep";
 import { BingSearch } from "@/lib/intelligence/tools/BingSearch";
 import { BingNews } from "@/lib/intelligence/tools/BingNews";
 import { AgentExecutor } from "@/lib/intelligence/react/AgentExecutor";
@@ -45,13 +45,14 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         tools.push(new BingSearch({ apiKey: bingApiKey, callbacks }));
         tools.push(new BingNews({ apiKey: bingApiKey, callbacks }));
     }
-    const multistep = new MultistepTool({ model, memory, creative, tools, callbacks, maxIterations: MAX_ITERATIONS});
+    const multistep = new Multistep({ model, memory, creative, tools, callbacks, maxIterations: MAX_ITERATIONS});
     const toolset = [...tools, multistep];
 
     const agent = ReActAgent.makeAgent(model, memory, toolset, callbacks);
 
     const executor = AgentExecutor.fromAgentAndTools({
         agent,
+        model,
         tools: toolset,
         verbose: true,
         callbacks,

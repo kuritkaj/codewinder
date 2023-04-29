@@ -4,9 +4,11 @@ import { Tool } from "langchain/tools";
 import { StoppingMethod } from "langchain/agents";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
 import { CallbackManagerForChainRun } from "langchain/callbacks";
+import { BaseChatModel } from "langchain/chat_models";
 
 export interface AgentExecutorInput extends ChainInputs {
     agent: BaseSingleActionAgent | BaseMultiActionAgent;
+    model: BaseChatModel;
     tools: Tool[];
     returnIntermediateSteps?: boolean;
     maxIterations?: number;
@@ -19,10 +21,11 @@ export interface AgentExecutorInput extends ChainInputs {
  */
 export class AgentExecutor extends BaseChain {
     agent: BaseSingleActionAgent | BaseMultiActionAgent;
-    tools: Tool[];
-    returnIntermediateSteps = false;
-    maxIterations?: number = 15;
     earlyStoppingMethod: StoppingMethod = "force";
+    maxIterations?: number = 15;
+    model: BaseChatModel;
+    returnIntermediateSteps = false;
+    tools: Tool[];
 
     get inputKeys() {
         return this.agent.inputKeys;
@@ -39,12 +42,13 @@ export class AgentExecutor extends BaseChain {
             input.callbacks
         );
         this.agent = input.agent;
+        this.model = input.model;
         this.tools = input.tools;
         if (this.agent._agentActionType() === "multi") {
             for (const tool of this.tools) {
                 if (tool.returnDirect) {
                     throw new Error(
-                        `Tool with return direct ${tool.name} not supported for multi-action agent.`
+                        `Tool with return direct ${ tool.name } not supported for multi-action agent.`
                     );
                 }
             }
@@ -71,9 +75,9 @@ export class AgentExecutor extends BaseChain {
         runManager?: CallbackManagerForChainRun
     ): Promise<ChainValues> {
         const toolsByName = Object.fromEntries(
-            this.tools.map((t) => [t.name.toLowerCase(), t])
+            this.tools.map((t) => [ t.name.toLowerCase(), t ])
         );
-        const steps: AgentStep[] = [];
+        let steps: AgentStep[] = [];
         let iterations = 0;
 
         const getOutput = async (finishStep: AgentFinish) => {
@@ -115,7 +119,7 @@ export class AgentExecutor extends BaseChain {
             if (Array.isArray(output)) {
                 actions = output as AgentAction[];
             } else {
-                actions = [output as AgentAction];
+                actions = [ output as AgentAction ];
             }
 
             const newSteps = await Promise.all(
@@ -125,7 +129,7 @@ export class AgentExecutor extends BaseChain {
                     const tool = toolsByName[action.tool?.toLowerCase()];
                     const observation = tool
                         ? await tool.call(action.toolInput, runManager?.getChild())
-                        : `${action.tool} is not a valid tool, try another one.`;
+                        : `${ action.tool } is not a valid tool, try another one.`;
 
                     return { action, observation };
                 })

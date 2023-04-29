@@ -144,8 +144,8 @@ export class WebBrowser extends Tool {
             let t = input.trim();
             t = t.startsWith('[') ? t.slice(1) : t;
             t = t.startsWith('"') ? t.slice(1) : t;
-            t = t.endsWith('"') ? t.slice(0, -1) : t;
             t = t.endsWith("]") ? t.slice(0, -1) : t;
+            t = t.endsWith('"') ? t.slice(0, -1) : t;
             // it likes to put / at the end of urls, won't matter for task
             t = t.endsWith("/") ? t.slice(0, -1) : t;
             return t.trim();

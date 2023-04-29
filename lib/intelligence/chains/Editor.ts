@@ -1,32 +1,33 @@
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain, LLMChainInput } from "langchain/chains";
 import { BaseChatModel } from "langchain/chat_models";
-import { GUIDANCE } from "@/lib/intelligence/chains/editor/prompts";
 import { Callbacks } from "langchain/callbacks";
+
+export const GUIDANCE = `
+This was the response:
+{context}
+
+Based on this stated objective: {objective}
+
+Fix any typos and grammar, as well as spacing and formatting, while preserving as much detail as possible.
+You can use markdown in your response.
+`;
 
 interface EditorChainInput {
     model: BaseChatModel;
     callbacks?: Callbacks;
 }
 
-export class EditorChain extends LLMChain {
-
-    get inputKeys(): string[] {
-        return ["context"];
-    }
-
-    get outputKeys(): string[] {
-        return ["response"];
-    }
+export class Editor extends LLMChain {
 
     constructor(inputs: LLMChainInput) {
         super(inputs);
     }
 
-    static makeChain(inputs: EditorChainInput): EditorChain {
+    static makeChain(inputs: EditorChainInput): Editor {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
-        return new EditorChain({
+        return new Editor({
             llm: inputs.model,
             callbacks: inputs.callbacks,
             prompt
