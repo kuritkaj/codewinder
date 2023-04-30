@@ -38,8 +38,8 @@ const Page = () => {
 
   // Focus on text field on load
   useEffect(() => {
-    textAreaRef.current?.focus();
-  }, []);
+    if (!loading) textAreaRef.current?.focus();
+  }, [loading]);
 
   const handleError = () => {
     setMessageState(state => ({
