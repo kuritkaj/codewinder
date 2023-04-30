@@ -60,7 +60,7 @@ const Service: NextApiHandler = async (req, res) => {
     try {
         let inputs = {};
         inputs[OBJECTIVE_INPUT] = objective;
-        inputs[CONTEXT_INPUT] = context.map(inner => inner.join("")).join("");
+        inputs[CONTEXT_INPUT] = context.length > 0 ? context.pop().join("") : ""
 
         const response = await chain.call(inputs);
         sendClear();
