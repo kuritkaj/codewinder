@@ -47,16 +47,16 @@ Here is an example of a valid $JSON_BLOB:
 
 ALWAYS use the following format:
 
-${OBJECTIVE}: the initial request, greeting, question, or action to take
-${THOUGHT}: the tool to use to meet the stated ${OBJECTIVE}
+${OBJECTIVE}: restate the initial request, greeting, question, or action to take
+${THOUGHT}: consider the best approach to meet the ${OBJECTIVE}
 ${ACTION}: 
 \`\`\`
 $JSON_BLOB
 \`\`\`
 ${OBSERVATION}: the result of the action
 ... (this ${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
-${THOUGHT}: I have a ${FINAL_RESPONSE}
-${FINAL_RESPONSE}: Repeat the ${OBSERVATION} or ${THOUGHT} verbatim
+${THOUGHT}: what additional information, if any, is needed in the ${FINAL_RESPONSE}?
+${FINAL_RESPONSE}: copy verbatim the ${OBSERVATION} and ${THOUGHT} as these are not shared with the user directly
 `;
 
 export const SUFFIX = `

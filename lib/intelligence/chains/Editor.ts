@@ -39,6 +39,6 @@ export class Editor extends LLMChain {
             context,
             objective
         });
-        return summary.response;
+        return summary.text;
     }
 }

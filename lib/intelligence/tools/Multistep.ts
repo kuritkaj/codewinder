@@ -44,7 +44,7 @@ export class Multistep extends Tool {
     maxIterations?: number;
     memory: MemoryStore;
     model: BaseChatModel;
-    returnDirect = false;
+    returnDirect = true;
     tools: Tool[];
 
     constructor(options: MultistepToolInput) {
@@ -87,7 +87,7 @@ export class Multistep extends Tool {
         }
 
         const editor = Editor.makeChain({model: creative, callbacks});
-        return editor.evaluate({
+        return await editor.evaluate({
             context: results.join("\n\n"),
             objective: plan.objective
         });

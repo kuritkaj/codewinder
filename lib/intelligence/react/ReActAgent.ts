@@ -41,6 +41,10 @@ interface ReActAgentInput extends ChatAgentInput {
 export class ReActAgent extends Agent {
     memory: MemoryStore;
 
+    get returnValues(): string[] {
+        return ["output"];
+    }
+
     constructor(input: ReActAgentInput) {
         const outputParser =
             input?.outputParser ?? ReActAgent.getDefaultOutputParser();
