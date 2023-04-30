@@ -67,6 +67,7 @@ Avoid saying the tool name in your ${FINAL_RESPONSE}.
 Reminder to always use the exact characters \`${FINAL_RESPONSE}\` when responding.
 
 Note: If the ${OBJECTIVE} is a casual greeting or conversation, then just respond in kind.
+NOte: If the ${OBJECTIVE} is a request that requires creativity, then skip the ${ACTION} and provide a ${FINAL_RESPONSE} directly.
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended using the provided ${CONTEXT}.
 Note: If the ${OBJECTIVE} relies on information that is not available to you, use a tool to find learn more.
 Note: If the ${OBJECTIVE} is incomplete, or unclear, the ${CONTEXT} might be useful to clarify the intent.
