@@ -1,8 +1,10 @@
 import { Tool, ToolParams } from "langchain/tools";
 import { CallbackManagerForToolRun } from "langchain/callbacks";
+import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
 export interface BingSearchArgs extends ToolParams {
     apiKey: string | undefined;
+    memory?: MemoryStore;
     params?: Record<string, string>;
 }
 
@@ -14,9 +16,10 @@ A search engine. Useful for when you need find an answer on the web. Input shoul
     `;
 
     readonly key: string;
+    readonly memory: MemoryStore;
     readonly params: Record<string, string>;
 
-    constructor({ apiKey, params }: BingSearchArgs) {
+    constructor({ apiKey, params, memory }: BingSearchArgs) {
         super();
 
         if (!apiKey) {
@@ -26,6 +29,7 @@ A search engine. Useful for when you need find an answer on the web. Input shoul
         }
 
         this.key = apiKey;
+        this.memory = memory;
         this.params = params;
     }
 
@@ -49,19 +53,23 @@ A search engine. Useful for when you need find an answer on the web. Input shoul
         }
 
         const res = await response.json();
-        const results: [] = res.webPages.value;
+        const results: { name: string, snippet: string, url: string }[] = res.webPages.value;
 
         if (results.length === 0) {
             await runManager?.handleText("No useful results found.");
             return "No useful results found.";
         }
 
-        results.map((result: { name: string, snippet: string, url: string }) => {
+        results.map(result => {
             runManager?.handleText(`${result.name} ${result.snippet} ${result.url}`);
         });
 
+        for (const result of results) {
+            if (this.memory) await this.memory.storeText(result.snippet);
+        }
+
         return results
-            .map((result: { name: string, snippet: string, url: string }) => `${result.name} ${result.snippet} ${result.url}`)
+            .map(result => `${result.name} ${result.snippet} ${result.url}`)
             .join(" ");
     }
 }

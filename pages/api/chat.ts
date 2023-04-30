@@ -32,9 +32,8 @@ const Service: NextApiHandler = async (req, res) => {
     }
 
     const callbackManager = CallbackManager.fromHandlers({
-        handleLLMStart(llm: { name: string }): Promise<void> | void {
+        handleLLMStart: () => {
             sendLine();
-            console.log(`\n\n${ llm.name } started.`);
         },
         handleLLMNewToken: async (token) => {
             sendData(token);

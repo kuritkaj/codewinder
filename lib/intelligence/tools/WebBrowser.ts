@@ -7,6 +7,7 @@ import {  CallbackManagerForToolRun } from "langchain/callbacks";
 import { Document } from "langchain/document";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
+import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
 const DESCRIPTION = `
 Useful for finding something on or summarizing a webpage. Should only be used if a valid URL is provided.
@@ -111,6 +112,7 @@ type Headers = Record<string, any>;
 export interface WebBrowserArgs extends ToolParams {
     embeddings: Embeddings;
     headers?: Headers;
+    memory?: MemoryStore;
     model: BaseLanguageModel;
 }
 
@@ -122,10 +124,12 @@ export class WebBrowser extends Tool {
 
     readonly embeddings: Embeddings;
     readonly headers: Headers;
+    readonly memory: MemoryStore;
     readonly model: BaseLanguageModel;
 
     constructor({
                     model,
+                    memory,
                     embeddings,
                     headers,
                     verbose,
@@ -135,6 +139,7 @@ export class WebBrowser extends Tool {
 
         this.embeddings = embeddings;
         this.headers = headers || DEFAULT_HEADERS;
+        this.memory = memory;
         this.model = model;
     }
 
@@ -162,6 +167,8 @@ export class WebBrowser extends Tool {
             }
             return "There was a problem connecting to the site";
         }
+
+        if (this.memory) await this.memory.storeText(text);
 
         const textSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: 2000,

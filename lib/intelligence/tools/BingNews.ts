@@ -1,7 +1,10 @@
 import { Tool, ToolParams } from "langchain/tools";
+import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import { CallbackManagerForToolRun } from "langchain/callbacks";
 
 export interface BingNewsArgs extends ToolParams {
     apiKey: string | undefined;
+    memory?: MemoryStore;
     params?: Record<string, string>;
 }
 
@@ -14,9 +17,10 @@ Input should be a search query.
     `;
 
     readonly key: string;
+    readonly memory: MemoryStore;
     readonly params: Record<string, string>;
 
-    constructor({ apiKey, params }: BingNewsArgs) {
+    constructor({ apiKey, memory, params }: BingNewsArgs) {
         super();
 
         if (!apiKey) {
@@ -26,11 +30,12 @@ Input should be a search query.
         }
 
         this.key = apiKey;
+        this.memory = memory;
         this.params = params;
     }
 
     /** @ignore */
-    async _call(input: string): Promise<string> {
+    async _call(input: string, runManager?: CallbackManagerForToolRun): Promise<string> {
         input = input.replace(/^"(.+(?="$))"$/, '$1');
 
         const headers = { "Ocp-Apim-Subscription-Key": this.key };
@@ -48,14 +53,23 @@ Input should be a search query.
         }
 
         const res = await response.json();
-        const results: [] = res.value;
+        const results: { name: string, description: string, url: string }[] = res.value;
 
         if (results.length === 0) {
+            await runManager?.handleText("No useful results found.");
             return "No useful results found.";
         }
 
+        results.map(result => {
+            runManager?.handleText(`${result.name} ${result.description} ${result.url}`);
+        });
+
+        for (const result of results) {
+            if (this.memory) await this.memory.storeText(result.description);
+        }
+
         return results
-            .map((result: { name: string, description: string, url: string }) => `${result.name} ${result.description} ${result.url}`)
+            .map(result => `${result.name} ${result.description} ${result.url}`)
             .join(" ");
     }
 }

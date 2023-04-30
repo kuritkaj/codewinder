@@ -35,7 +35,9 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
     });
 
     const embeddings = new OpenAIEmbeddings({ openAIApiKey });
-    const memory = await MemoryStore.makeShortTermStore(embeddings);
+    const memory = process.env.SUPABASE_URL ?
+        await MemoryStore.makeLongTermStore(embeddings) :
+        await MemoryStore.makeShortTermStore(embeddings);
 
     const tools: Tool[] = [
         new WebBrowser({ model, embeddings, callbacks }),
@@ -45,8 +47,8 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         tools.push(new BingSearch({ apiKey: bingApiKey, callbacks }));
         tools.push(new BingNews({ apiKey: bingApiKey, callbacks }));
     }
-    const multistep = new Multistep({ model, memory, creative, tools, callbacks, maxIterations: MAX_ITERATIONS});
-    const toolset = [...tools, multistep];
+    const multistep = new Multistep({ model, memory, creative, tools, callbacks, maxIterations: MAX_ITERATIONS });
+    const toolset = [ ...tools, multistep ];
 
     const agent = ReActAgent.makeAgent(model, memory, toolset, callbacks);
 

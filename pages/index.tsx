@@ -106,19 +106,20 @@ const Page = () => {
       done = doneReading;
       const data = decoder.decode(value, { stream: true });
 
-      if (data.trim().startsWith("{clear}")) {
+      // clear the textarea if the data contains {clear}
+      if (data.trim().includes("{clear}")) {
         setMessageState(state => ({
           ...state,
           pending: undefined,
         }));
       }
 
-      data.split("{clear}").forEach(chunk => {
-        setMessageState(state => ({
-          ...state,
-          pending: (state.pending ?? "") + chunk,
-        }));
-      });
+      // if the data contains {clear}, just output the string after that phrase.
+      const chunk = data.split("{clear}").pop();
+      setMessageState(state => ({
+        ...state,
+        pending: (state.pending ?? "") + chunk,
+      }));
     }
 
     setMessageState(state => ({
