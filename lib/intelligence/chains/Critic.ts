@@ -46,7 +46,7 @@ export class Critic extends LLMChain {
         return super._call(values, runManager);
     }
 
-    async evaluate({product, objective}: { product: string; objective: string }) {
+    async evaluate({product, objective}: { product: string; objective: string }): Promise<string> {
         const summary = await this.call({
             product,
             objective

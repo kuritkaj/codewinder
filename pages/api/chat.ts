@@ -64,6 +64,7 @@ const Service: NextApiHandler = async (req, res) => {
         sendClear();
         sendLine(response.output);
     } catch (error) {
+        sendClear();
         sendError(error)
     } finally {
         res.end();

@@ -7,7 +7,7 @@ import { BingSearch } from "@/lib/intelligence/tools/BingSearch";
 import { BingNews } from "@/lib/intelligence/tools/BingNews";
 import { AgentExecutor } from "@/lib/intelligence/react/AgentExecutor";
 import { Callbacks } from "langchain/callbacks";
-import { WebBrowser }from "@/lib/intelligence/tools/WebBrowser";
+import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 
@@ -50,7 +50,7 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
 
     const agent = ReActAgent.makeAgent(model, memory, toolset, callbacks);
 
-    const executor = AgentExecutor.fromAgentAndTools({
+    return AgentExecutor.fromAgentAndTools({
         agent,
         model,
         tools: toolset,
@@ -58,8 +58,4 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         callbacks,
         maxIterations: MAX_ITERATIONS
     });
-
-    console.log("Loaded agent.");
-
-    return executor;
 }

@@ -20,12 +20,12 @@ export interface AgentExecutorInput extends ChainInputs {
  * @augments BaseChain
  */
 export class AgentExecutor extends BaseChain {
-    agent: BaseSingleActionAgent | BaseMultiActionAgent;
-    earlyStoppingMethod: StoppingMethod = "force";
-    maxIterations?: number = 15;
-    model: BaseChatModel;
-    returnIntermediateSteps = false;
-    tools: Tool[];
+    readonly agent: BaseSingleActionAgent | BaseMultiActionAgent;
+    readonly earlyStoppingMethod: StoppingMethod = "force";
+    readonly maxIterations?: number = 15;
+    readonly model: BaseChatModel;
+    readonly returnIntermediateSteps: boolean = false;
+    readonly tools: Tool[];
 
     get inputKeys() {
         return this.agent.inputKeys;

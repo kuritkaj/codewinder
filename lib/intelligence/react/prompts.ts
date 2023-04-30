@@ -56,7 +56,7 @@ $JSON_BLOB
 ${OBSERVATION}: the result of the action
 ... (this ${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
 ${THOUGHT}: I have a ${FINAL_RESPONSE}
-${FINAL_RESPONSE}: Repeat the ${THOUGHT} verbatim
+${FINAL_RESPONSE}: Repeat the ${OBSERVATION} or ${THOUGHT} verbatim
 `;
 
 export const SUFFIX = `

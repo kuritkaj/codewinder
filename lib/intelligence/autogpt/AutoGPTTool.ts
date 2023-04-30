@@ -51,6 +51,6 @@ class AutoGPTTool extends DynamicTool {
                 maxIterations: 10,
                 outputParser: new AutoGPTOutputParser(),
             }
-        )
+        );
     }
 }
