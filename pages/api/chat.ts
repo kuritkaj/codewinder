@@ -39,10 +39,13 @@ const Service: NextApiHandler = async (req, res) => {
         handleLLMNewToken: async (token) => {
             sendData(token);
         },
-        handleLLMEnd(): Promise<void> | void {
+        handleLLMEnd: () => {
             sendLine();
         },
-        handleToolStart() {
+        handleText: (text: string) => {
+            sendData(text);
+        },
+        handleToolStart: () => {
             sendLine();
         },
         handleToolEnd: async () => {

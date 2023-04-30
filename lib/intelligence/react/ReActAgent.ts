@@ -39,15 +39,14 @@ interface ReActAgentInput extends ChatAgentInput {
 }
 
 export class ReActAgent extends Agent {
-    memory: MemoryStore;
+    readonly memory: MemoryStore;
 
     get returnValues(): string[] {
         return ["output"];
     }
 
     constructor(input: ReActAgentInput) {
-        const outputParser =
-            input?.outputParser ?? ReActAgent.getDefaultOutputParser();
+        const outputParser = input.outputParser;
         super({
             ...input,
             outputParser
@@ -108,10 +107,6 @@ ${ TOOLING }
         return ChatPromptTemplate.fromPromptMessages(messages);
     }
 
-    static getDefaultOutputParser(_fields?: OutputParserArgs) {
-        return new ReActAgentActionOutputParser();
-    }
-
     /**
      * Decide what to do provided some input.
      *
@@ -160,7 +155,7 @@ ${ TOOLING }
         return new ReActAgent({
             llmChain: chain,
             memory,
-            outputParser: new ReActAgentActionOutputParser({ memory }),
+            outputParser: ReActAgentActionOutputParser.makeParser(memory),
             allowedTools: tools.map((t) => t.name),
         });
     }
@@ -177,16 +172,25 @@ ${ TOOLING }
     }
 }
 
-export class ReActAgentActionOutputParser extends AgentActionOutputParser {
-    finishToolName: string;
+interface ReActAgentInput extends OutputParserArgs {
+    finishToolName?: string;
+    memory: MemoryStore;
+}
 
-    constructor(fields?: OutputParserArgs) {
+export class ReActAgentActionOutputParser extends AgentActionOutputParser {
+    readonly finishToolName: string;
+    readonly memory: MemoryStore;
+
+    constructor(input: ReActAgentInput) {
         super();
-        this.finishToolName = fields?.finishToolName || FINAL_RESPONSE;
+
+        this.finishToolName = input.finishToolName || FINAL_RESPONSE;
+        this.memory = input.memory;
     }
 
     async parse(text: string) {
         const responder = async (response: string) => {
+            await this.memory.storeText(response);
             return { returnValues: { output: `${ response }` }, log: response };
         }
 
@@ -217,5 +221,10 @@ export class ReActAgentActionOutputParser extends AgentActionOutputParser {
 
     getFormatInstructions(): string {
         return FORMAT_INSTRUCTIONS;
+    }
+
+    static makeParser(memory: MemoryStore, finishToolName?: string) {
+        // Why does this require the llmChain?
+        return new ReActAgentActionOutputParser({ llmChain: undefined, memory, finishToolName });
     }
 }

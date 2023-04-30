@@ -16,7 +16,7 @@ const MAX_ITERATIONS = 8;
 export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor> => {
     const openAIApiKey = process.env.OPENAI_API_KEY;
     if (!Boolean(openAIApiKey)) {
-        throw new Error('OpenAI API Key not found.');
+        throw new Error('OpenAI api key not found.');
     }
     const bingApiKey = process.env.BING_API_KEY;
 
@@ -35,7 +35,7 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
     });
 
     const embeddings = new OpenAIEmbeddings({ openAIApiKey });
-    const memory = await MemoryStore.makeMemoryStore(embeddings);
+    const memory = await MemoryStore.makeShortTermStore(embeddings);
 
     const tools: Tool[] = [
         new WebBrowser({ model, embeddings, callbacks }),

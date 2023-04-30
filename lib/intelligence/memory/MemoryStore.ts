@@ -10,29 +10,8 @@ export class MemoryStore {
     memory: VectorStore;
     textSplitter: TextSplitter;
 
-    constructor(memory: VectorStore, textSplitter: TextSplitter) {
+    constructor(memory: VectorStore) {
         this.memory = memory;
-        this.textSplitter = textSplitter;
-    }
-
-    static async makeMemoryStore(embeddings: OpenAIEmbeddings) {
-        const supabaseApiKey = process.env.SUPABASE_API_KEY;
-        const supabaseUrl = process.env.SUPABASE_URL;
-
-        let memory;
-        if (Boolean(supabaseApiKey) && Boolean(supabaseUrl)) {
-            console.log("Using Supabase vector store.");
-
-            const client = createClient(supabaseUrl, supabaseApiKey);
-            memory = await SupabaseVectorStore.fromExistingIndex(embeddings, {
-                client,
-                tableName: "documents",
-                queryName: "match_documents",
-            });
-        } else {
-            console.log("Using memory vector store.");
-            memory = await new MemoryVectorStore(embeddings);
-        }
 
         const getEmbeddingContextSize = (modelName?: string): number => {
             switch (modelName) {
@@ -48,12 +27,35 @@ export class MemoryStore {
                 : undefined
         );
 
-        const textSplitter = new TokenTextSplitter({
+        this.textSplitter = new TokenTextSplitter({
             chunkSize,
             chunkOverlap: Math.round(chunkSize / 10),
         });
+    }
 
-        return new MemoryStore(memory, textSplitter);
+    static async makeLongTermStore(embeddings: OpenAIEmbeddings) {
+        const supabaseApiKey = process.env.SUPABASE_API_KEY;
+        if (!Boolean(supabaseApiKey)) {
+            throw new Error('Supabase api key not found.');
+        }
+        const supabaseUrl = process.env.SUPABASE_URL;
+        if (!Boolean(supabaseUrl)) {
+            throw new Error('Supabase url not found.');
+        }
+
+        const client = createClient(supabaseUrl, supabaseApiKey);
+        const memory = await SupabaseVectorStore.fromExistingIndex(embeddings, {
+            client,
+            tableName: "documents",
+            queryName: "match_documents",
+        });
+
+        return new MemoryStore(memory);
+    }
+
+    static async makeShortTermStore(embeddings: OpenAIEmbeddings) {
+        const memory = await new MemoryVectorStore(embeddings);
+        return new MemoryStore(memory);
     }
 
     async retrieve(query: string, k?: number, filter?: VectorStore["FilterType"] | undefined): Promise<Document[]> {
@@ -65,7 +67,7 @@ export class MemoryStore {
     }
 
     async storeText(text: string) {
-        const documents = await this.textSplitter.createDocuments([ text ]);
+        const documents = await this.textSplitter.createDocuments([ text ], [{ created: new Date()}] );
         await this.memory.addDocuments(documents);
     }
 }
