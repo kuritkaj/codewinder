@@ -34,14 +34,16 @@ ${THOUGHT}: consider the best approach to meet the ${OBJECTIVE}
 ${ACTION}:
 \`\`\`
 {{
-  "action": "tool name",
+  "action": "available tool name",
   "action_input": "tool input"
 }}
 \`\`\`
-${OBSERVATION}: the result of the action
+... (using a tool ALWAYS requires the prior JSON format)
+${OBSERVATION}: the result of the ${ACTION}
 ... (this ${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
-${THOUGHT}: what additional information, if any, is needed for a ${FINAL_RESPONSE}?
-${FINAL_RESPONSE}: copy the ${OBSERVATION} and ${THOUGHT} verbatim
+${THOUGHT}: critical evaluation and reflection of the ${THOUGHT}/${ACTION}/${OBSERVATION}
+${FINAL_RESPONSE}: copy the ${OBSERVATION} and previous ${THOUGHT} verbatim, as though it were never shared
+... (reminder to always use the exact characters \`${FINAL_RESPONSE}\` when responding)
 `;
 
 export const SUFFIX = `
@@ -49,9 +51,8 @@ Format your ${FINAL_RESPONSE} as though the ${OBSERVATION} and ${THOUGHT} were n
 and you're restating it in it's entirety for the benefit of the person stating the ${OBJECTIVE}.
 Maintain markdown formatting from the ${OBSERVATION} or ${THOUGHT} in your ${FINAL_RESPONSE}.
 Avoid saying the tool name in your ${FINAL_RESPONSE}.
-Reminder to always use the exact characters \`${FINAL_RESPONSE}\` when responding.
 
-Note: If the ${OBJECTIVE} is a casual greeting or conversation, then just respond in kind.
+Note: If the ${OBJECTIVE} is a casual greeting or conversation, then just respond in kind as the ${FINAL_RESPONSE}.
 NOte: If the ${OBJECTIVE} is a request that requires creativity, then skip the ${ACTION} and provide a ${FINAL_RESPONSE} directly.
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended using the provided ${CONTEXT}.
 Note: If the ${OBJECTIVE} relies on information that is not available to you, use a tool to find learn more.

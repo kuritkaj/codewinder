@@ -91,7 +91,7 @@ export class ReActAgent extends Agent {
             .join("\n");
         const tooling = `
 You have access to the following tools: ${ tools.map((t) => t.name).join(", ") }.
-You may not use any other tools.
+You may not use any other tools - never make up a tool that isn't on this list.
 Here are the details on how to use these tools:
 ${ toolDetails }
 ${ TOOLING }
