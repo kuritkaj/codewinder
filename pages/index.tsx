@@ -163,20 +163,13 @@ const Page = () => {
           <Link href="/">Codewinder</Link>
         </div>
         <div className = {styles.navlinks}>
-          <a
-            href="https://js.langchain.com/docs/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Docs
-          </a>
-          <a
-            href="https://github.com/hwchase17/langchainjs"
+          <Link
+            href="https://github.com/nyvyn/codewinder"
             target="_blank"
             rel="noreferrer"
           >
             GitHub
-          </a>
+          </Link>
         </div>
       </div>
       <main className={styles.main}>

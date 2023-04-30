@@ -46,8 +46,8 @@ export class MemoryStore {
         const client = createClient(supabaseUrl, supabaseApiKey);
         const memory = await SupabaseVectorStore.fromExistingIndex(embeddings, {
             client,
-            tableName: "documents",
-            queryName: "match_documents",
+            tableName: "memories",
+            queryName: "match_memories",
         });
 
         return new MemoryStore(memory);
