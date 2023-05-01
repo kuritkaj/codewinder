@@ -11,7 +11,7 @@ Based on this stated objective: {objective}
 
 Fix any typos and grammar, as well as spacing and formatting, while preserving as much detail as possible.
 You can use markdown in your response.
-Do not editorialize or add any new information, just fix the errors.
+NEVER say what you did or editorialize, just share the updated work directly.
 `;
 
 interface EditorChainInput {

@@ -90,9 +90,8 @@ export class ReActAgent extends Agent {
             .map((tool) => `${ tool.name }: ${ tool.description }`)
             .join("\n");
         const tooling = `
-You have access to the following tools: ${ tools.map((t) => t.name).join(", ") }.
-You may not use any other tools - never make up a tool that isn't on this list.
-Here are the details on how to use these tools:
+Allowed tools: ${ tools.map((t) => t.name).join(", ") }.
+Tool instructions:
 ${ toolDetails }
 ${ TOOLING }
         `;
@@ -105,6 +104,10 @@ ${ TOOLING }
             HumanMessagePromptTemplate.fromTemplate(human)
         ];
         return ChatPromptTemplate.fromPromptMessages(messages);
+    }
+
+    static getDefaultOutputParser() {
+        return new ReActAgentActionOutputParser();
     }
 
     /**
@@ -122,7 +125,7 @@ ${ TOOLING }
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
         const thoughts = await this.constructScratchPad(steps);
-        const memories = await this.memory.retrieve(inputs[OBJECTIVE_INPUT]);
+        const memories = await this.memory.retrieve(inputs[OBJECTIVE_INPUT], 1);
 
         const newInputs: ChainValues = {
             ...inputs
@@ -155,7 +158,7 @@ ${ TOOLING }
         return new ReActAgent({
             llmChain: chain,
             memory,
-            outputParser: ReActAgentActionOutputParser.makeParser(memory),
+            outputParser: ReActAgent.getDefaultOutputParser(),
             allowedTools: tools.map((t) => t.name),
         });
     }
@@ -174,23 +177,19 @@ ${ TOOLING }
 
 interface ReActAgentInput extends OutputParserArgs {
     finishToolName?: string;
-    memory: MemoryStore;
 }
 
 export class ReActAgentActionOutputParser extends AgentActionOutputParser {
     readonly finishToolName: string;
-    readonly memory: MemoryStore;
 
-    constructor(input: ReActAgentInput) {
+    constructor(input?: ReActAgentInput) {
         super();
 
-        this.finishToolName = input.finishToolName || FINAL_RESPONSE;
-        this.memory = input.memory;
+        this.finishToolName = input?.finishToolName || FINAL_RESPONSE;
     }
 
     async parse(text: string) {
         const responder = async (response: string) => {
-            await this.memory.storeText(response);
             return { returnValues: { output: `${ response }` }, log: response };
         }
 
@@ -221,10 +220,5 @@ export class ReActAgentActionOutputParser extends AgentActionOutputParser {
 
     getFormatInstructions(): string {
         return FORMAT_INSTRUCTIONS;
-    }
-
-    static makeParser(memory: MemoryStore, finishToolName?: string) {
-        // Why does this require the llmChain?
-        return new ReActAgentActionOutputParser({ llmChain: undefined, memory, finishToolName });
     }
 }

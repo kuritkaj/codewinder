@@ -6,9 +6,12 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { CallbackManagerForToolRun } from "langchain/dist/callbacks/manager";
 import { Editor } from "@/lib/intelligence/chains/Editor";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
+import { Planner } from "@/lib/intelligence/chains/Planner";
 
 const DESCRIPTION = `
 This tool can help accomplish an objective that requires a series of tasks, such as a document with multiple parts.
+Always use the multi-step tool if the request has more than one part or multiple steps.
+A productive strategy is to use the web search tool, and provide the results as input to this tool.
 When using this tool ensure you use JSON and pass the objective and the steps in natural language to achieve the objective.
 
 The tool input should use this format:
@@ -76,12 +79,19 @@ export class Multistep extends Tool {
             maxIterations
         });
 
+        const planner = Planner.makeChain({model: creative, callbacks});
+        const interim = await planner.evaluate({
+            objective: plan.objective,
+            steps: JSON.stringify(plan.steps)
+        });
+        const newPlan = JSON.parse(interim);
+
         let results = [];
-        for (const step of plan.steps) {
-            await callbackManager?.handleText("Starting step: " + step);
+        for (const step of newPlan.steps) {
+            await callbackManager?.handleText("Starting: " + step);
             const completion = await executor.call({
                 context: results.length > 0 ? results[results.length - 1] : "",
-                objective: `${step} - supporting this overall goal: ${plan.objective}`
+                objective: `${step} - supporting this overall goal: ${newPlan.objective}`
             });
             results.push(completion.output);
         }

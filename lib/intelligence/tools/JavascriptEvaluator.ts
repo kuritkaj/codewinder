@@ -4,7 +4,7 @@ export class JavascriptEvaluator extends Tool {
     name = "javascript-evaluator";
 
     description = `
-An isolated environment to evaluate and run Javascript.
+An isolated environment to evaluate and run Javascript; includes fetch to fetch resources.
 The javascript program provided should always return a string.
     `;
 

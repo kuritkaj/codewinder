@@ -10,7 +10,8 @@ import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
 const DESCRIPTION = `
-Useful for finding something on or summarizing a webpage. Should only be used if a valid URL is provided.
+Useful for finding something on or summarizing a webpage; such as follow up from a web search.
+Should only be used if a valid URL is provided.
 Input should be "ONE valid http URL including protocol","what to find on the page or an empty string for a summary".
 
 The tool input should use this format:
@@ -168,6 +169,7 @@ export class WebBrowser extends Tool {
             return "There was a problem connecting to the site";
         }
 
+        // Store the full text for later retrieval
         if (this.memory) await this.memory.storeText(text);
 
         const textSplitter = new RecursiveCharacterTextSplitter({
@@ -196,14 +198,14 @@ export class WebBrowser extends Tool {
                 docs,
                 this.embeddings
             );
-            const results = await vectorStore.similaritySearch(task, 4);
+            const results = await vectorStore.similaritySearch(task, 8);
 
             context = results.map((res) => res.pageContent).join("\n");
         }
 
         const input = `Text:${ context }\n\nI need ${
             doSummary ? "a summary" : task
-        } from the above text, also provide up to 5 markdown links from within that would be of interest (always including URL and text). Links should be provided, if present, in markdown syntax as a list under the heading "Relevant Links:".`;
+        } from the provided text.`;
 
         const res = await this.model.generatePrompt(
             [ new StringPromptValue(input) ],

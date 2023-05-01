@@ -40,12 +40,12 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         await MemoryStore.makeShortTermStore(embeddings);
 
     const tools: Tool[] = [
-        new WebBrowser({ model, embeddings, callbacks }),
+        new WebBrowser({ model, embeddings, memory, callbacks }),
         new JavascriptEvaluator()
     ];
     if (Boolean(bingApiKey)) {
-        tools.push(new BingSearch({ apiKey: bingApiKey, callbacks }));
-        tools.push(new BingNews({ apiKey: bingApiKey, callbacks }));
+        tools.push(new BingSearch({ apiKey: bingApiKey, memory, callbacks }));
+        tools.push(new BingNews({ apiKey: bingApiKey, memory, callbacks }));
     }
     const multistep = new Multistep({ model, memory, creative, tools, callbacks, maxIterations: MAX_ITERATIONS });
     const toolset = [ ...tools, multistep ];
