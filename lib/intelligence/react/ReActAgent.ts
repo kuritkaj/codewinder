@@ -1,5 +1,4 @@
 import {
-    CONTEXT,
     FINAL_RESPONSE,
     FORMAT_INSTRUCTIONS,
     OBJECTIVE,
@@ -87,17 +86,22 @@ export class ReActAgent extends Agent {
     static createPrompt(tools: Tool[], args?: ChatCreatePromptArgs) {
         const { prefix = PREFIX, suffix = SUFFIX } = args ?? {};
         const toolDetails = tools
-            .map((tool) => `${ tool.name }: ${ tool.description }`)
+            .map((tool) => `* ${ tool.name }: ${ tool.description }`)
             .join("\n");
         const tooling = `
 Allowed tools: ${ tools.map((t) => t.name).join(", ") }.
 Tool instructions:
 ${ toolDetails }
-${ TOOLING }
-        `;
-        const system = [ prefix, tooling, FORMAT_INSTRUCTIONS, suffix ].join("\n");
-        const assistant = [`This is the ${CONTEXT}:\n{${CONTEXT_INPUT}}`, `Which reminds you of this:\n{${MEMORIES_INPUT}}`].join("\n\n");
-        const human = [ `${ OBJECTIVE }: {${OBJECTIVE_INPUT}}`, `{${SCRATCHPAD_INPUT}}` ].join("\n");
+${ TOOLING }`;
+
+        const system = [ prefix, tooling, FORMAT_INSTRUCTIONS, suffix ].join("");
+        const assistant = [
+            `{${CONTEXT_INPUT}}`
+        ].join("");
+        const human = [
+            `${ OBJECTIVE }: {${OBJECTIVE_INPUT}}`,
+            `{${SCRATCHPAD_INPUT}}`
+        ].join("\n");
         const messages = [
             SystemMessagePromptTemplate.fromTemplate(system),
             AIMessagePromptTemplate.fromTemplate(assistant),
@@ -125,7 +129,7 @@ ${ TOOLING }
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
         const thoughts = await this.constructScratchPad(steps);
-        const memories = await this.memory.retrieve(inputs[OBJECTIVE_INPUT], 1);
+        const memories = await this.memory.retrieveSnippet(inputs[OBJECTIVE_INPUT]);
 
         const newInputs: ChainValues = {
             ...inputs

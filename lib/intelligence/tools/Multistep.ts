@@ -8,12 +8,7 @@ import { Editor } from "@/lib/intelligence/chains/Editor";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { Planner } from "@/lib/intelligence/chains/Planner";
 
-const DESCRIPTION = `
-This tool can help accomplish an objective that requires a series of tasks, such as a document with multiple parts.
-Always use the multi-step tool if the request has more than one part or multiple steps.
-A productive strategy is to use the web search tool, and provide the results as input to this tool.
-When using this tool ensure you use JSON and pass the objective and the steps in natural language to achieve the objective.
-
+const DESCRIPTION = `achieve an objective that requires a series of tasks, such as a document with multiple parts.
 The tool input should use this format:
 {{
   "action": "tool name",
@@ -24,9 +19,7 @@ The tool input should use this format:
             "step or task 2"
         ]
     }}
-}}
-
-`;
+}}`;
 
 interface MultistepToolInput {
     creative: BaseChatModel;

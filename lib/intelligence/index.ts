@@ -4,7 +4,6 @@ import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { JavascriptEvaluator } from "@/lib/intelligence/tools/JavascriptEvaluator";
 import { Multistep } from "@/lib/intelligence/tools/Multistep";
 import { BingSearch } from "@/lib/intelligence/tools/BingSearch";
-import { BingNews } from "@/lib/intelligence/tools/BingNews";
 import { AgentExecutor } from "@/lib/intelligence/react/AgentExecutor";
 import { Callbacks } from "langchain/callbacks";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
@@ -44,8 +43,7 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         new JavascriptEvaluator()
     ];
     if (Boolean(bingApiKey)) {
-        tools.push(new BingSearch({ apiKey: bingApiKey, memory, callbacks }));
-        tools.push(new BingNews({ apiKey: bingApiKey, memory, callbacks }));
+        tools.push(new BingSearch({ apiKey: bingApiKey, callbacks }));
     }
     const multistep = new Multistep({ model, memory, creative, tools, callbacks, maxIterations: MAX_ITERATIONS });
     const toolset = [ ...tools, multistep ];

@@ -3,10 +3,7 @@ import { Tool } from "langchain/tools";
 export class JavascriptEvaluator extends Tool {
     name = "javascript-evaluator";
 
-    description = `
-An isolated environment to evaluate and run Javascript; includes fetch to fetch resources.
-The javascript program provided should always return a string.
-    `;
+    description = "an isolated Javascript environment with fetch() to evaluate and run code. Programs must always return a string.";
 
     constructor() {
         super();

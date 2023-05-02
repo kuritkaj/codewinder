@@ -4,14 +4,10 @@ import { BaseChatModel } from "langchain/chat_models";
 import { Callbacks } from "langchain/callbacks";
 
 export const GUIDANCE = `
-This was the response:
+Rewrite the following:
 {context}
 
-Based on this stated objective: {objective}
-
-Fix any typos and grammar, as well as spacing and formatting, while preserving as much detail as possible.
-You can use markdown in your response.
-NEVER say what you did or editorialize, just share the updated work directly.
+Using this as your guide: {objective}
 `;
 
 interface EditorChainInput {

@@ -1,5 +1,5 @@
 import { VectorStore } from "langchain/dist/vectorstores/base";
-import { TextSplitter, TokenTextSplitter } from "langchain/text_splitter";
+import { RecursiveCharacterTextSplitter, TextSplitter, TokenTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { Document } from "langchain/document";
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
@@ -61,6 +61,25 @@ export class MemoryStore {
     async retrieve(query: string, k?: number, filter?: VectorStore["FilterType"] | undefined): Promise<Document[]> {
         return await this.memory.similaritySearch(query, k, filter);
     }
+
+    async retrieveSnippet(query: string): Promise<Document[]> {
+        const docs = await this.memory.similaritySearch(query, 1);
+        if (docs.length === 0) return [];
+
+        const snippetSplitter = new RecursiveCharacterTextSplitter({
+            chunkSize: 1000,
+            chunkOverlap: 10,
+        });
+        const { pageContent, metadata } = docs.pop();
+        const texts = await snippetSplitter.splitText(pageContent);
+        const vectorStore = await MemoryVectorStore.fromTexts(
+            texts,
+            metadata,
+            this.memory.embeddings
+        );
+        return await vectorStore.similaritySearch(query, 1);
+    }
+
 
     async storeDocuments(documents: Document[]) {
         await this.memory.addDocuments(documents);

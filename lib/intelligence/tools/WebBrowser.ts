@@ -9,17 +9,13 @@ import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
-const DESCRIPTION = `
-Useful for finding something on or summarizing a webpage; such as follow up from a web search.
-Should only be used if a valid URL is provided.
+const DESCRIPTION = `finding or summarizing webpage content from a valid URL, such as follow up from a web search.
 Input should be "ONE valid http URL including protocol","what to find on the page or an empty string for a summary".
-
 The tool input should use this format:
 {{
   "action": "tool name",
   "action_input": ["https://www.google.com","how to make a cake"]
-}}
-`;
+}}`;
 
 export const getText = (
     html: string,

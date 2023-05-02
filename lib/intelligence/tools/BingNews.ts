@@ -11,10 +11,7 @@ export interface BingNewsArgs extends ToolParams {
 export class BingNews extends Tool {
     name = "news-search";
 
-    description = `
-A news search engine. Useful for when you need to find headlines and news articles on trending topics.
-Input should be a search query.
-    `;
+    description = "find headlines and articles on trending topics. Follow provided links using the browser tool for productivity. Input a search query.";
 
     readonly key: string;
     readonly memory: MemoryStore;
