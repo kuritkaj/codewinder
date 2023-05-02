@@ -38,14 +38,11 @@ interface ReActAgentInput extends ChatAgentInput {
 }
 
 export class ReActAgent extends Agent {
-    readonly memory: MemoryStore;
-
-    get returnValues(): string[] {
-        return ["output"];
-    }
+    memory: MemoryStore;
 
     constructor(input: ReActAgentInput) {
-        const outputParser = input.outputParser;
+        const outputParser =
+            input?.outputParser ?? ReActAgent.getDefaultOutputParser();
         super({
             ...input,
             outputParser
@@ -86,7 +83,7 @@ export class ReActAgent extends Agent {
     static createPrompt(tools: Tool[], args?: ChatCreatePromptArgs) {
         const { prefix = PREFIX, suffix = SUFFIX } = args ?? {};
         const toolDetails = tools
-            .map((tool) => `* ${ tool.name }: ${ tool.description }`)
+            .map((tool) => `${ tool.name }: ${ tool.description }`)
             .join("\n");
         const tooling = `
 Allowed tools: ${ tools.map((t) => t.name).join(", ") }.
@@ -94,14 +91,9 @@ Tool instructions:
 ${ toolDetails }
 ${ TOOLING }`;
 
-        const system = [ prefix, tooling, FORMAT_INSTRUCTIONS, suffix ].join("");
-        const assistant = [
-            `{${CONTEXT_INPUT}}`
-        ].join("");
-        const human = [
-            `${ OBJECTIVE }: {${OBJECTIVE_INPUT}}`,
-            `{${SCRATCHPAD_INPUT}}`
-        ].join("\n");
+        const system = [ prefix, tooling, FORMAT_INSTRUCTIONS, suffix ].join("\n");
+        const assistant = [`{${CONTEXT_INPUT}}`].join("\n\n");
+        const human = [ `${ OBJECTIVE }: {${OBJECTIVE_INPUT}}`, `{${SCRATCHPAD_INPUT}}` ].join("\n");
         const messages = [
             SystemMessagePromptTemplate.fromTemplate(system),
             AIMessagePromptTemplate.fromTemplate(assistant),
@@ -110,8 +102,8 @@ ${ TOOLING }`;
         return ChatPromptTemplate.fromPromptMessages(messages);
     }
 
-    static getDefaultOutputParser() {
-        return new ReActAgentActionOutputParser();
+    static getDefaultOutputParser(_fields?: OutputParserArgs) {
+        return new ReActAgentActionOutputParser(_fields);
     }
 
     /**
@@ -146,7 +138,7 @@ ${ TOOLING }`;
             return this.outputParser.parse(output);
         } catch (e) {
             console.error("Error in LLMChain.predict:", e);
-            return this.outputParser.parse("");
+            return this.outputParser.parse("Error in LLMChain.predict");
         }
     }
 
@@ -171,25 +163,20 @@ ${ TOOLING }`;
         const invalidTool = tools.find((tool) => !tool.description);
         if (invalidTool) {
             const msg = `
-                Got a tool ${ invalidTool.name } without a description.
-                This agent requires descriptions for all tools.
+Got a tool ${ invalidTool.name } without a description.
+This agent requires descriptions for all tools.
             `;
             throw new Error(msg);
         }
     }
 }
 
-interface ReActAgentInput extends OutputParserArgs {
-    finishToolName?: string;
-}
-
 export class ReActAgentActionOutputParser extends AgentActionOutputParser {
-    readonly finishToolName: string;
+    finishToolName: string;
 
-    constructor(input?: ReActAgentInput) {
+    constructor(fields?: OutputParserArgs) {
         super();
-
-        this.finishToolName = input?.finishToolName || FINAL_RESPONSE;
+        this.finishToolName = fields?.finishToolName || FINAL_RESPONSE;
     }
 
     async parse(text: string) {
