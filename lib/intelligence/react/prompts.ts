@@ -20,7 +20,7 @@ export const TOOLING = `
 export const FORMAT_INSTRUCTIONS = `
 ALWAYS use the following format:
 
-${OBJECTIVE}: the initial request, greeting, question, or action to take
+${OBJECTIVE}: reword the initial request to include increased specificity and detail
 ${THOUGHT}: consider the best approach to meet the ${OBJECTIVE}
 ${ACTION}:
 \`\`\`
@@ -33,6 +33,7 @@ ${ACTION}:
 ${OBSERVATION}: the result of the ${ACTION}
 ... (this ${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
 ${THOUGHT}: critical evaluation of the ${OBSERVATION}
+${FINAL_RESPONSE}: the final response (repeat the ${OBSERVATION} exactly)
 `;
 
 export const SUFFIX = `

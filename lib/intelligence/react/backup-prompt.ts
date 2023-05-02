@@ -1,4 +1,5 @@
 export const ACTION = "Action";
+export const ANALYSIS = "Thought";
 export const FINAL_RESPONSE = "Final Response";
 export const OBJECTIVE = "Objective";
 export const OBSERVATION = "Observation";
@@ -64,7 +65,7 @@ Maintain any markdown formatting from the ${OBSERVATION} in your ${FINAL_RESPONS
 Avoid saying the tool name in your ${FINAL_RESPONSE}.
 Reminder to always use the exact characters \`${FINAL_RESPONSE}\` when responding.
 
-Note: If the ${OBJECTIVE} is a casual greting or conversation, then just respond in kind.
+Note: If the ${OBJECTIVE} is a casual greating or conversation, then just respond in kind.
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended.
 Note: If the ${OBJECTIVE} relies on information that is not available to you, use a tool to find learn more.
 `;
