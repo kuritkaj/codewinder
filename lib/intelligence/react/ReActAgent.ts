@@ -121,7 +121,7 @@ ${ TOOLING }`;
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
         const thoughts = await this.constructScratchPad(steps);
-        const memories = await this.memory.retrieveSnippet(inputs[OBJECTIVE_INPUT]);
+        const memories = await this.memory.retrieveSnippet(inputs[OBJECTIVE_INPUT], 0.6);
 
         const newInputs: ChainValues = {
             ...inputs
