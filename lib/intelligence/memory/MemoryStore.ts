@@ -67,20 +67,20 @@ export class MemoryStore {
         const docsWithScores = await this.memory.similaritySearchWithScore(query, 1);
         if (docsWithScores.length === 0) return [];
 
-        // use the RecursiveCharacterTextSplitter to split the doc into chunks of 1000 characters
-        // in theory, this does a good job of breaking on sentences...
-        const snippetSplitter = new RecursiveCharacterTextSplitter({
-            chunkSize: 1000,
-            chunkOverlap: 10,
-        });
-
         // convert the response from similaritySearchWithScore to a tuple of [Document, number]
         const docWithScore: [Document, number] = docsWithScores.pop();
         const doc = docWithScore[0];
         const score = docWithScore[1];
 
         // if doc score is less than threshold, return empty array signifying no match
-        if (score < threshold) return [];
+        if (score > threshold) return [];
+
+        // use the RecursiveCharacterTextSplitter to split the doc into chunks of 1000 characters
+        // in theory, this does a good job of breaking on sentences...
+        const snippetSplitter = new RecursiveCharacterTextSplitter({
+            chunkSize: 1000,
+            chunkOverlap: 10,
+        });
 
         // if doc score is greater than threshold, search the doc for the single snippet that best matches the query
         const texts = await snippetSplitter.splitText(doc.pageContent);

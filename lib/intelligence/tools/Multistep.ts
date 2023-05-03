@@ -8,7 +8,7 @@ import { Editor } from "@/lib/intelligence/chains/Editor";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { Planner } from "@/lib/intelligence/chains/Planner";
 
-const DESCRIPTION = `achieve an objective that requires a series of tasks, such as a document with multiple parts.
+const DESCRIPTION = `achieve an objective that has multiple parts, or requires more than one task for completion.
 The tool input should use this format:
 {{
   "action": "tool name",
