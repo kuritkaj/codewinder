@@ -5,24 +5,23 @@ import { Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { CallbackManagerForToolRun } from "langchain/dist/callbacks/manager";
 import { Editor } from "@/lib/intelligence/chains/Editor";
-import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
+import { CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { Planner } from "@/lib/intelligence/chains/Planner";
 
-const DESCRIPTION = `achieve an objective that has multiple parts, or requires more than one task for completion.
+const DESCRIPTION = `use this tool anytime n objective has multiple parts, sections, task, etc. or is complex, or requires critical thinking.
 The tool input should use this format:
 {{
   "action": "tool name",
   "action_input": {{
-        "objective": "objective",
-        "steps": [
-            "step or task 1",
-            "step or task 2"
+        "goal": "the goal or objective with specifics from previous actions",
+        "tasks": [
+            "task 1",
+            "task 2"
         ]
     }}
 }}`;
 
 interface MultistepToolInput {
-    creative: BaseChatModel;
     model: BaseChatModel;
     tools: Tool[];
     maxIterations?: number;
@@ -36,7 +35,6 @@ export class Multistep extends Tool {
 
     description = DESCRIPTION;
 
-    creative: BaseChatModel;
     maxIterations?: number;
     memory: MemoryStore;
     model: BaseChatModel;
@@ -46,7 +44,6 @@ export class Multistep extends Tool {
     constructor(options: MultistepToolInput) {
         super(options.verbose, options.callbacks);
 
-        this.creative = options.creative;
         this.maxIterations = options?.maxIterations;
         this.memory = options.memory;
         this.model = options.model;
@@ -54,16 +51,16 @@ export class Multistep extends Tool {
     }
 
     async _call(input: string, callbackManager?: CallbackManagerForToolRun): Promise<string> {
-        return await Multistep.runAgent(this.model, this.creative, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations || 8, JSON.parse(input), callbackManager);
+        return await Multistep.runAgent(this.model, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations || 8, JSON.parse(input), callbackManager);
     }
 
     static async runAgent(
-        model: BaseChatModel, creative: BaseChatModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, verbose: boolean, maxIterations: number, plan: {
-            objective: string;
-            steps: string[];
-        }, callbackManager?: CallbackManagerForToolRun): Promise<string> {
+        model: BaseChatModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, verbose: boolean, maxIterations: number, plan: {
+            goal: string;
+            tasks: string[];
+        }, callbackManager?: CallbackManagerForToolRun): Promise<string>
+    {
         const agent = ReActAgent.makeAgent(model, memory, tools, callbacks);
-
         const executor = AgentExecutor.fromAgentAndTools({
             agent,
             tools,
@@ -72,27 +69,29 @@ export class Multistep extends Tool {
             maxIterations
         });
 
-        const planner = Planner.makeChain({model: creative, callbacks});
+        const planner = Planner.makeChain({model, callbacks});
         const interim = await planner.evaluate({
-            objective: plan.objective,
-            steps: JSON.stringify(plan.steps)
+            goal: plan.goal,
+            tasks: JSON.stringify(plan.tasks)
         });
         const newPlan = JSON.parse(interim);
 
         let results = [];
-        for (const step of newPlan.steps) {
-            await callbackManager?.handleText("Starting: " + step);
-            const completion = await executor.call({
-                context: results.length > 0 ? results[results.length - 1] : "",
-                objective: `${step} - supporting this overall goal: ${newPlan.objective}`
-            });
+        for (const task of newPlan.tasks) {
+            await callbackManager?.handleText("Starting: " + task);
+
+            let inputs = {};
+            inputs[CONTEXT_INPUT] = results.length > 0 ? results[results.length - 1] : "";
+            inputs[OBJECTIVE_INPUT] = `${task} - supporting this overall goal: ${newPlan.goal}`
+
+            const completion = await executor.call(inputs);
             results.push(completion.output);
         }
 
-        const editor = Editor.makeChain({model: creative, callbacks});
+        const editor = Editor.makeChain({model, callbacks});
         return await editor.evaluate({
             context: results.join("\n\n"),
-            objective: plan.objective
+            goal: plan.goal
         });
     }
 }

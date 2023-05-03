@@ -4,23 +4,24 @@ import { BaseChatModel } from "langchain/chat_models";
 import { Callbacks } from "langchain/callbacks";
 
 export const GUIDANCE = `
-This is the objective: {objective}
-And these are the steps to achieve it: {steps}
+This is the goal: {goal}
+And these are the tasks to achieve it: {tasks}
 
-Rewrite the provided steps: you may add, remove, or change the steps as you see fit.
+Rewrite the provided tasks: you may add, remove, or change the tasks as you see fit.
 
-When responding, ALWAYS use JSON and include the original objective and the updated steps.
+When responding, ALWAYS use JSON and include the original objective and the updated tasks.
 
 ALWAYS respond using this format:
 \`\`\`
 {{
-    "objective": "objective",
-    "steps": [
-        "step or task 1",
-        "step or task 2"
+    "goal": "goal",
+    "tasks": [
+        "task 1",
+        "task 2"
     ]
 }}
 \`\`\`
+... (the response should only contain a SINGLE objective, do NOT return a list of multiple objectives)
 `;
 
 interface PlannerChainInput {
@@ -44,10 +45,10 @@ export class Planner extends LLMChain {
         });
     }
 
-    async evaluate({objective, steps}: { objective: string, steps: string }) {
+    async evaluate({goal, tasks}: { goal: string, tasks: string }) {
         const summary = await this.call({
-            objective,
-            steps
+            goal,
+            tasks
         });
         return summary.text;
     }

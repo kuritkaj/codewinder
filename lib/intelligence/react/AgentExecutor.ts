@@ -92,27 +92,15 @@ export class AgentExecutor extends BaseChain {
         };
 
         while (this.shouldContinue(iterations)) {
-            iterations += 1;
-
-            let output;
-            try {
-                output = await this.agent.plan(
-                    steps,
-                    inputs,
-                    runManager?.getChild()
-                );
-            } catch (e) {
-                console.log("AgentExecutor error", e);
-                continue;
-            }
+            const output = await this.agent.plan(
+                steps,
+                inputs,
+                runManager?.getChild()
+            );
 
             // Check if the agent has finished
             if ("returnValues" in output) {
-                if (output.returnValues?.output) {
-                    return getOutput(output);
-                } else {
-                    continue;
-                }
+                return getOutput(output);
             }
 
             let actions: AgentAction[];
@@ -146,6 +134,8 @@ export class AgentExecutor extends BaseChain {
                     log: "",
                 });
             }
+
+            iterations += 1;
         }
 
         const finish = await this.agent.returnStoppedResponse(

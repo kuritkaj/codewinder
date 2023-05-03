@@ -7,7 +7,7 @@ export const GUIDANCE = `
 Rewrite the following:
 {context}
 
-Using this as your guide: {objective}
+Using this as your guide: {goal}
 `;
 
 interface EditorChainInput {
@@ -31,10 +31,10 @@ export class Editor extends LLMChain {
         });
     }
 
-    async evaluate({context, objective}: { context: string; objective: string }) {
+    async evaluate({context, goal}: { context: string; goal: string }) {
         const summary = await this.call({
             context,
-            objective
+            goal
         });
         return summary.text;
     }

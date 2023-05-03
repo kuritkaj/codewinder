@@ -194,14 +194,14 @@ export class WebBrowser extends Tool {
                 docs,
                 this.embeddings
             );
-            const results = await vectorStore.similaritySearch(task, 8);
+            const results = await vectorStore.similaritySearch(task, 4);
 
             context = results.map((res) => res.pageContent).join("\n");
         }
 
         const input = `Text:${ context }\n\nI need ${
             doSummary ? "a summary" : task
-        } from the provided text.`;
+        } from the provided text. Limit to 200 words.`;
 
         const res = await this.model.generatePrompt(
             [ new StringPromptValue(input) ],

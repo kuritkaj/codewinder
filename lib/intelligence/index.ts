@@ -45,7 +45,7 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
     if (Boolean(bingApiKey)) {
         tools.push(new BingSearch({ apiKey: bingApiKey, callbacks }));
     }
-    const multistep = new Multistep({ model, memory, creative, tools, callbacks, maxIterations: MAX_ITERATIONS });
+    const multistep = new Multistep({ model: creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });
     const toolset = [ ...tools, multistep ];
 
     const agent = ReActAgent.makeAgent(model, memory, toolset, callbacks);
