@@ -1,8 +1,8 @@
+import * as cheerio from "cheerio";
 import { BaseLanguageModel } from "langchain/base_language";
 import { Tool, ToolParams } from "langchain/tools";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { StringPromptValue } from "langchain/prompts";
-import * as cheerio from "cheerio";
 import {  CallbackManagerForToolRun } from "langchain/callbacks";
 import { Document } from "langchain/document";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
@@ -10,7 +10,7 @@ import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
 const DESCRIPTION = `finding or summarizing webpage content from a valid URL, such as follow up from a web search.
-Input should be "ONE valid http URL including protocol","what to find on the page or an empty string for a summary".
+Input should be "ONE valid http URL including protocol","what to find on the page".
 The tool input should use this format:
 {{
   "action": "tool name",

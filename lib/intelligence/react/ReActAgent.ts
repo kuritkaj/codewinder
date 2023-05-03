@@ -92,7 +92,7 @@ ${ toolDetails }
 ${ TOOLING }`;
 
         const system = [ prefix, tooling, FORMAT_INSTRUCTIONS, suffix ].join("\n");
-        const assistant = [`{${CONTEXT_INPUT}}`].join("\n\n");
+        const assistant = [`{${CONTEXT_INPUT}}`, `{${MEMORIES_INPUT}}`].join("\n\n");
         const human = [ `${ OBJECTIVE }: {${OBJECTIVE_INPUT}}`, `{${SCRATCHPAD_INPUT}}` ].join("\n");
         const messages = [
             SystemMessagePromptTemplate.fromTemplate(system),
