@@ -22,7 +22,7 @@ export class BingNews extends Tool {
 
         if (!apiKey) {
             throw new Error(
-                "BingNewsKey API key not set."
+                "BING_API_KEY key not set."
             );
         }
 

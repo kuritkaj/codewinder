@@ -22,7 +22,7 @@ export class BingSearch extends Tool {
 
         if (!apiKey) {
             throw new Error(
-                "BingSerpAPI API key not set."
+                "BING_API_KEY key not set."
             );
         }
 
