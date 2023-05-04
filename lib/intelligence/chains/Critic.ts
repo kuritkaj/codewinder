@@ -6,12 +6,12 @@ import { CallbackManagerForChainRun, Callbacks } from "langchain/callbacks";
 
 export const ELABORATION_REQUIRED = "NO";
 export const OBJECTIVE_INPUT = "objective";
-export const PRODUCT_INPUT = "product";
+export const RESPONSE_INPUT = "response";
 
 export const GUIDANCE = `
 This is the stated objective: {${OBJECTIVE_INPUT}}
 This was the resulting response: 
-{${PRODUCT_INPUT}}
+{${RESPONSE_INPUT}}
 
 You are a critic designed to evaluate the quality of a response to the stated objective.
 Based on the provided response, respond with \`YES\` if the response meets the stated objective, 

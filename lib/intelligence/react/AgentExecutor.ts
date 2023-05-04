@@ -92,6 +92,8 @@ export class AgentExecutor extends BaseChain {
         };
 
         while (this.shouldContinue(iterations)) {
+            iterations += 1;
+
             const output = await this.agent.plan(
                 steps,
                 inputs,
@@ -134,8 +136,6 @@ export class AgentExecutor extends BaseChain {
                     log: "",
                 });
             }
-
-            iterations += 1;
         }
 
         const finish = await this.agent.returnStoppedResponse(

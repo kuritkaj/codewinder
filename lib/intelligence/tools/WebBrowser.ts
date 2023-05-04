@@ -114,10 +114,8 @@ export interface WebBrowserArgs extends ToolParams {
 }
 
 export class WebBrowser extends Tool {
-
-    name = "web-browser";
-
-    description = DESCRIPTION;
+    readonly name = "web-browser";
+    readonly description = DESCRIPTION;
 
     readonly embeddings: Embeddings;
     readonly headers: Headers;

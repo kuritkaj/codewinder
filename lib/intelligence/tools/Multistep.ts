@@ -31,15 +31,14 @@ interface MultistepToolInput {
 }
 
 export class Multistep extends Tool {
-    name = "multi-step";
+    readonly name = "multi-step";
+    readonly description = DESCRIPTION;
 
-    description = DESCRIPTION;
-
-    maxIterations?: number;
-    memory: MemoryStore;
-    model: BaseChatModel;
-    returnDirect = true;
-    tools: Tool[];
+    readonly maxIterations?: number;
+    readonly memory: MemoryStore;
+    readonly model: BaseChatModel;
+    readonly returnDirect = true;
+    readonly tools: Tool[];
 
     constructor(options: MultistepToolInput) {
         super(options.verbose, options.callbacks);

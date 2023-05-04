@@ -9,6 +9,7 @@ import { Callbacks } from "langchain/callbacks";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { BingNews } from "@/lib/intelligence/tools/BingNews";
 
 const MAX_ITERATIONS = 8;
 
@@ -43,6 +44,7 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         new JavascriptEvaluator()
     ];
     if (Boolean(bingApiKey)) {
+        tools.push(new BingNews({ apiKey: bingApiKey, callbacks }));
         tools.push(new BingSearch({ apiKey: bingApiKey, callbacks }));
     }
     const multistep = new Multistep({ model: creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });

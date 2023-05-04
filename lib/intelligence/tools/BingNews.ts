@@ -9,9 +9,8 @@ export interface BingNewsArgs extends ToolParams {
 }
 
 export class BingNews extends Tool {
-    name = "news-search";
-
-    description = "find headlines and articles on trending topics. Input a search query.";
+    readonly name = "news-search";
+    readonly description = "find headlines and articles on trending topics. Input a web search query.";
 
     readonly key: string;
     readonly memory: MemoryStore;
