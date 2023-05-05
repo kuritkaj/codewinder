@@ -55,12 +55,12 @@ export class ReActAgent extends Agent {
         return "react-agent-description" as const;
     }
 
-    observationPrefix() {
-        return `${OBSERVATION}:`;
-    }
-
     llmPrefix() {
         return `${THOUGHT}:`;
+    }
+
+    observationPrefix() {
+        return `${OBSERVATION}:`;
     }
 
     _stop(): string[] {
@@ -92,8 +92,8 @@ ${ toolDetails }
 ${ TOOLING }`;
 
         const system = [ prefix, tooling, FORMAT_INSTRUCTIONS, suffix ].join("\n");
-        const assistant = [`{${CONTEXT_INPUT}}`, `{${MEMORIES_INPUT}}`].join("\n\n");
-        const human = [ `${ OBJECTIVE }: {${OBJECTIVE_INPUT}}`, `{${SCRATCHPAD_INPUT}}` ].join("\n");
+        const assistant = [`Here's the previous conversation: {${CONTEXT_INPUT}}`, `Which triggered this memory: {${MEMORIES_INPUT}}`].join("\n\n");
+        const human = [ `Begin!`, `${ OBJECTIVE }: {${OBJECTIVE_INPUT}}`, `{${SCRATCHPAD_INPUT}}` ].join("\n\n");
         const messages = [
             SystemMessagePromptTemplate.fromTemplate(system),
             AIMessagePromptTemplate.fromTemplate(assistant),
@@ -159,6 +159,16 @@ ${ TOOLING }`;
         });
     }
 
+    /**
+     * Prepare the agent for output, if needed
+     */
+    async prepareForOutput(
+        _returnValues: AgentFinish["returnValues"],
+        _steps: AgentStep[]
+    ): Promise<AgentFinish["returnValues"]> {
+        return {};
+    }
+
     static validateTools(tools: Tool[]) {
         const invalidTool = tools.find((tool) => !tool.description);
         if (invalidTool) {
@@ -179,13 +189,17 @@ export class ReActAgentActionOutputParser extends AgentActionOutputParser {
         this.finishToolName = fields?.finishToolName || FINAL_RESPONSE;
     }
 
+    responsePrefix() {
+        return `${FINAL_RESPONSE}:`;
+    }
+
     async parse(text: string) {
         const responder = async (response: string) => {
             return { returnValues: { output: `${ response }` }, log: response };
         }
 
-        if (text.includes(`${ FINAL_RESPONSE }:`)) {
-            const parts = text.split(`${ FINAL_RESPONSE }:`);
+        if (text.includes(`${ this.responsePrefix() }`)) {
+            const parts = text.split(`${ this.responsePrefix() }`);
             const output = parts[parts.length - 1].trim();
             return await responder(output);
         }

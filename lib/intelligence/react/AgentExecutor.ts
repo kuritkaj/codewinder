@@ -1,13 +1,12 @@
 import { BaseChain, ChainInputs, SerializedLLMChain } from "langchain/chains";
-import { BaseMultiActionAgent, BaseSingleActionAgent } from "langchain/dist/agents/agent";
 import { Tool } from "langchain/tools";
-import { StoppingMethod } from "langchain/agents";
+import { BaseSingleActionAgent, StoppingMethod } from "langchain/agents";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
 import { CallbackManagerForChainRun } from "langchain/callbacks";
 import { BaseChatModel } from "langchain/chat_models";
 
 export interface AgentExecutorInput extends ChainInputs {
-    agent: BaseSingleActionAgent | BaseMultiActionAgent;
+    agent: BaseSingleActionAgent;
     model: BaseChatModel;
     tools: Tool[];
     returnIntermediateSteps?: boolean;
@@ -20,7 +19,7 @@ export interface AgentExecutorInput extends ChainInputs {
  * @augments BaseChain
  */
 export class AgentExecutor extends BaseChain {
-    readonly agent: BaseSingleActionAgent | BaseMultiActionAgent;
+    readonly agent: BaseSingleActionAgent;
     readonly earlyStoppingMethod: StoppingMethod = "force";
     readonly maxIterations?: number = 15;
     readonly model: BaseChatModel;
