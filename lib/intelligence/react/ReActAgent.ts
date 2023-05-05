@@ -55,29 +55,35 @@ export class ReActAgent extends Agent {
         return "react-agent-description" as const;
     }
 
+    finalPrefix() {
+        return `${ FINAL_RESPONSE }:`;
+    }
+
     llmPrefix() {
-        return `${THOUGHT}:`;
+        return `${ THOUGHT }:`;
     }
 
     observationPrefix() {
-        return `${OBSERVATION}:`;
+        return `${ OBSERVATION }:`;
     }
 
     _stop(): string[] {
-        return [ `${OBSERVATION}:` ];
+        return [ `${ OBSERVATION }:`, `${ FINAL_RESPONSE }` ];
     }
 
     async constructScratchPad(steps: AgentStep[]): Promise<string> {
-        return steps.reduce(
-            (thoughts, { action, observation }) =>
+        return steps.reduce((thoughts, { action, observation }, index, array) => {
+            const isLastElement = index === array.length - 1;
+            const separator = isLastElement ? "" : "\n";
+            return (
                 thoughts +
                 [
                     action.log,
-                    `${ this.observationPrefix() } ${ observation }`,
-                    this.llmPrefix()
-                ].join("\n"),
-            ""
-        );
+                    `${this.observationPrefix()} ${observation}`,
+                    isLastElement ? "" : this.llmPrefix()
+                ].join(separator)
+            );
+        }, "");
     }
 
     static createPrompt(tools: Tool[], args?: ChatCreatePromptArgs) {
@@ -85,15 +91,12 @@ export class ReActAgent extends Agent {
         const toolDetails = tools
             .map((tool) => `${ tool.name }: ${ tool.description }`)
             .join("\n");
-        const tooling = `
-Allowed tools: ${ tools.map((t) => t.name).join(", ") }.
-Tool instructions:
-${ toolDetails }
-${ TOOLING }`;
+        const tooling = [ `Allowed tools: ${ tools.map((t) => t.name).join(", ") }`,
+            "Tool instructions:", `${ toolDetails }`, `${ TOOLING }` ].join("\n");
 
         const system = [ prefix, tooling, FORMAT_INSTRUCTIONS, suffix ].join("\n");
-        const assistant = [`Here's the previous conversation: {${CONTEXT_INPUT}}`, `Which triggered this memory: {${MEMORIES_INPUT}}`].join("\n\n");
-        const human = [ `Begin!`, `${ OBJECTIVE }: {${OBJECTIVE_INPUT}}`, `{${SCRATCHPAD_INPUT}}` ].join("\n\n");
+        const assistant = [ `Here's the previous conversation: {${ CONTEXT_INPUT }}`, `Which triggered this memory: {${ MEMORIES_INPUT }}` ].join("\n\n");
+        const human = [ `Begin!`, `${ OBJECTIVE }: {${ OBJECTIVE_INPUT }}`, `{${ SCRATCHPAD_INPUT }}` ].join("\n\n");
         const messages = [
             SystemMessagePromptTemplate.fromTemplate(system),
             AIMessagePromptTemplate.fromTemplate(assistant),
@@ -127,7 +130,7 @@ ${ TOOLING }`;
             ...inputs
         };
         newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
-        newInputs[SCRATCHPAD_INPUT] = thoughts;
+        newInputs[SCRATCHPAD_INPUT] = [thoughts, this.llmPrefix()].join("\n");
 
         if (this._stop().length !== 0) {
             newInputs.stop = this._stop();
@@ -135,7 +138,22 @@ ${ TOOLING }`;
 
         try {
             const output = await this.llmChain.predict(newInputs, callbackManager);
-            return this.outputParser.parse(output);
+            const action = await this.outputParser.parse(output);
+
+            if ("tool" in action) {
+                // This is an action
+                return this.outputParser.parse(output);
+            } else {
+                // This is a final response.
+                const finalInputs: ChainValues = {
+                    ...newInputs
+                };
+                finalInputs[SCRATCHPAD_INPUT] = [thoughts, this.finalPrefix()].join("\n");
+                finalInputs.stop = "";
+
+                const finalOutput = await this.llmChain.predict(finalInputs, callbackManager);
+                return this.outputParser.parse(finalOutput);
+            }
         } catch (e) {
             console.error("Error in LLMChain.predict:", e);
             return this.outputParser.parse("Error in LLMChain.predict");
@@ -190,10 +208,10 @@ export class ReActAgentActionOutputParser extends AgentActionOutputParser {
     }
 
     responsePrefix() {
-        return `${FINAL_RESPONSE}:`;
+        return `${ FINAL_RESPONSE }:`;
     }
 
-    async parse(text: string) {
+    async parse(text: string): Promise<AgentAction | AgentFinish> {
         const responder = async (response: string) => {
             return { returnValues: { output: `${ response }` }, log: response };
         }
@@ -210,7 +228,9 @@ export class ReActAgentActionOutputParser extends AgentActionOutputParser {
         }
 
         try {
-            const correct = (jsonStr) => { return jsonStr.trim().replace(/(, *[\]}])|(}+|]+)[^}\]]*$/g, '$1$2');}
+            const correct = (jsonStr) => {
+                return jsonStr.trim().replace(/(, *[\]}])|(}+|]+)[^}\]]*$/g, '$1$2');
+            }
             const response = JSON.parse(correct(action));
             if (!response || !response.action || !response.action_input) return await responder(text);
             return {

@@ -10,7 +10,7 @@ export interface BingSearchArgs extends ToolParams {
 
 export class BingSearch extends Tool {
     readonly name = "web-search";
-    readonly description = "find answers on the web. Input a web search query.";
+    readonly description = "find answers on the web. Input is a string for a web search query.";
 
     readonly key: string;
     readonly memory: MemoryStore;
