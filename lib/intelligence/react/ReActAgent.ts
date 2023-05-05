@@ -25,8 +25,8 @@ import {
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
 import { LLMChain } from "langchain";
 import { CallbackManager, Callbacks } from "langchain/callbacks";
-import { BaseLanguageModel } from "langchain/base_language";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import { BaseChatModel } from "langchain/dist/chat_models/base";
 
 export const CONTEXT_INPUT = "context";
 export const MEMORIES_INPUT = "memories";
@@ -34,10 +34,12 @@ export const OBJECTIVE_INPUT = "objective";
 export const SCRATCHPAD_INPUT = "scratchpad";
 
 interface ReActAgentInput extends ChatAgentInput {
+    creativeChain: LLMChain
     memory: MemoryStore;
 }
 
 export class ReActAgent extends Agent {
+    creativeChain: LLMChain;
     memory: MemoryStore;
 
     constructor(input: ReActAgentInput) {
@@ -48,6 +50,7 @@ export class ReActAgent extends Agent {
             outputParser
         });
 
+        this.creativeChain = input.creativeChain;
         this.memory = input.memory;
     }
 
@@ -130,6 +133,7 @@ export class ReActAgent extends Agent {
             ...inputs
         };
         newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
+        // append the prefix to the scratchpad
         newInputs[SCRATCHPAD_INPUT] = [thoughts, this.llmPrefix()].join("\n");
 
         if (this._stop().length !== 0) {
@@ -140,18 +144,22 @@ export class ReActAgent extends Agent {
             const output = await this.llmChain.predict(newInputs, callbackManager);
             const action = await this.outputParser.parse(output);
 
+            // If we're calling to use a tool, then parse the output normally.
+            // Otherwise, switch from the baseChain to the creativeChain for the final output.
             if ("tool" in action) {
                 // This is an action
                 return this.outputParser.parse(output);
             } else {
                 // This is a final response.
                 const finalInputs: ChainValues = {
-                    ...newInputs
+                    ...inputs
                 };
+                finalInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
+                // append the prefix to the scratchpad
                 finalInputs[SCRATCHPAD_INPUT] = [thoughts, this.finalPrefix()].join("\n");
-                finalInputs.stop = "";
 
-                const finalOutput = await this.llmChain.predict(finalInputs, callbackManager);
+                // Here we use the creative chain to generate a response.
+                const finalOutput = await this.creativeChain.predict(finalInputs, callbackManager);
                 return this.outputParser.parse(finalOutput);
             }
         } catch (e) {
@@ -160,17 +168,23 @@ export class ReActAgent extends Agent {
         }
     }
 
-    static makeAgent(model: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks): ReActAgent {
+    static makeAgent(model: BaseChatModel, creative: BaseChatModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks): ReActAgent {
         ReActAgent.validateTools(tools);
         const prompt = ReActAgent.createPrompt(tools);
-        const chain = new LLMChain({
+        const llmChain = new LLMChain({
             prompt,
             llm: model,
             callbacks,
         });
+        const creativeChain = new LLMChain({
+            prompt,
+            llm: creative,
+            callbacks
+        });
 
         return new ReActAgent({
-            llmChain: chain,
+            llmChain,
+            creativeChain,
             memory,
             outputParser: ReActAgent.getDefaultOutputParser(),
             allowedTools: tools.map((t) => t.name),

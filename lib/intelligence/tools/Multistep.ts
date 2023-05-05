@@ -22,6 +22,7 @@ The tool input should use this format:
 }}`;
 
 interface MultistepToolInput {
+    creative: BaseChatModel;
     model: BaseChatModel;
     tools: Tool[];
     maxIterations?: number;
@@ -34,6 +35,7 @@ export class Multistep extends Tool {
     readonly name = "multi-step";
     readonly description = DESCRIPTION;
 
+    readonly creative: BaseChatModel;
     readonly maxIterations?: number;
     readonly memory: MemoryStore;
     readonly model: BaseChatModel;
@@ -43,6 +45,7 @@ export class Multistep extends Tool {
     constructor(options: MultistepToolInput) {
         super(options.verbose, options.callbacks);
 
+        this.creative = options.creative;
         this.maxIterations = options?.maxIterations;
         this.memory = options.memory;
         this.model = options.model;
@@ -50,16 +53,16 @@ export class Multistep extends Tool {
     }
 
     async _call(input: string, callbackManager?: CallbackManagerForToolRun): Promise<string> {
-        return await Multistep.runAgent(this.model, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations || 8, JSON.parse(input), callbackManager);
+        return await Multistep.runAgent(this.model, this.creative, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations || 8, JSON.parse(input), callbackManager);
     }
 
     static async runAgent(
-        model: BaseChatModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, verbose: boolean, maxIterations: number, plan: {
+        model: BaseChatModel, creative: BaseChatModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, verbose: boolean, maxIterations: number, plan: {
             goal: string;
             tasks: string[];
         }, callbackManager?: CallbackManagerForToolRun): Promise<string>
     {
-        const agent = ReActAgent.makeAgent(model, memory, tools, callbacks);
+        const agent = ReActAgent.makeAgent(model, creative, memory, tools, callbacks);
         const executor = AgentExecutor.fromAgentAndTools({
             agent,
             tools,
@@ -68,7 +71,7 @@ export class Multistep extends Tool {
             maxIterations
         });
 
-        const planner = Planner.makeChain({model, callbacks});
+        const planner = Planner.makeChain({model: creative, callbacks});
         const interim = await planner.evaluate({
             goal: plan.goal,
             tasks: JSON.stringify(plan.tasks)
@@ -87,7 +90,7 @@ export class Multistep extends Tool {
             results.push(completion.output);
         }
 
-        const editor = Editor.makeChain({model, callbacks});
+        const editor = Editor.makeChain({model: creative, callbacks});
         return await editor.evaluate({
             context: results.join("\n\n"),
             goal: plan.goal
