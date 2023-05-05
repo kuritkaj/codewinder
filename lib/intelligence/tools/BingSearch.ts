@@ -1,10 +1,13 @@
 import { Tool, ToolParams } from "langchain/tools";
 import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import { StringPromptValue } from "langchain/prompts";
+import { BaseLanguageModel } from "langchain/base_language";
 
 export interface BingSearchArgs extends ToolParams {
     apiKey: string | undefined;
     memory?: MemoryStore;
+    model: BaseLanguageModel;
     params?: Record<string, string>;
 }
 
@@ -14,9 +17,10 @@ export class BingSearch extends Tool {
 
     readonly key: string;
     readonly memory: MemoryStore;
+    readonly model: BaseLanguageModel;
     readonly params: Record<string, string>;
 
-    constructor({ apiKey, params, memory }: BingSearchArgs) {
+    constructor({ apiKey, params, model, memory }: BingSearchArgs) {
         super();
 
         if (!apiKey) {
@@ -27,6 +31,7 @@ export class BingSearch extends Tool {
 
         this.key = apiKey;
         this.memory = memory;
+        this.model = model;
         this.params = params;
     }
 
@@ -35,18 +40,18 @@ export class BingSearch extends Tool {
         input = input.replace(/^"(.+(?="$))"$/, '$1');
 
         const headers = { "Ocp-Apim-Subscription-Key": this.key };
-        const params = { q: input, textDecorations: "true", textFormat: "HTML", count: "4" };
+        const params = { q: input, textDecorations: "true", textFormat: "HTML", count: "20" };
         const searchUrl = new URL("https://api.bing.microsoft.com/v7.0/search");
 
-        Object.entries(params).forEach(([key, value]) => {
+        Object.entries(params).forEach(([ key, value ]) => {
             searchUrl.searchParams.append(key, value);
         });
 
         const response = await fetch(searchUrl, { headers });
 
         if (!response.ok) {
-            await runManager?.handleToolError(`HTTP error ${response.status}`);
-            throw new Error(`HTTP error ${response.status}`);
+            await runManager?.handleToolError(`HTTP error ${ response.status }`);
+            throw new Error(`HTTP error ${ response.status }`);
         }
 
         const res = await response.json();
@@ -58,15 +63,25 @@ export class BingSearch extends Tool {
         }
 
         results.map(result => {
-            runManager?.handleText(`${result.name} ${result.snippet} ${result.url}`);
+            runManager?.handleText(`[${ result.name }](${ result.url }) - ${ result.snippet }`);
         });
 
         for (const result of results) {
-            if (this.memory) await this.memory.storeText(result.snippet);
+            if (this.memory) await this.memory.storeText(result.snippet, [ { name: result.snippet }, { url: result.url } ]);
         }
 
-        return results
-            .map(result => `${result.name} ${result.snippet} ${result.url}`)
-            .join(" ");
+        const links = results.map(result => `[${ result.name }](${ result.url }) - ${ result.snippet }`).join("\n");
+
+        const prompt = `Given this input: ${ input }
+            And these search results (name, url, snippet): ${ links }
+            Return the search results that are most relevant to the query.`;
+
+        const completion = await this.model.generatePrompt(
+            [ new StringPromptValue(prompt) ],
+            undefined,
+            runManager?.getChild()
+        );
+
+        return completion.generations[0][0].text;
     }
 }

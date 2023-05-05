@@ -99,8 +99,8 @@ export class MemoryStore {
         await this.memory.addDocuments(documents);
     }
 
-    async storeText(text: string) {
-        const documents = await this.textSplitter.createDocuments([ text ], [{ created: new Date()}] );
+    async storeText(text: string, metadata: Record<string, any>[] = []) {
+        const documents = await this.textSplitter.createDocuments([ text ], [...metadata, { created: new Date()}] );
         await this.memory.addDocuments(documents);
     }
 }

@@ -197,16 +197,16 @@ export class WebBrowser extends Tool {
             context = results.map((res) => res.pageContent).join("\n");
         }
 
-        const input = `Text:${ context }\n\nI need ${
+        const prompt = `Text:${ context }\n\nI need ${
             doSummary ? "a summary" : task
         } from the provided text. Limit to 200 words.`;
 
-        const res = await this.model.generatePrompt(
-            [ new StringPromptValue(input) ],
+        const completion = await this.model.generatePrompt(
+            [ new StringPromptValue(prompt) ],
             undefined,
             runManager?.getChild()
         );
 
-        return res.generations[0][0].text;
+        return completion.generations[0][0].text;
     }
 }
