@@ -1,5 +1,5 @@
 # Codewinder
-This provides a webchat interface over OpenAI's ChatGPT-3 API and LangChain's backend.  
+This provides a web chat interface over OpenAI's ChatGPT-3 API and LangChain's backend.  
 The chat has history of the current interaction (refresh the page to clear the history),
 a multistep agent which provides a way for the chat to break down an action into multiple steps,
 and short-term memory for coordination between steps of a multi-step action.
@@ -10,6 +10,7 @@ The server requires the following environment variables:
 - OPENAI_API_KEY - which can be found [here](https://platform.openai.com/account/api-keys).
 
 And optionally the following environment variables:
+- GPT4 - set to "true" or "false" depending on whether you want to use GPT-4 or GPT-3.5-turbo.
 - BING_API_KEY - which can be found [here](https://azure.microsoft.com/en-us/services/cognitive-services/bing-web-search-api/).
 - SUPABASE_URL - which can be found [here](https://app.supabase.io/).
 - SUPABASE_API_KEY - which can be found [here](https://app.supabase.io/).

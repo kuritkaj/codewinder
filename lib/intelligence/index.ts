@@ -19,6 +19,8 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         throw new Error('OpenAI api key not found.');
     }
     const bingApiKey = process.env.BING_API_KEY;
+    const gpt4 = process.env.GPT4 || "false";
+    console.log(`GPT4: ${gpt4}`);
 
     const model = new ChatOpenAI({
         openAIApiKey,
@@ -28,6 +30,7 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         maxRetries: 2
     });
     const creative = new ChatOpenAI({
+        modelName: Boolean(gpt4) ? 'gpt-4' : 'gpt-3.5-turbo',
         openAIApiKey,
         streaming: Boolean(callbacks),
         callbacks,
@@ -50,12 +53,12 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
     const multistep = new Multistep({ model, creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });
     const toolset = [ ...tools, multistep ];
 
-    const agent = ReActAgent.makeAgent(model, creative, memory, tools, callbacks);
+    const agent = ReActAgent.makeAgent(model, creative, memory, toolset, callbacks);
 
     return AgentExecutor.fromAgentAndTools({
         agent,
         model,
-        tools: tools,
+        tools: toolset,
         verbose: true,
         callbacks,
         maxIterations: MAX_ITERATIONS
