@@ -32,7 +32,7 @@ ${ACTION}:
 ${OBSERVATION}: the result of the action (this is never shared, pretend it's a secret)
 ... (${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
 ${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including markdown formatting and citations from the ${OBSERVATION}s.
-... (${FINAL_RESPONSE} should include links searched or referenced, e.g. "\n\n${SOURCES}: [Wikipedia](https://en.wikipedia.org/wiki/ReAct)")
+${SOURCES}: include links searched or referenced
 `;
 
 export const SUFFIX = `

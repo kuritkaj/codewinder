@@ -3,14 +3,14 @@ import { BaseLanguageModel } from "langchain/base_language";
 import { Tool, ToolParams } from "langchain/tools";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { StringPromptValue } from "langchain/prompts";
-import {  CallbackManagerForToolRun } from "langchain/callbacks";
+import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { Document } from "langchain/document";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
 const DESCRIPTION = `finding or summarizing webpage content from a valid URL, such as follow up from a web search.
-Input should be "ONE valid http URL including protocol","what to find on the page".
+Input should be "ONE valid http URL including protocol","what to find on the page". Leave the second input blank to summarize the page.
 The tool input should use this format:
 {{
   "action": "tool name",
@@ -21,7 +21,7 @@ export const getText = (
     html: string,
     baseUrl: string,
     summary: boolean
-): string => {
+): { text: string, title: string } => {
     // scriptingEnabled so noscript elements are parsed
     const $ = cheerio.load(html, { scriptingEnabled: true });
 
@@ -61,7 +61,9 @@ export const getText = (
         }
     });
 
-    return text.trim().replace(/\n+/g, " ");
+    const cleansed = text.trim().replace(/\n+/g, " ");
+    const title = $("title").text().trim();
+    return { text: cleansed, title };
 };
 
 const getHtml = async (
@@ -153,9 +155,12 @@ export class WebBrowser extends Tool {
         const doSummary = !task;
 
         let text;
+        let title;
         try {
             const html = await getHtml(baseUrl, this.headers);
-            text = getText(html, baseUrl, doSummary);
+            const result = getText(html, baseUrl, doSummary);
+            text = result.text;
+            title = result.title;
         } catch (e) {
             if (e) {
                 return e.toString();
@@ -164,7 +169,7 @@ export class WebBrowser extends Tool {
         }
 
         // Store the full text for later retrieval
-        if (this.memory) await this.memory.storeText(text);
+        if (this.memory) await this.memory.storeText(text, [ { name: title }, { url: baseUrl } ]);
 
         const textSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: 2000,

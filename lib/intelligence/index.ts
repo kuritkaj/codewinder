@@ -43,7 +43,7 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         await MemoryStore.makeShortTermStore(embeddings);
 
     const tools: Tool[] = [
-        new WebBrowser({ model, embeddings, memory, callbacks }),
+        new WebBrowser({ model, embeddings, callbacks }),
         new JavascriptEvaluator()
     ];
     if (Boolean(bingApiKey)) {

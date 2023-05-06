@@ -79,7 +79,7 @@ export class MemoryStore {
         // in theory, this does a good job of breaking on sentences...
         const snippetSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: 1000,
-            chunkOverlap: 10,
+            chunkOverlap: 100
         });
 
         // if doc score is greater than threshold, search the doc for the single snippet that best matches the query

@@ -67,14 +67,14 @@ export class BingSearch extends Tool {
         });
 
         for (const result of results) {
-            if (this.memory) await this.memory.storeText(result.snippet, [ { name: result.snippet }, { url: result.url } ]);
+            if (this.memory) await this.memory.storeText(result.snippet, [ { name: result.name }, { url: result.url } ]);
         }
 
         const links = results.map(result => `[${ result.name }](${ result.url }) - ${ result.snippet }`).join("\n");
 
         const prompt = `Given this input: ${ input }
             And these search results (name, url, snippet): ${ links }
-            Return the search results that are most relevant to the query.`;
+            Return a list of the search results that are most relevant to the query.`;
 
         const completion = await this.model.generatePrompt(
             [ new StringPromptValue(prompt) ],
