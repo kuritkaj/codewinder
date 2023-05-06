@@ -20,7 +20,7 @@ export const FORMAT_INSTRUCTIONS = `
 Use this format to reason about the ${OBJECTIVE}:
 ${OBJECTIVE}: the objective
 ${THOUGHT}: critical evaluation and self-reflection (this is never shared, pretend it's a secret)
-${ACTION}: 
+${ACTION}: the action to take to meet the ${OBJECTIVE}
 \`\`\`
 {{
   "action": "tool name",

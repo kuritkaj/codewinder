@@ -22,18 +22,29 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
     }
     const bingApiKey = process.env.BING_API_KEY;
     const gpt4 = process.env.GPT4 || "false";
-    console.log(`GPT4: ${gpt4}`);
+    console.log(`GPT4: ${ gpt4 }`);
 
-    const model = new ChatOpenAI({
+    // This is GPT3.5 with temp of 0
+    const predictable = new ChatOpenAI({
         openAIApiKey,
         temperature: 0,
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2
     });
+    // This is GPT4 with temp of 0
+    // const gpt4Zero = new ChatOpenAI({
+    //     openAIApiKey,
+    //     modelName: Boolean(gpt4) ? 'gpt-4' : 'gpt-3.5-turbo',
+    //     temperature: 0,
+    //     streaming: Boolean(callbacks),
+    //     callbacks,
+    //     maxRetries: 2
+    // });
+    // This is GPT4 with temp of the default
     const creative = new ChatOpenAI({
-        modelName: Boolean(gpt4) ? 'gpt-4' : 'gpt-3.5-turbo',
         openAIApiKey,
+        modelName: Boolean(gpt4) ? 'gpt-4' : 'gpt-3.5-turbo',
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2
@@ -45,23 +56,23 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         await MemoryStore.makeShortTermStore(embeddings);
 
     const tools: Tool[] = [
-        new WebBrowser({ model, embeddings, callbacks }),
+        new WebBrowser({ model: predictable, embeddings, callbacks }),
         new JavascriptEvaluator(),
-        new MemoryRecall({ model, memory }),
-        new MemoryStorage({ model, memory })
+        new MemoryRecall({ model: predictable, memory }),
+        new MemoryStorage({ model: predictable, memory })
     ];
     if (Boolean(bingApiKey)) {
-        tools.push(new BingNews({ apiKey: bingApiKey, model, callbacks }));
-        tools.push(new BingSearch({ apiKey: bingApiKey, model, callbacks }));
+        tools.push(new BingNews({ apiKey: bingApiKey, model: predictable, callbacks }));
+        tools.push(new BingSearch({ apiKey: bingApiKey, model: predictable, callbacks }));
     }
-    const multistep = new Multistep({ model, creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });
+    const multistep = new Multistep({ model: predictable, creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });
     const toolset = [ ...tools, multistep ];
 
-    const agent = ReActAgent.makeAgent(model, creative, memory, toolset, callbacks);
+    const agent = ReActAgent.makeAgent({ model: predictable, creative, memory, tools: toolset, callbacks });
 
     return AgentExecutor.fromAgentAndTools({
         agent,
-        model,
+        model: predictable,
         tools: toolset,
         verbose: true,
         callbacks,

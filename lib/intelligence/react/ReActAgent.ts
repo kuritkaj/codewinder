@@ -141,6 +141,7 @@ export class ReActAgent extends Agent {
         }
 
         try {
+            // Use the base chain for evaluating the right tool to use.
             const output = await this.llmChain.predict(newInputs, callbackManager);
             const action = await this.outputParser.parse(output);
 
@@ -158,7 +159,7 @@ export class ReActAgent extends Agent {
                 // append the prefix to the scratchpad
                 finalInputs[SCRATCHPAD_INPUT] = [ thoughts, this.finalPrefix() ].join("\n");
 
-                // Here we use the creative chain to generate a response.
+                // Here we use the creative chain to generate a final response.
                 const finalOutput = await this.creativeChain.predict(finalInputs, callbackManager);
                 return this.outputParser.parse(finalOutput);
             }
@@ -168,7 +169,13 @@ export class ReActAgent extends Agent {
         }
     }
 
-    static makeAgent(model: BaseChatModel, creative: BaseChatModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks): ReActAgent {
+    static makeAgent({
+                         model,
+                         creative,
+                         memory,
+                         tools,
+                         callbacks
+                     }: { model: BaseChatModel, creative: BaseChatModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks }): ReActAgent {
         ReActAgent.validateTools(tools);
         const prompt = ReActAgent.createPrompt(tools);
         const llmChain = new LLMChain({
@@ -234,20 +241,17 @@ export class ReActAgentActionOutputParser extends AgentActionOutputParser {
             return await responder(output);
         }
 
-        const [ _, action, __ ] = text.split(/```(?:json)?/g);
-        if (!action) {
-            return await responder(text);
-        }
+        const regex = /{[^{}]*}/g; // match on JSON brackets.
+        const matches = text.match(regex);
+
+        if (!matches || matches.length === 0) return await responder(text);
 
         try {
-            const correct = (jsonStr) => {
-                return jsonStr.trim().replace(/(, *[\]}])|(}+|]+)[^}\]]*$/g, '$1$2');
-            }
-            const response = JSON.parse(correct(action));
-            if (!response || !response.action || !response.action_input) return await responder(text);
+            const actions = matches.map(match => JSON.parse(match));
+            const action = actions.pop();
             return {
-                tool: response.action,
-                toolInput: typeof response.action_input === 'string' ? response.action_input : JSON.stringify(response.action_input),
+                tool: action.action,
+                toolInput: typeof action.action_input === 'string' ? action.action_input : JSON.stringify(action.action_input),
                 log: text,
             };
         } catch {
