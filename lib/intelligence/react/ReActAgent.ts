@@ -98,7 +98,7 @@ export class ReActAgent extends Agent {
             "Tool instructions:", `${ toolDetails }`, `${ TOOLING }` ].join("\n");
 
         const system = [ prefix, tooling, FORMAT_INSTRUCTIONS, suffix ].join("\n");
-        const assistant = [ `Here's the previous conversation: {${ CONTEXT_INPUT }}`, `Which triggered this memory: {${ MEMORIES_INPUT }}` ].join("\n\n");
+        const assistant = [ `This is the previous conversation: {${ CONTEXT_INPUT }}`, `Which triggered this memory: {${ MEMORIES_INPUT }}` ].join("\n\n");
         const human = [ `Begin!`, `${ OBJECTIVE }: {${ OBJECTIVE_INPUT }}`, `{${ SCRATCHPAD_INPUT }}` ].join("\n\n");
         const messages = [
             SystemMessagePromptTemplate.fromTemplate(system),

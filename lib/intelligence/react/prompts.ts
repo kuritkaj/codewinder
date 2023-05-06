@@ -17,8 +17,7 @@ Guidance on tool use:
 `;
 
 export const FORMAT_INSTRUCTIONS = `
-Use this format:
-
+Use this format to reason about the ${OBJECTIVE}:
 ${OBJECTIVE}: the objective
 ${THOUGHT}: critical evaluation and self-reflection (this is never shared, pretend it's a secret)
 ${ACTION}: 
@@ -31,15 +30,16 @@ ${ACTION}:
 ... (the ${ACTION} should only contain a SINGLE action, NEVER return more than one action)
 ${OBSERVATION}: the result of the action (this is never shared, pretend it's a secret)
 ... (${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
-${THOUGHT}: do I have enough information to meet the ${OBJECTIVE}? If so, respond with the ${FINAL_RESPONSE}.
 ${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including markdown formatting and citations from the ${OBSERVATION}s.
+... (include links searched or referenced)
+
+Alternatively, use this format for simple greetings, poems or short creative works, or if you already know the answer:
+${OBJECTIVE}: the objective
+${THOUGHT}: ${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including markdown formatting and citations as appropriate.
 ... (include links searched or referenced)
 `;
 
 export const SUFFIX = `
-Note: If the ${OBJECTIVE} is a casual greeting or conversation, then respond directly.
-Note: If the ${OBJECTIVE} asked for a creative response such as a joke or a poem, then respond directly.
-Note: If the ${OBJECTIVE} triggered a memory and it meets the ${OBJECTIVE}, then respond directly.
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended. Never ask for clarification.
 Note: If the ${OBJECTIVE} needs information that you don't have, use a tool to learn more.
 `;
