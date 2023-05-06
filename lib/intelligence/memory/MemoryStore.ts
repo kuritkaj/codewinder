@@ -73,7 +73,7 @@ export class MemoryStore {
         const score = docWithScore[1];
 
         // if doc score is less than threshold, return empty array signifying no match
-        if (score > threshold) return [];
+        if (score < threshold) return [];
 
         // use the RecursiveCharacterTextSplitter to split the doc into chunks of 1000 characters
         // in theory, this does a good job of breaking on sentences...

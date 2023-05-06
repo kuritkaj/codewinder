@@ -70,7 +70,7 @@ export class BingSearch extends Tool {
 
         const prompt = `Given this input: ${ input }
             And these search results (name, url, snippet): ${ links }
-            Return a list of markdown links \`[name](url) - snippet\` that are most relevant to the query.`;
+            Return a list of markdown links \`* [name](url) - snippet\` that are most relevant to the query.`;
 
         const completion = await this.model.generatePrompt(
             [ new StringPromptValue(prompt) ],

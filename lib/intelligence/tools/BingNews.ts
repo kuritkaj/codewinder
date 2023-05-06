@@ -69,7 +69,7 @@ export class BingNews extends Tool {
 
         const prompt = `Given this input: ${ input }
             And these search results (name, url, description): ${ links }
-            Return a list of the search results that are most relevant to the query.`;
+            Return a list of markdown links \`* [name](url) - snippet\` that are most relevant to the query.`;
 
         const completion = await this.model.generatePrompt(
             [ new StringPromptValue(prompt) ],

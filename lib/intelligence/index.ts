@@ -11,6 +11,7 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { BingNews } from "@/lib/intelligence/tools/BingNews";
 import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
+import { MemoryRecall } from "@/lib/intelligence/tools/MemoryRecall";
 
 const MAX_ITERATIONS = 8;
 
@@ -46,7 +47,8 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
     const tools: Tool[] = [
         new WebBrowser({ model, embeddings, callbacks }),
         new JavascriptEvaluator(),
-        new MemoryStorage({ memory })
+        new MemoryRecall({ model, memory }),
+        new MemoryStorage({ model, memory })
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new BingNews({ apiKey: bingApiKey, model, callbacks }));
