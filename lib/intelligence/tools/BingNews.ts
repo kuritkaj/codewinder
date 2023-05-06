@@ -61,10 +61,6 @@ export class BingNews extends Tool {
             return "No useful results found.";
         }
 
-        results.map(result => {
-            runManager?.handleText(`[${ result.name }](${ result.url }) - ${ result.description }`);
-        });
-
         for (const result of results) {
             if (this.memory) await this.memory.storeText(result.description, [ { name: result.name }, { url: result.url } ]);
         }

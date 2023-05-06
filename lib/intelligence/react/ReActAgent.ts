@@ -82,7 +82,7 @@ export class ReActAgent extends Agent {
                 thoughts +
                 [
                     action.log,
-                    `${this.observationPrefix()} ${observation}`,
+                    `${ this.observationPrefix() } ${ observation }`,
                     isLastElement ? "" : this.llmPrefix()
                 ].join(separator)
             );
@@ -134,7 +134,7 @@ export class ReActAgent extends Agent {
         };
         newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
         // append the prefix to the scratchpad
-        newInputs[SCRATCHPAD_INPUT] = [thoughts, this.llmPrefix()].join("\n");
+        newInputs[SCRATCHPAD_INPUT] = [ thoughts, this.llmPrefix() ].join("\n");
 
         if (this._stop().length !== 0) {
             newInputs.stop = this._stop();
@@ -156,7 +156,7 @@ export class ReActAgent extends Agent {
                 };
                 finalInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
                 // append the prefix to the scratchpad
-                finalInputs[SCRATCHPAD_INPUT] = [thoughts, this.finalPrefix()].join("\n");
+                finalInputs[SCRATCHPAD_INPUT] = [ thoughts, this.finalPrefix() ].join("\n");
 
                 // Here we use the creative chain to generate a response.
                 const finalOutput = await this.creativeChain.predict(finalInputs, callbackManager);
@@ -204,10 +204,8 @@ export class ReActAgent extends Agent {
     static validateTools(tools: Tool[]) {
         const invalidTool = tools.find((tool) => !tool.description);
         if (invalidTool) {
-            const msg = `
-Got a tool ${ invalidTool.name } without a description.
-This agent requires descriptions for all tools.
-            `;
+            const msg = `Got a tool ${ invalidTool.name } without a description.` +
+                "This agent requires descriptions for all tools.";
             throw new Error(msg);
         }
     }

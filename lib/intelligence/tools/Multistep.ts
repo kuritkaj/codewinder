@@ -8,7 +8,7 @@ import { Editor } from "@/lib/intelligence/chains/Editor";
 import { CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { Planner } from "@/lib/intelligence/chains/Planner";
 
-const DESCRIPTION = `use this tool anytime the objective requires multiple steps, for example a document with multiple sections.
+const DESCRIPTION = `use this tool anytime the objective requires multiple steps or has multiple tasks to accomplish.
 The tool input should use this format:
 {{
   "action": "tool name",

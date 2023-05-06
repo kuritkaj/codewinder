@@ -62,10 +62,6 @@ export class BingSearch extends Tool {
             return "No useful results found.";
         }
 
-        results.map(result => {
-            runManager?.handleText(`[${ result.name }](${ result.url }) - ${ result.snippet }`);
-        });
-
         for (const result of results) {
             if (this.memory) await this.memory.storeText(result.snippet, [ { name: result.name }, { url: result.url } ]);
         }
@@ -74,7 +70,7 @@ export class BingSearch extends Tool {
 
         const prompt = `Given this input: ${ input }
             And these search results (name, url, snippet): ${ links }
-            Return a list of the search results that are most relevant to the query.`;
+            Return a list of markdown links \`[name](url) - snippet\` that are most relevant to the query.`;
 
         const completion = await this.model.generatePrompt(
             [ new StringPromptValue(prompt) ],

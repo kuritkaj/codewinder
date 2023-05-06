@@ -10,7 +10,7 @@ import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { BingNews } from "@/lib/intelligence/tools/BingNews";
-import { SaveToMemory } from "@/lib/intelligence/tools/SaveToMemory";
+import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
 
 const MAX_ITERATIONS = 8;
 
@@ -46,21 +46,21 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
     const tools: Tool[] = [
         new WebBrowser({ model, embeddings, callbacks }),
         new JavascriptEvaluator(),
-        new SaveToMemory({ memory, callbacks })
+        new MemoryStorage({ memory })
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new BingNews({ apiKey: bingApiKey, model, callbacks }));
         tools.push(new BingSearch({ apiKey: bingApiKey, model, callbacks }));
     }
-    //const multistep = new Multistep({ model, creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });
-    //const toolset = [ ...tools, multistep ];
+    const multistep = new Multistep({ model, creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });
+    const toolset = [ ...tools, multistep ];
 
-    const agent = ReActAgent.makeAgent(model, creative, memory, tools, callbacks);
+    const agent = ReActAgent.makeAgent(model, creative, memory, toolset, callbacks);
 
     return AgentExecutor.fromAgentAndTools({
         agent,
         model,
-        tools,
+        tools: toolset,
         verbose: true,
         callbacks,
         maxIterations: MAX_ITERATIONS

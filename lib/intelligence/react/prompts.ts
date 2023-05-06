@@ -20,7 +20,7 @@ export const FORMAT_INSTRUCTIONS = `
 Use this format:
 
 ${OBJECTIVE}: the objective
-${THOUGHT}: the best way to meet the ${OBJECTIVE} (this is never shared, pretend it's a secret)
+${THOUGHT}: critical evaluation and self-reflection (this is never shared, pretend it's a secret)
 ${ACTION}: 
 \`\`\`
 {{
@@ -32,12 +32,13 @@ ${ACTION}:
 ${OBSERVATION}: the result of the action (this is never shared, pretend it's a secret)
 ... (${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
 ${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including markdown formatting and citations from the ${OBSERVATION}s.
-${SOURCES}: include links searched or referenced
+... (include links searched or referenced)
 `;
 
 export const SUFFIX = `
 Note: If the ${OBJECTIVE} is a casual greeting or conversation, then skip the ${ACTION}.
 Note: If the ${OBJECTIVE} asked for a creative response such as a joke or a poem, then skip the ${ACTION}.
+Note: If the ${OBJECTIVE} triggered a memory and it meets the ${OBJECTIVE}, then skip the ${ACTION}.
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended. Never ask a question.
 Note: If the ${OBJECTIVE} needs information that you don't have, use a tool to learn more.
 `;
