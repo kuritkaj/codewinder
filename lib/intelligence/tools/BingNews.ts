@@ -4,7 +4,7 @@ import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { StringPromptValue } from "langchain/prompts";
 import { BaseLanguageModel } from "langchain/base_language";
 
-export interface BingNewsArgs extends ToolParams {
+export interface BingNewParams extends ToolParams {
     apiKey: string | undefined;
     memory?: MemoryStore;
     model: BaseLanguageModel;
@@ -20,8 +20,8 @@ export class BingNews extends Tool {
     readonly model: BaseLanguageModel;
     readonly params: Record<string, string>;
 
-    constructor({ apiKey, params, model, memory }: BingNewsArgs) {
-        super();
+    constructor({ apiKey, params, model, memory, verbose, callbacks }: BingNewParams) {
+        super(verbose, callbacks);
 
         if (!apiKey) {
             throw new Error(

@@ -1,9 +1,9 @@
-import { Tool } from "langchain/tools";
+import { Tool, ToolParams } from "langchain/tools";
 import { StringPromptValue } from "langchain/prompts";
 import { BaseChatModel } from "langchain/chat_models";
 import { CallbackManagerForToolRun } from "langchain/callbacks";
 
-interface CreativeWriterInput {
+interface CreativeWriterParams extends ToolParams {
     model: BaseChatModel;
 }
 
@@ -14,10 +14,10 @@ export class CreativeWriter extends Tool {
     readonly model: BaseChatModel;
     readonly returnDirect = true;
 
-    constructor(input: CreativeWriterInput) {
-        super();
+    constructor({ model, verbose, callbacks }: CreativeWriterParams) {
+        super(verbose, callbacks);
 
-        this.model = input.model;
+        this.model = model;
     }
 
     /** @ignore */

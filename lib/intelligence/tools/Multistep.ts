@@ -1,4 +1,4 @@
-import { Tool } from "langchain/tools";
+import { Tool, ToolParams } from "langchain/tools";
 import { BaseChatModel } from "langchain/chat_models";
 import { AgentExecutor } from "langchain/agents";
 import { Callbacks } from "langchain/callbacks";
@@ -21,14 +21,12 @@ The tool input should use this format:
     }}
 }}`;
 
-interface MultistepToolInput {
+interface MultistepToolParams extends ToolParams {
     creative: BaseChatModel;
     model: BaseChatModel;
     tools: Tool[];
     maxIterations?: number;
     memory: MemoryStore;
-    verbose?: boolean;
-    callbacks?: Callbacks;
 }
 
 export class Multistep extends Tool {
@@ -42,14 +40,14 @@ export class Multistep extends Tool {
     readonly returnDirect = true;
     readonly tools: Tool[];
 
-    constructor(options: MultistepToolInput) {
-        super(options.verbose, options.callbacks);
+    constructor({ model, creative, memory, tools, maxIterations, verbose, callbacks }: MultistepToolParams) {
+        super(verbose, callbacks);
 
-        this.creative = options.creative;
-        this.maxIterations = options?.maxIterations;
-        this.memory = options.memory;
-        this.model = options.model;
-        this.tools = options.tools;
+        this.creative = creative;
+        this.maxIterations = maxIterations;
+        this.memory = memory;
+        this.model = model;
+        this.tools = tools;
     }
 
     async _call(input: string, callbackManager?: CallbackManagerForToolRun): Promise<string> {

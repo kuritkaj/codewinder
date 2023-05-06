@@ -1,11 +1,11 @@
-import { Tool } from "langchain/tools";
+import { Tool, ToolParams } from "langchain/tools";
 
 export class JavascriptEvaluator extends Tool {
     readonly name = "javascript-evaluator";
     readonly description = "an isolated Node.js environment with fetch() to evaluate and run code. Programs must always return a string.";
 
-    constructor() {
-        super();
+    constructor({ verbose = false, callbacks = undefined}: Partial<ToolParams> = {}) {
+        super(verbose, callbacks);
     }
 
     /** @ignore */

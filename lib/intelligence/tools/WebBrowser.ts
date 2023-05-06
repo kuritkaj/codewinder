@@ -108,7 +108,7 @@ const DEFAULT_HEADERS = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Headers = Record<string, any>;
 
-export interface WebBrowserArgs extends ToolParams {
+export interface WebBrowserParams extends ToolParams {
     embeddings: Embeddings;
     headers?: Headers;
     memory?: MemoryStore;
@@ -131,7 +131,7 @@ export class WebBrowser extends Tool {
                     headers,
                     verbose,
                     callbacks,
-                }: WebBrowserArgs) {
+                }: WebBrowserParams) {
         super(verbose, callbacks);
 
         this.embeddings = embeddings;

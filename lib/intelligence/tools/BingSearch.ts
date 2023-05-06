@@ -4,7 +4,7 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { StringPromptValue } from "langchain/prompts";
 import { BaseLanguageModel } from "langchain/base_language";
 
-export interface BingSearchArgs extends ToolParams {
+export interface BingSearchParams extends ToolParams {
     apiKey: string | undefined;
     memory?: MemoryStore;
     model: BaseLanguageModel;
@@ -20,8 +20,8 @@ export class BingSearch extends Tool {
     readonly model: BaseLanguageModel;
     readonly params: Record<string, string>;
 
-    constructor({ apiKey, params, model, memory }: BingSearchArgs) {
-        super();
+    constructor({ apiKey, params, model, memory, verbose, callbacks }: BingSearchParams) {
+        super(verbose, callbacks);
 
         if (!apiKey) {
             throw new Error(
