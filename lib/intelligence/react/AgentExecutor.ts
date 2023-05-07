@@ -3,11 +3,9 @@ import { Tool } from "langchain/tools";
 import { BaseSingleActionAgent, StoppingMethod } from "langchain/agents";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
 import { CallbackManagerForChainRun } from "langchain/callbacks";
-import { BaseChatModel } from "langchain/chat_models";
 
 export interface AgentExecutorInput extends ChainInputs {
     agent: BaseSingleActionAgent;
-    model: BaseChatModel;
     tools: Tool[];
     returnIntermediateSteps?: boolean;
     maxIterations?: number;
@@ -22,7 +20,6 @@ export class AgentExecutor extends BaseChain {
     readonly agent: BaseSingleActionAgent;
     readonly earlyStoppingMethod: StoppingMethod = "force";
     readonly maxIterations?: number = 15;
-    readonly model: BaseChatModel;
     readonly returnIntermediateSteps: boolean = false;
     readonly tools: Tool[];
 
@@ -41,7 +38,6 @@ export class AgentExecutor extends BaseChain {
             input.callbacks
         );
         this.agent = input.agent;
-        this.model = input.model;
         this.tools = input.tools;
         if (this.agent._agentActionType() === "multi") {
             for (const tool of this.tools) {

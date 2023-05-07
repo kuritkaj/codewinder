@@ -2,7 +2,6 @@ import { Tool } from "langchain/tools";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { JavascriptEvaluator } from "@/lib/intelligence/tools/JavascriptEvaluator";
-import { Multistep } from "@/lib/intelligence/tools/Multistep";
 import { BingSearch } from "@/lib/intelligence/tools/BingSearch";
 import { AgentExecutor } from "@/lib/intelligence/react/AgentExecutor";
 import { Callbacks } from "langchain/callbacks";
@@ -33,14 +32,14 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         maxRetries: 2
     });
     // This is GPT4 with temp of 0
-    // const gpt4Zero = new ChatOpenAI({
-    //     openAIApiKey,
-    //     modelName: Boolean(gpt4) ? 'gpt-4' : 'gpt-3.5-turbo',
-    //     temperature: 0,
-    //     streaming: Boolean(callbacks),
-    //     callbacks,
-    //     maxRetries: 2
-    // });
+    const capable = new ChatOpenAI({
+        openAIApiKey,
+        modelName: Boolean(gpt4) ? 'gpt-4' : 'gpt-3.5-turbo',
+        temperature: 0,
+        streaming: Boolean(callbacks),
+        callbacks,
+        maxRetries: 2
+    });
     // This is GPT4 with temp of the default
     const creative = new ChatOpenAI({
         openAIApiKey,
@@ -59,21 +58,20 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         new WebBrowser({ model: predictable, embeddings, callbacks }),
         new JavascriptEvaluator(),
         new MemoryRecall({ model: predictable, memory }),
-        new MemoryStorage({ model: predictable, memory })
+        new MemoryStorage({ model: predictable, memory, embeddings })
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new BingNews({ apiKey: bingApiKey, model: predictable, callbacks }));
         tools.push(new BingSearch({ apiKey: bingApiKey, model: predictable, callbacks }));
     }
-    const multistep = new Multistep({ model: predictable, creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });
-    const toolset = [ ...tools, multistep ];
+    //const multistep = new Multistep({ model: predictable, creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });
+    //const toolset = [ ...tools, multistep ];
 
-    const agent = ReActAgent.makeAgent({ model: predictable, creative, memory, tools: toolset, callbacks });
+    const agent = ReActAgent.makeAgent({ model: capable, creative, memory, tools, callbacks });
 
     return AgentExecutor.fromAgentAndTools({
         agent,
-        model: predictable,
-        tools: toolset,
+        tools,
         verbose: true,
         callbacks,
         maxIterations: MAX_ITERATIONS
