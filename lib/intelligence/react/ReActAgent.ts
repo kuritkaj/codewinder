@@ -10,7 +10,6 @@ import {
 } from "@/lib/intelligence/react/prompts";
 import {
     Agent,
-    AgentActionOutputParser,
     ChatAgentInput,
     ChatCreatePromptArgs,
     OutputParserArgs
@@ -27,6 +26,7 @@ import { LLMChain } from "langchain";
 import { CallbackManager, Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { BaseChatModel } from "langchain/dist/chat_models/base";
+import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
 
 export const CONTEXT_INPUT = "context";
 export const MEMORIES_INPUT = "memories";
@@ -215,51 +215,5 @@ export class ReActAgent extends Agent {
                 "This agent requires descriptions for all tools.";
             throw new Error(msg);
         }
-    }
-}
-
-export class ReActAgentActionOutputParser extends AgentActionOutputParser {
-    finishToolName: string;
-
-    constructor(fields?: OutputParserArgs) {
-        super();
-        this.finishToolName = fields?.finishToolName || FINAL_RESPONSE;
-    }
-
-    responsePrefix() {
-        return `${ FINAL_RESPONSE }:`;
-    }
-
-    async parse(text: string): Promise<AgentAction | AgentFinish> {
-        const responder = async (response: string) => {
-            return { returnValues: { output: `${ response }` }, log: response };
-        }
-
-        if (text.includes(`${ this.responsePrefix() }`)) {
-            const parts = text.split(`${ this.responsePrefix() }`);
-            const output = parts[parts.length - 1].trim();
-            return await responder(output);
-        }
-
-        const regex = /{[^{}]*}/g; // match on JSON brackets.
-        const matches = text.match(regex);
-
-        if (!matches || matches.length === 0) return await responder(text);
-
-        try {
-            const actions = matches.map(match => JSON.parse(match));
-            const action = actions.pop();
-            return {
-                tool: action.action,
-                toolInput: typeof action.action_input === 'string' ? action.action_input : JSON.stringify(action.action_input),
-                log: text,
-            };
-        } catch {
-            return await responder(text);
-        }
-    }
-
-    getFormatInstructions(): string {
-        return FORMAT_INSTRUCTIONS;
     }
 }
