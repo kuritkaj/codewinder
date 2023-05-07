@@ -1,7 +1,7 @@
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain, LLMChainInput } from "langchain/chains";
-import { BaseChatModel } from "langchain/chat_models";
 import { Callbacks } from "langchain/callbacks";
+import { BaseLanguageModel } from "langchain/dist/base_language";
 
 export const GUIDANCE = `
 This is the goal: {goal}
@@ -25,7 +25,7 @@ ALWAYS respond using this format:
 `;
 
 interface PlannerChainInput {
-    model: BaseChatModel;
+    model: BaseLanguageModel;
     callbacks?: Callbacks;
 }
 
@@ -35,12 +35,12 @@ export class Planner extends LLMChain {
         super(inputs);
     }
 
-    static makeChain(inputs: PlannerChainInput): Planner {
+    static makeChain({ model, callbacks }: PlannerChainInput): Planner {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new Planner({
-            llm: inputs.model,
-            callbacks: inputs.callbacks,
+            llm: model,
+            callbacks: callbacks,
             prompt
         });
     }

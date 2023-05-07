@@ -67,13 +67,14 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
     //const multistep = new Multistep({ model: predictable, creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });
     //const toolset = [ ...tools, multistep ];
 
-    const agent = ReActAgent.makeAgent({ model: capable, creative, memory, tools, callbacks });
+    const agent = ReActAgent.makeAgent({ model: predictable, creative, memory, tools, callbacks });
 
     return AgentExecutor.fromAgentAndTools({
         agent,
+        callbacks,
+        creative,
+        maxIterations: MAX_ITERATIONS,
         tools,
         verbose: true,
-        callbacks,
-        maxIterations: MAX_ITERATIONS
     });
 }

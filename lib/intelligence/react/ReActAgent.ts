@@ -8,12 +8,7 @@ import {
     THOUGHT,
     TOOLING
 } from "@/lib/intelligence/react/prompts";
-import {
-    Agent,
-    ChatAgentInput,
-    ChatCreatePromptArgs,
-    OutputParserArgs
-} from "langchain/agents";
+import { Agent, ChatAgentInput, ChatCreatePromptArgs, OutputParserArgs } from "langchain/agents";
 import { Tool } from "langchain/tools";
 import {
     AIMessagePromptTemplate,
@@ -25,8 +20,8 @@ import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/sche
 import { LLMChain } from "langchain";
 import { CallbackManager, Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
-import { BaseChatModel } from "langchain/dist/chat_models/base";
 import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
+import { BaseLanguageModel } from "langchain/base_language";
 
 export const CONTEXT_INPUT = "context";
 export const MEMORIES_INPUT = "memories";
@@ -175,7 +170,7 @@ export class ReActAgent extends Agent {
                          memory,
                          tools,
                          callbacks
-                     }: { model: BaseChatModel, creative: BaseChatModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks }): ReActAgent {
+                     }: { model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks }): ReActAgent {
         ReActAgent.validateTools(tools);
         const prompt = ReActAgent.createPrompt(tools);
         const llmChain = new LLMChain({

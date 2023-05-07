@@ -1,7 +1,7 @@
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain, LLMChainInput } from "langchain/chains";
-import { BaseChatModel } from "langchain/chat_models";
 import { Callbacks } from "langchain/callbacks";
+import { BaseLanguageModel } from "langchain/base_language";
 
 export const GUIDANCE = `
 Rewrite the following:
@@ -11,7 +11,7 @@ Using this as your guide: {goal}
 `;
 
 interface EditorChainInput {
-    model: BaseChatModel;
+    model: BaseLanguageModel;
     callbacks?: Callbacks;
 }
 
@@ -21,12 +21,12 @@ export class Editor extends LLMChain {
         super(inputs);
     }
 
-    static makeChain(inputs: EditorChainInput): Editor {
+    static makeChain({ model, callbacks }: EditorChainInput): Editor {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new Editor({
-            llm: inputs.model,
-            callbacks: inputs.callbacks,
+            llm: model,
+            callbacks: callbacks,
             prompt
         });
     }

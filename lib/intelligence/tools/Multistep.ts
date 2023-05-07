@@ -1,5 +1,4 @@
 import { Tool, ToolParams } from "langchain/tools";
-import { BaseChatModel } from "langchain/chat_models";
 import { AgentExecutor } from "langchain/agents";
 import { Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
@@ -7,6 +6,7 @@ import { CallbackManagerForToolRun } from "langchain/dist/callbacks/manager";
 import { Editor } from "@/lib/intelligence/chains/Editor";
 import { CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { Planner } from "@/lib/intelligence/chains/Planner";
+import { BaseLanguageModel } from "langchain/base_language";
 
 const DESCRIPTION = `use this tool anytime the objective requires multiple steps or has multiple tasks to accomplish.
 The tool input should use this format:
@@ -22,8 +22,8 @@ The tool input should use this format:
 }}`;
 
 interface MultistepToolParams extends ToolParams {
-    creative: BaseChatModel;
-    model: BaseChatModel;
+    creative: BaseLanguageModel;
+    model: BaseLanguageModel;
     tools: Tool[];
     maxIterations?: number;
     memory: MemoryStore;
@@ -33,10 +33,10 @@ export class Multistep extends Tool {
     readonly name = "multi-step";
     readonly description = DESCRIPTION;
 
-    readonly creative: BaseChatModel;
+    readonly creative: BaseLanguageModel;
     readonly maxIterations?: number;
     readonly memory: MemoryStore;
-    readonly model: BaseChatModel;
+    readonly model: BaseLanguageModel;
     readonly returnDirect = true;
     readonly tools: Tool[];
 
@@ -55,12 +55,12 @@ export class Multistep extends Tool {
     }
 
     static async runAgent(
-        model: BaseChatModel, creative: BaseChatModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, verbose: boolean, maxIterations: number, plan: {
+        model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, verbose: boolean, maxIterations: number, plan: {
             goal: string;
             tasks: string[];
         }, callbackManager?: CallbackManagerForToolRun): Promise<string>
     {
-        const agent = ReActAgent.makeAgent(model, creative, memory, tools, callbacks);
+        const agent = ReActAgent.makeAgent({model, creative, memory, tools, callbacks});
         const executor = AgentExecutor.fromAgentAndTools({
             agent,
             tools,

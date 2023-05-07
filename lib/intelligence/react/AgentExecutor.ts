@@ -3,9 +3,12 @@ import { Tool } from "langchain/tools";
 import { BaseSingleActionAgent, StoppingMethod } from "langchain/agents";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
 import { CallbackManagerForChainRun } from "langchain/callbacks";
+import { OBJECTIVE_INPUT, Reviser } from "@/lib/intelligence/chains/Reviser";
+import { BaseLanguageModel } from "langchain/base_language";
 
 export interface AgentExecutorInput extends ChainInputs {
     agent: BaseSingleActionAgent;
+    creative: BaseLanguageModel;
     tools: Tool[];
     returnIntermediateSteps?: boolean;
     maxIterations?: number;
@@ -18,6 +21,7 @@ export interface AgentExecutorInput extends ChainInputs {
  */
 export class AgentExecutor extends BaseChain {
     readonly agent: BaseSingleActionAgent;
+    readonly creative: BaseLanguageModel;
     readonly earlyStoppingMethod: StoppingMethod = "force";
     readonly maxIterations?: number = 15;
     readonly returnIntermediateSteps: boolean = false;
@@ -31,14 +35,25 @@ export class AgentExecutor extends BaseChain {
         return this.agent.returnValues;
     }
 
-    constructor(input: AgentExecutorInput) {
+    constructor({
+                    agent,
+                    callbacks,
+                    creative,
+                    earlyStoppingMethod,
+                    maxIterations,
+                    memory,
+                    returnIntermediateSteps,
+                    tools,
+                    verbose
+                }: AgentExecutorInput) {
         super(
-            input.memory,
-            input.verbose,
-            input.callbacks
+            memory,
+            verbose,
+            callbacks
         );
-        this.agent = input.agent;
-        this.tools = input.tools;
+        this.agent = agent;
+        this.creative = creative;
+        this.tools = tools;
         if (this.agent._agentActionType() === "multi") {
             for (const tool of this.tools) {
                 if (tool.returnDirect) {
@@ -49,15 +64,35 @@ export class AgentExecutor extends BaseChain {
             }
         }
         this.returnIntermediateSteps =
-            input.returnIntermediateSteps ?? this.returnIntermediateSteps;
-        this.maxIterations = input.maxIterations ?? this.maxIterations;
+            returnIntermediateSteps ?? this.returnIntermediateSteps;
+        this.maxIterations = maxIterations ?? this.maxIterations;
         this.earlyStoppingMethod =
-            input.earlyStoppingMethod ?? this.earlyStoppingMethod;
+            earlyStoppingMethod ?? this.earlyStoppingMethod;
     }
 
     /** Create from agent and a list of tools. */
-    static fromAgentAndTools(fields: AgentExecutorInput): AgentExecutor {
-        return new AgentExecutor(fields);
+    static fromAgentAndTools({
+                                 agent,
+                                 callbacks,
+                                 creative,
+                                 earlyStoppingMethod,
+                                 maxIterations,
+                                 memory,
+                                 returnIntermediateSteps,
+                                 tools,
+                                 verbose
+                             }: AgentExecutorInput): AgentExecutor {
+        return new AgentExecutor({
+            agent,
+            callbacks,
+            creative,
+            earlyStoppingMethod,
+            maxIterations,
+            memory,
+            returnIntermediateSteps,
+            tools,
+            verbose
+        });
     }
 
     private shouldContinue(iterations: number): boolean {
@@ -86,6 +121,14 @@ export class AgentExecutor extends BaseChain {
             return { ...returnValues, ...additional };
         };
 
+        // First, revise the provided objective to be more specific
+        inputs[OBJECTIVE_INPUT] = await Reviser.makeChain({
+            model: this.creative,
+            callbacks: runManager?.getChild()
+        }).evaluate({ objective: inputs[OBJECTIVE_INPUT] });
+
+
+        // Loop until the number of iterations are met, or the plan returns with AgentFinish.
         while (this.shouldContinue(iterations)) {
             iterations += 1;
 
