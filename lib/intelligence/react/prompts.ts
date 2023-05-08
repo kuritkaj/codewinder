@@ -45,4 +45,5 @@ ${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including markdown for
 export const SUFFIX = `
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended.
 Note: If the ${OBJECTIVE} needs information that you don't have, use a tool to learn more.
+Note: If the ${OBJECTIVE} is to make a table or document, then use markdown formatting to create it.
 `;

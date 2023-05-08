@@ -82,7 +82,7 @@ export class Multistep extends Tool {
 
             let inputs = {};
             inputs[CONTEXT_INPUT] = results.length > 0 ? results[results.length - 1] : "";
-            inputs[OBJECTIVE_INPUT] = `${task} - supporting this overall goal: ${newPlan.goal}`
+            inputs[OBJECTIVE_INPUT] = `${task}`
 
             const completion = await executor.call(inputs);
             results.push(completion.output);
