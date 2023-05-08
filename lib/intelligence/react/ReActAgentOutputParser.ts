@@ -25,7 +25,7 @@ export class ReActAgentActionOutputParser extends AgentActionOutputParser {
             return await responder(output);
         }
 
-        const regex = /{[^{}]*}/g; // match on JSON brackets.
+        const regex = /(?<=```)[\s\S]*?(?=\n```)/;
         const matches = text.match(regex);
 
         if (!matches || matches.length === 0) return await responder(text);

@@ -8,7 +8,7 @@ import {
     THOUGHT,
     TOOLING
 } from "@/lib/intelligence/react/prompts";
-import { Agent, ChatAgentInput, ChatCreatePromptArgs, OutputParserArgs } from "langchain/agents";
+import { Agent, ChatCreatePromptArgs, OutputParserArgs } from "langchain/agents";
 import { Tool } from "langchain/tools";
 import {
     AIMessagePromptTemplate,
@@ -28,26 +28,31 @@ export const CONTEXT_INPUT = "context";
 export const MEMORIES_INPUT = "memories";
 export const OBJECTIVE_INPUT = "objective";
 export const SCRATCHPAD_INPUT = "scratchpad";
+export const TOOL_INPUT = "tools";
 
-interface ReActAgentInput extends ChatAgentInput {
-    creativeChain: LLMChain
+interface ReActAgentInput {
+    creativeChain: LLMChain;
+    llmChain: LLMChain;
     memory: MemoryStore;
+    tools: Tool[];
 }
 
 export class ReActAgent extends Agent {
     readonly creativeChain: LLMChain;
     readonly memory: MemoryStore;
+    readonly tools: Tool[];
 
-    constructor(input: ReActAgentInput) {
-        const outputParser =
-            input?.outputParser ?? ReActAgent.getDefaultOutputParser();
+    constructor({ creativeChain, llmChain, memory, tools }: ReActAgentInput) {
+        const outputParser = ReActAgent.getDefaultOutputParser();
         super({
-            ...input,
-            outputParser
+            llmChain,
+            outputParser,
+            allowedTools: tools.map((t) => t.name)
         });
 
-        this.creativeChain = input.creativeChain;
-        this.memory = input.memory;
+        this.creativeChain = creativeChain;
+        this.memory = memory;
+        this.tools = tools;
     }
 
     _agentType() {
@@ -87,15 +92,23 @@ export class ReActAgent extends Agent {
 
     static createPrompt(tools: Tool[], args?: ChatCreatePromptArgs) {
         const { prefix = PREFIX, suffix = SUFFIX } = args ?? {};
-        const toolDetails = tools
-            .map((tool) => `${ tool.name }: ${ tool.description }`)
-            .join("\n");
-        const tooling = [ `Allowed tools: ${ tools.map((t) => t.name).join(", ") }`,
-            "Tool instructions:", `${ toolDetails }`, `${ TOOLING }` ].join("\n");
 
-        const system = [ prefix, tooling, FORMAT_INSTRUCTIONS, suffix ].join("\n");
-        const assistant = [ `This is the previous conversation: {${ CONTEXT_INPUT }}`, `Which triggered this memory: {${ MEMORIES_INPUT }}` ].join("\n\n");
-        const human = [ `Begin!`, `${ OBJECTIVE }: {${ OBJECTIVE_INPUT }}`, `{${ SCRATCHPAD_INPUT }}` ].join("\n\n");
+        const system = [
+            prefix,
+            TOOLING,
+            `Allowed tools:\n{${ TOOL_INPUT }}`,
+            FORMAT_INSTRUCTIONS,
+            suffix
+        ].join("\n");
+        const assistant = [
+            `This is the previous conversation: {${ CONTEXT_INPUT }}`,
+            `Which triggered this memory: {${ MEMORIES_INPUT }}`
+        ].join("\n\n");
+        const human = [
+            `Begin!`,
+            `${ OBJECTIVE }: {${ OBJECTIVE_INPUT }}`,
+            `{${ SCRATCHPAD_INPUT }}`
+        ].join("\n\n");
         const messages = [
             SystemMessagePromptTemplate.fromTemplate(system),
             AIMessagePromptTemplate.fromTemplate(assistant),
@@ -124,6 +137,9 @@ export class ReActAgent extends Agent {
     ): Promise<AgentAction | AgentFinish> {
         const thoughts = await this.constructScratchPad(steps);
         const memories = await this.memory.retrieveSnippet(inputs[OBJECTIVE_INPUT], 0.85);
+        const tooling = this.tools
+            .map((tool) => `${ tool.name }: ${ tool.description }`)
+            .join("\n");
 
         const newInputs: ChainValues = {
             ...inputs
@@ -131,6 +147,7 @@ export class ReActAgent extends Agent {
 
         newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
         newInputs[SCRATCHPAD_INPUT] = [ thoughts, this.llmPrefix() ].join("\n");
+        newInputs[TOOL_INPUT] = tooling;
 
         if (this._stop().length !== 0) {
             newInputs.stop = this._stop();
@@ -159,7 +176,7 @@ export class ReActAgent extends Agent {
             } else {
                 // This is a final response.
                 const finalInputs: ChainValues = {
-                    ...inputs
+                    ...newInputs
                 };
                 finalInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
                 // append the prefix to the scratchpad
@@ -199,8 +216,7 @@ export class ReActAgent extends Agent {
             llmChain,
             creativeChain,
             memory,
-            outputParser: ReActAgent.getDefaultOutputParser(),
-            allowedTools: tools.map((t) => t.name),
+            tools,
         });
     }
 

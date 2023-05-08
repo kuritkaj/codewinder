@@ -9,8 +9,6 @@ import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { BingNews } from "@/lib/intelligence/tools/BingNews";
-import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
-import { MemoryRecall } from "@/lib/intelligence/tools/MemoryRecall";
 import { Multistep } from "@/lib/intelligence/tools/Multistep";
 
 const MAX_ITERATIONS = 8;
@@ -58,8 +56,8 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
     const tools: Tool[] = [
         new WebBrowser({ model: predictable, embeddings, callbacks }),
         new JavascriptEvaluator(),
-        new MemoryRecall({ model: predictable, memory }),
-        new MemoryStorage({ model: predictable, memory, embeddings })
+        // new MemoryRecall({ model: predictable, memory }),
+        // new MemoryStorage({ model: predictable, memory, embeddings })
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new BingNews({ apiKey: bingApiKey, embeddings, callbacks }));
