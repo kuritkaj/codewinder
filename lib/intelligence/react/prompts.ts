@@ -43,6 +43,6 @@ ${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including markdown for
 `;
 
 export const SUFFIX = `
-Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended. Ask for clarification if needed.
+Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended.
 Note: If the ${OBJECTIVE} needs information that you don't have, use a tool to learn more.
 `;
