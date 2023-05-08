@@ -4,7 +4,6 @@ import { Tool, ToolParams } from "langchain/tools";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { StringPromptValue } from "langchain/prompts";
 import { CallbackManagerForToolRun } from "langchain/callbacks";
-import { Document } from "langchain/document";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
@@ -184,22 +183,14 @@ export class WebBrowser extends Tool {
         }
         // search term well embed and grab top 4
         else {
-            const docs = texts.map(
-                (pageContent) =>
-                    new Document({
-                        pageContent,
-                        metadata: [],
-                    })
-            );
-
             // this is short-term memory for searching on the page:
-            const vectorStore = await MemoryVectorStore.fromDocuments(
-                docs,
+            const vectorStore = await MemoryVectorStore.fromTexts(
+                texts,
+                [],
                 this.embeddings
             );
-            const results = await vectorStore.similaritySearch(task, 4);
-
-            context = results.map((res) => res.pageContent).join("\n");
+            const similar = await vectorStore.similaritySearch(task, 4);
+            context = similar.map((res) => res.pageContent).join("\n");
         }
 
         const prompt = `Text:${ context }\n\nI need ${

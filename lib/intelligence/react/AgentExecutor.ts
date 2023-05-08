@@ -3,12 +3,9 @@ import { Tool } from "langchain/tools";
 import { BaseSingleActionAgent, StoppingMethod } from "langchain/agents";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
 import { CallbackManagerForChainRun } from "langchain/callbacks";
-import { OBJECTIVE_INPUT, Reviser } from "@/lib/intelligence/chains/Reviser";
-import { BaseLanguageModel } from "langchain/base_language";
 
 export interface AgentExecutorInput extends ChainInputs {
     agent: BaseSingleActionAgent;
-    creative: BaseLanguageModel;
     tools: Tool[];
     returnIntermediateSteps?: boolean;
     maxIterations?: number;
@@ -21,7 +18,6 @@ export interface AgentExecutorInput extends ChainInputs {
  */
 export class AgentExecutor extends BaseChain {
     readonly agent: BaseSingleActionAgent;
-    readonly creative: BaseLanguageModel;
     readonly earlyStoppingMethod: StoppingMethod = "force";
     readonly maxIterations?: number = 15;
     readonly returnIntermediateSteps: boolean = false;
@@ -38,7 +34,6 @@ export class AgentExecutor extends BaseChain {
     constructor({
                     agent,
                     callbacks,
-                    creative,
                     earlyStoppingMethod,
                     maxIterations,
                     memory,
@@ -52,7 +47,6 @@ export class AgentExecutor extends BaseChain {
             callbacks
         );
         this.agent = agent;
-        this.creative = creative;
         this.tools = tools;
         if (this.agent._agentActionType() === "multi") {
             for (const tool of this.tools) {
@@ -74,7 +68,6 @@ export class AgentExecutor extends BaseChain {
     static fromAgentAndTools({
                                  agent,
                                  callbacks,
-                                 creative,
                                  earlyStoppingMethod,
                                  maxIterations,
                                  memory,
@@ -85,7 +78,6 @@ export class AgentExecutor extends BaseChain {
         return new AgentExecutor({
             agent,
             callbacks,
-            creative,
             earlyStoppingMethod,
             maxIterations,
             memory,
@@ -120,13 +112,6 @@ export class AgentExecutor extends BaseChain {
             await runManager?.handleAgentEnd(finishStep);
             return { ...returnValues, ...additional };
         };
-
-        // First, revise the provided objective to be more specific
-        inputs[OBJECTIVE_INPUT] = await Reviser.makeChain({
-            model: this.creative,
-            callbacks: runManager?.getChild()
-        }).evaluate({ objective: inputs[OBJECTIVE_INPUT] });
-
 
         // Loop until the number of iterations are met, or the plan returns with AgentFinish.
         while (this.shouldContinue(iterations)) {

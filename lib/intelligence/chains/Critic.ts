@@ -21,7 +21,7 @@ If the response is asking for clarification or more information, then always res
 If you respond with \`${ELABORATION_REQUIRED}\`, provide guidance that will help provide a better response next time.
 `;
 
-interface CriticChainInput {
+interface CriticInput {
     model: BaseLanguageModel;
     callbacks?: Callbacks;
 }
@@ -32,7 +32,7 @@ export class Critic extends LLMChain {
         super(inputs);
     }
 
-    static makeChain({ model, callbacks }: CriticChainInput): Critic {
+    static makeChain({ model, callbacks }: CriticInput): Critic {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new Critic({
@@ -42,10 +42,10 @@ export class Critic extends LLMChain {
         });
     }
 
-    async evaluate({response, objective}: { response: string; objective: string }): Promise<string> {
+    async evaluate({objective, response}: { objective: string; response: string; }): Promise<string> {
         const summary = await this.call({
-            response,
-            objective
+            objective,
+            response
         });
         return summary.text;
     }

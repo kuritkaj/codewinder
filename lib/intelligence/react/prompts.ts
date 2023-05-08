@@ -35,7 +35,8 @@ ${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including markdown for
 
 Alternatively, use this format for simple greetings, poems or short creative works, or if you already know the answer:
 ${OBJECTIVE}: the objective
-${THOUGHT}: ${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including markdown formatting and citations as appropriate.
+${THOUGHT}: no action or tool is needed
+${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including markdown formatting and citations as appropriate
 ... (include links searched or referenced)
 `;
 

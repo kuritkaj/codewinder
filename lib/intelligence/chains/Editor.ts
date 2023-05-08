@@ -10,7 +10,7 @@ Rewrite the following:
 Using this as your guide: {goal}
 `;
 
-interface EditorChainInput {
+interface EditorInput {
     model: BaseLanguageModel;
     callbacks?: Callbacks;
 }
@@ -21,7 +21,7 @@ export class Editor extends LLMChain {
         super(inputs);
     }
 
-    static makeChain({ model, callbacks }: EditorChainInput): Editor {
+    static makeChain({ model, callbacks }: EditorInput): Editor {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new Editor({

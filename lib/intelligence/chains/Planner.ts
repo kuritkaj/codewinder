@@ -24,7 +24,7 @@ ALWAYS respond using this format:
 ... (the response should only contain a SINGLE objective, do NOT return a list of multiple objectives)
 `;
 
-interface PlannerChainInput {
+interface PlannerInput {
     model: BaseLanguageModel;
     callbacks?: Callbacks;
 }
@@ -35,7 +35,7 @@ export class Planner extends LLMChain {
         super(inputs);
     }
 
-    static makeChain({ model, callbacks }: PlannerChainInput): Planner {
+    static makeChain({ model, callbacks }: PlannerInput): Planner {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new Planner({

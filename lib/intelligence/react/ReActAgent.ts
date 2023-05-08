@@ -22,6 +22,7 @@ import { CallbackManager, Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
 import { BaseLanguageModel } from "langchain/base_language";
+import { Reviser } from "@/lib/intelligence/chains/Reviser";
 
 export const CONTEXT_INPUT = "context";
 export const MEMORIES_INPUT = "memories";
@@ -34,8 +35,8 @@ interface ReActAgentInput extends ChatAgentInput {
 }
 
 export class ReActAgent extends Agent {
-    creativeChain: LLMChain;
-    memory: MemoryStore;
+    readonly creativeChain: LLMChain;
+    readonly memory: MemoryStore;
 
     constructor(input: ReActAgentInput) {
         const outputParser =
@@ -66,7 +67,7 @@ export class ReActAgent extends Agent {
     }
 
     _stop(): string[] {
-        return [ `${ OBSERVATION }:`, `${ FINAL_RESPONSE }` ];
+        return [ `${ OBSERVATION }:`, `${ FINAL_RESPONSE }:` ];
     }
 
     async constructScratchPad(steps: AgentStep[]): Promise<string> {
@@ -76,9 +77,9 @@ export class ReActAgent extends Agent {
             return (
                 thoughts +
                 [
+                    this.llmPrefix(),
                     action.log,
-                    `${ this.observationPrefix() } ${ observation }`,
-                    isLastElement ? "" : this.llmPrefix()
+                    `${ this.observationPrefix() } ${ observation }`
                 ].join(separator)
             );
         }, "");
@@ -127,8 +128,8 @@ export class ReActAgent extends Agent {
         const newInputs: ChainValues = {
             ...inputs
         };
+
         newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
-        // append the prefix to the scratchpad
         newInputs[SCRATCHPAD_INPUT] = [ thoughts, this.llmPrefix() ].join("\n");
 
         if (this._stop().length !== 0) {
@@ -136,6 +137,16 @@ export class ReActAgent extends Agent {
         }
 
         try {
+            // On the first call to plan, update the objective.
+            // This directly modifies the initial inputs, not newInputs as below.
+            if (steps.length === 0) {
+                // Revise the provided objective to be more specific
+                inputs[OBJECTIVE_INPUT] = await Reviser.makeChain({
+                    model: this.creativeChain.llm,
+                    callbacks: callbackManager
+                }).evaluate({ objective: inputs[OBJECTIVE_INPUT] });
+            }
+
             // Use the base chain for evaluating the right tool to use.
             const output = await this.llmChain.predict(newInputs, callbackManager);
             const action = await this.outputParser.parse(output);

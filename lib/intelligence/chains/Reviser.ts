@@ -15,7 +15,7 @@ If no improvements are necessary, then reply with the original objective unchang
 For example, simple greetings or statements of fact do not need to be improved.
 `;
 
-interface ReviserChainInput {
+interface ReviserInput {
     model: BaseLanguageModel;
     callbacks?: Callbacks;
 }
@@ -26,7 +26,7 @@ export class Reviser extends LLMChain {
         super(inputs);
     }
 
-    static makeChain({ model, callbacks }: ReviserChainInput): Reviser {
+    static makeChain({ model, callbacks }: ReviserInput): Reviser {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new Reviser({

@@ -1,13 +1,13 @@
 import { Tool, ToolParams } from "langchain/tools";
 import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
-import { StringPromptValue } from "langchain/prompts";
-import { BaseLanguageModel } from "langchain/base_language";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { Embeddings } from "langchain/embeddings";
 
 export interface BingSearchParams extends ToolParams {
     apiKey: string | undefined;
+    embeddings: Embeddings;
     memory?: MemoryStore;
-    model: BaseLanguageModel;
     params?: Record<string, string>;
 }
 
@@ -15,12 +15,12 @@ export class BingSearch extends Tool {
     readonly name = "web-search";
     readonly description = "find answers on the web. Input is a string for a web search query.";
 
+    readonly embeddings: Embeddings;
     readonly key: string;
     readonly memory: MemoryStore;
-    readonly model: BaseLanguageModel;
     readonly params: Record<string, string>;
 
-    constructor({ apiKey, params, model, memory, verbose, callbacks }: BingSearchParams) {
+    constructor({ apiKey, params, memory, embeddings, verbose, callbacks }: BingSearchParams) {
         super(verbose, callbacks);
 
         if (!apiKey) {
@@ -29,9 +29,9 @@ export class BingSearch extends Tool {
             );
         }
 
+        this.embeddings = embeddings;
         this.key = apiKey;
         this.memory = memory;
-        this.model = model;
         this.params = params;
     }
 
@@ -66,18 +66,16 @@ export class BingSearch extends Tool {
             if (this.memory) await this.memory.storeText(result.snippet, [ { name: result.name }, { url: result.url } ]);
         }
 
-        const links = results.map(result => `[${ result.name }](${ result.url }) - ${ result.snippet }`).join("\n");
+        const links = results.map(result => `[${ result.name }](${ result.url }) - ${ result.snippet }`);
 
-        const prompt = `Given this input: ${ input }
-            And these search results (name, url, snippet): ${ links }
-            Return a list of 4 or 5 markdown links \`* [name](url) - snippet\` that are most relevant to the query.`;
-
-        const completion = await this.model.generatePrompt(
-            [ new StringPromptValue(prompt) ],
-            undefined,
-            runManager?.getChild()
+        // this is short-term memory for searching on the page:
+        const vectorStore = await MemoryVectorStore.fromTexts(
+            links,
+            [],
+            this.embeddings
         );
+        const similar = await vectorStore.similaritySearch(input, 4);
 
-        return completion.generations[0][0].text;
+        return similar.map((res) => res.pageContent).join("\n");
     }
 }

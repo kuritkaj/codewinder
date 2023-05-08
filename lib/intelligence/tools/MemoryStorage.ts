@@ -6,6 +6,11 @@ import { BaseLanguageModel } from "langchain/base_language";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { Embeddings } from "langchain/embeddings";
 
+const DESCRIPTION = `saves the provided input string to memory for recall later.
+The input string should include enough context to be easily retrievable in the future.
+Alternatively, provide a valid url to save the contents of that page.
+`;
+
 function extractUrl(str: string): string | null {
     const urlRegex = /(https?:\/\/[^\s]+)/gi; // regular expression to match URLs
     const urls = str.match(urlRegex); // search for URLs in the string
@@ -25,9 +30,7 @@ interface MemoryStorageParams extends ToolParams {
 
 export class MemoryStorage extends Tool {
     readonly name = "memory-storage";
-    readonly description = "saves the provided input to memory for recall later. " +
-        "The input should include enough context to be easily retrievable in the future." +
-        "Alternatively, provide a valid url to save the contents of that page.";
+    readonly description = DESCRIPTION;
 
     readonly browser: WebBrowser;
     readonly memory: MemoryStore;
