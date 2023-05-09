@@ -8,7 +8,7 @@ import { CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/r
 import { Planner } from "@/lib/intelligence/chains/Planner";
 import { BaseLanguageModel } from "langchain/base_language";
 
-const DESCRIPTION = `use this tool anytime the objective requires multiple steps or has multiple tasks to accomplish.
+const DESCRIPTION = `use this tool for complex objectives that have multiple steps or tasks.
 The tool input should use this format:
 {{
   "action": "tool name",

@@ -9,7 +9,7 @@ import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
 const DESCRIPTION = `finding or summarizing webpage content from a valid URL, such as follow up from a web search.
-Input should be "ONE valid http URL including protocol","what to find on the page". Leave the second input blank to summarize the page.
+Input should be "ONE valid http URL including protocol","what to find on the page".
 The tool input should use this format:
 {{
   "action": "tool name",

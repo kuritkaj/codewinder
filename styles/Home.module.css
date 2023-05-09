@@ -33,10 +33,10 @@
 }
 
 .navlinks {
-  width: 20rem;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: flex-end;
   align-items: center;
+  margin-right: 1rem;
 }
 
 .apptitle {

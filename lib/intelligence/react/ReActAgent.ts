@@ -1,10 +1,10 @@
 import {
     FINAL_RESPONSE,
     FORMAT_INSTRUCTIONS,
+    GUIDANCE,
     OBJECTIVE,
     OBSERVATION,
-    PREFIX,
-    SUFFIX,
+    SYSTEM,
     THOUGHT,
     TOOLING
 } from "@/lib/intelligence/react/prompts";
@@ -59,10 +59,6 @@ export class ReActAgent extends Agent {
         return "react-agent-description" as const;
     }
 
-    finalPrefix() {
-        return `${ FINAL_RESPONSE }:`;
-    }
-
     llmPrefix() {
         return `${ THOUGHT }:`;
     }
@@ -91,7 +87,7 @@ export class ReActAgent extends Agent {
     }
 
     static createPrompt(tools: Tool[], args?: ChatCreatePromptArgs) {
-        const { prefix = PREFIX, suffix = SUFFIX } = args ?? {};
+        const { prefix = SYSTEM, suffix = GUIDANCE } = args ?? {};
 
         const system = [
             prefix,
@@ -105,7 +101,6 @@ export class ReActAgent extends Agent {
             `Which triggered this memory: {${ MEMORIES_INPUT }}`
         ].join("\n\n");
         const human = [
-            `Begin!`,
             `${ OBJECTIVE }: {${ OBJECTIVE_INPUT }}`,
             `{${ SCRATCHPAD_INPUT }}`
         ].join("\n\n");
@@ -135,20 +130,33 @@ export class ReActAgent extends Agent {
         inputs: ChainValues,
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
-        const thoughts = await this.constructScratchPad(steps);
-        const memories = await this.memory.retrieveSnippet(inputs[OBJECTIVE_INPUT], 0.85);
-        const tooling = this.tools
-            .map((tool) => `${ tool.name }: ${ tool.description }`)
-            .join("\n");
-
+        // Define the new inputs, as we'll update/replace some values
         const newInputs: ChainValues = {
             ...inputs
         };
 
-        newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
-        newInputs[SCRATCHPAD_INPUT] = [ thoughts, this.llmPrefix() ].join("\n");
-        newInputs[TOOL_INPUT] = tooling;
+        // Provide the tools and descriptions
+        newInputs[TOOL_INPUT] = this.tools.map((tool) => `${ tool.name }: ${ tool.description }`).join("\n");
 
+        // Only update memories if this is the first step or invocation
+        // The memories can be confusing later, and we don't need to repeat them
+        if (steps.length === 0) {
+            const memories = await this.memory.retrieveSnippet(inputs[OBJECTIVE_INPUT], 0.85);
+            newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
+        } else {
+            newInputs[MEMORIES_INPUT] = "";
+        }
+
+        // Remove the chat history to reduce the free space in the context window for more steps
+        if (steps.length !== 0) {
+            newInputs[CONTEXT_INPUT] = "";
+        }
+
+        // Construct the scratchpad and add it to the inputs
+        const thoughts = await this.constructScratchPad(steps);
+        newInputs[SCRATCHPAD_INPUT] = [ thoughts, this.llmPrefix() ].join("\n");
+
+        // Add the appropriate stop phrases for the llm
         if (this._stop().length !== 0) {
             newInputs.stop = this._stop();
         }
@@ -174,16 +182,11 @@ export class ReActAgent extends Agent {
                 // This is an action
                 return this.outputParser.parse(output);
             } else {
-                // This is a final response.
-                const finalInputs: ChainValues = {
-                    ...newInputs
-                };
-                finalInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
-                // append the prefix to the scratchpad
-                finalInputs[SCRATCHPAD_INPUT] = [ thoughts, this.finalPrefix() ].join("\n");
-
+                // Ensure we include teh output the previous execution for this final response.
+                newInputs[SCRATCHPAD_INPUT] = [ newInputs[SCRATCHPAD_INPUT], output ].join("\n");
+                newInputs.stop = ""; // Don't stop as we're on our final generation.
                 // Here we use the creative chain to generate a final response.
-                const finalOutput = await this.creativeChain.predict(finalInputs, callbackManager);
+                const finalOutput = await this.creativeChain.predict(newInputs, callbackManager);
                 return this.outputParser.parse(finalOutput);
             }
         } catch (e) {

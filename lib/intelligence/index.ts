@@ -13,7 +13,7 @@ import { Multistep } from "@/lib/intelligence/tools/Multistep";
 
 const MAX_ITERATIONS = 8;
 
-export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor> => {
+export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promise<AgentExecutor> => {
     const openAIApiKey = process.env.OPENAI_API_KEY;
     if (!Boolean(openAIApiKey)) {
         throw new Error('OpenAI api key not found.');
@@ -63,10 +63,23 @@ export const makeToolChain = async (callbacks: Callbacks): Promise<AgentExecutor
         tools.push(new BingNews({ apiKey: bingApiKey, embeddings, callbacks }));
         tools.push(new BingSearch({ apiKey: bingApiKey, embeddings, callbacks }));
     }
-    const multistep = new Multistep({ model: predictable, creative, memory, tools, callbacks, maxIterations: MAX_ITERATIONS });
+    const multistep = new Multistep({
+        model: predictable,
+        creative,
+        memory,
+        tools,
+        callbacks,
+        maxIterations: MAX_ITERATIONS
+    });
     const toolset = [ ...tools, multistep ];
 
-    const agent = ReActAgent.makeAgent({ model: predictable, creative, memory, tools: toolset, callbacks });
+    const agent = ReActAgent.makeAgent({
+        model: predictable,
+        creative,
+        memory,
+        tools: toolset,
+        callbacks
+    });
 
     return AgentExecutor.fromAgentAndTools({
         agent,

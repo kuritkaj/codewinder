@@ -1,10 +1,10 @@
-import { makeToolChain } from "@/lib/intelligence";
+import { makeChain } from "@/lib/intelligence";
 import { CallbackManager } from "langchain/callbacks";
 import { NextApiHandler } from "next";
 import { CONTEXT_INPUT, OBJECTIVE_INPUT } from "@/lib/intelligence/react/ReActAgent";
 
 const Service: NextApiHandler = async (req, res) => {
-    const { context, objective } = await req.body;
+    const { context, objective }: { context: [ string, string ][], objective: string } = await req.body;
 
     res.writeHead(200, {
         "Content-Type": "text/event-stream",
@@ -31,7 +31,7 @@ const Service: NextApiHandler = async (req, res) => {
         res.status(500).write(`\n\n${ error }`);
     }
 
-    const callbackManager = CallbackManager.fromHandlers({
+    const callbacks = CallbackManager.fromHandlers({
         handleLLMStart: () => {
             sendLine();
         },
@@ -55,12 +55,12 @@ const Service: NextApiHandler = async (req, res) => {
         },
     });
 
-    const chain = await makeToolChain(callbackManager);
+    const chain = await makeChain({ callbacks });
 
     try {
         let inputs = {};
         inputs[OBJECTIVE_INPUT] = objective;
-        inputs[CONTEXT_INPUT] = context.length > 0 ? context.pop().join("") : ""
+        inputs[CONTEXT_INPUT] = context.length > 0 ? context.map(chat => chat.join["\n" ]).join("\n\n") : "";
 
         const response = await chain.call(inputs);
         sendClear();
