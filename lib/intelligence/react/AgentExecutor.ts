@@ -1,11 +1,12 @@
 import { BaseChain, ChainInputs, SerializedLLMChain } from "langchain/chains";
 import { Tool } from "langchain/tools";
-import { BaseSingleActionAgent, StoppingMethod } from "langchain/agents";
+import { StoppingMethod } from "langchain/agents";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
 import { CallbackManagerForChainRun } from "langchain/callbacks";
+import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 
 export interface AgentExecutorInput extends ChainInputs {
-    agent: BaseSingleActionAgent;
+    agent: ReActAgent;
     tools: Tool[];
     returnIntermediateSteps?: boolean;
     maxIterations?: number;
@@ -17,7 +18,7 @@ export interface AgentExecutorInput extends ChainInputs {
  * @augments BaseChain
  */
 export class AgentExecutor extends BaseChain {
-    readonly agent: BaseSingleActionAgent;
+    readonly agent: ReActAgent;
     readonly earlyStoppingMethod: StoppingMethod = "force";
     readonly maxIterations?: number = 15;
     readonly returnIntermediateSteps: boolean = false;
@@ -91,7 +92,6 @@ export class AgentExecutor extends BaseChain {
         return this.maxIterations === undefined || iterations < this.maxIterations;
     }
 
-    /** @ignore */
     async _call(
         inputs: ChainValues,
         runManager?: CallbackManagerForChainRun
@@ -117,9 +117,13 @@ export class AgentExecutor extends BaseChain {
         while (this.shouldContinue(iterations)) {
             iterations += 1;
 
+            // Prepare the inputs
+            const newInputs = await this.agent.prepareInputs(inputs, steps);
+
+            // Execute the plan with the new inputs
             const output = await this.agent.plan(
                 steps,
-                inputs,
+                newInputs,
                 runManager?.getChild()
             );
 
@@ -128,6 +132,7 @@ export class AgentExecutor extends BaseChain {
                 return getOutput(output);
             }
 
+            // The agent returned with an action or a list of actions.
             let actions: AgentAction[];
             if (Array.isArray(output)) {
                 actions = output as AgentAction[];
@@ -135,6 +140,7 @@ export class AgentExecutor extends BaseChain {
                 actions = [ output as AgentAction ];
             }
 
+            // Here, we execute the actions and gather the observations.
             const newSteps = await Promise.all(
                 actions.map(async (action) => {
                     await runManager?.handleAgentAction(action);
@@ -148,11 +154,14 @@ export class AgentExecutor extends BaseChain {
                 })
             );
 
+            // This prior action observations are added to the previous steps.
             steps.push(...newSteps);
 
             const lastStep = steps[steps.length - 1];
             const lastTool = toolsByName[lastStep.action.tool?.toLowerCase()];
 
+            // If the last tool returns directly, we return that observation.
+            // Given this is positional, that would mean any multi-action observations are ignored.
             if (lastTool?.returnDirect) {
                 return getOutput({
                     returnValues: { [this.agent.returnValues[0]]: lastStep.observation },

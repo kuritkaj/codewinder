@@ -5,7 +5,7 @@ export const OBSERVATION = "Observation";
 export const THOUGHT = "Thought";
 
 export const SYSTEM = `
-You are an AI Assistant that's helping a human with an ${OBJECTIVE}.
+You are an AI Assistant helping a user achieve a specific ${OBJECTIVE}.
 As an AI Assistant, you have access to real-time information because you can use tools to access the internet.
 The current date and time is: ${ new Date().toLocaleString() }.
 `;
@@ -17,17 +17,14 @@ Guidance on tool use:
 `;
 
 export const FORMAT_INSTRUCTIONS = `
-Use this format to reason about the ${OBJECTIVE}:
+Always use this format:
 ${OBJECTIVE}: the objective
-${THOUGHT}: break the problem down into steps
-${ACTION}: the action to take to meet the ${OBJECTIVE}
-\`\`\`
+${THOUGHT}: let's think about this step-by-step
+${ACTION}:
 {{
   "action": "tool name",
   "action_input": "tool input"
 }}
-\`\`\`
-(Include only ONE action per ${ACTION} and do NOT return more than one action)
 ${OBSERVATION}: the result of the action (this is never shared, pretend it's a secret)
    (${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
 ${THOUGHT}: critical evaluation and self-reflection (this is never shared, pretend it's a secret)
@@ -39,7 +36,7 @@ export const GUIDANCE = `
 Note: If the ${OBJECTIVE} is a casual greeting or conversation, then respond directly.
 Note: If the ${OBJECTIVE} asked for a creative response such as a joke or a poem, then respond directly.
 Note: If the ${OBJECTIVE} triggered a memory and it meets the ${OBJECTIVE}, then respond directly.
-Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended.
+Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended. Never ask for clarification.
 Note: If the ${OBJECTIVE} needs information that you don't have, use a tool to learn more.
 Note: If the ${OBJECTIVE} is to make a table or document, then use markdown formatting to create it.
 

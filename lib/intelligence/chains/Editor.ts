@@ -4,10 +4,12 @@ import { Callbacks } from "langchain/callbacks";
 import { BaseLanguageModel } from "langchain/base_language";
 
 export const GUIDANCE = `
-Rewrite the following:
+Provided the following text:
 {context}
 
-Using this as your guide: {goal}
+And using this as your guide: {objective}
+
+Rewrite the provided text: you may add, remove, or change the sections and headings as you see fit.
 `;
 
 interface EditorInput {
@@ -31,10 +33,10 @@ export class Editor extends LLMChain {
         });
     }
 
-    async evaluate({context, goal}: { context: string; goal: string }) {
+    async evaluate({context, objective}: { context: string; objective: string }) {
         const summary = await this.call({
             context,
-            goal
+            objective
         });
         return summary.text;
     }

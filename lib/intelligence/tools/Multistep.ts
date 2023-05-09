@@ -1,5 +1,4 @@
 import { Tool, ToolParams } from "langchain/tools";
-import { AgentExecutor } from "langchain/agents";
 import { Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { CallbackManagerForToolRun } from "langchain/dist/callbacks/manager";
@@ -7,16 +6,17 @@ import { Editor } from "@/lib/intelligence/chains/Editor";
 import { CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { Planner } from "@/lib/intelligence/chains/Planner";
 import { BaseLanguageModel } from "langchain/base_language";
+import { AgentExecutor } from "@/lib/intelligence/react/AgentExecutor";
 
 const DESCRIPTION = `use this tool for complex objectives that have multiple steps or tasks.
 The tool input should use this format:
 {{
   "action": "tool name",
   "action_input": {{
-        "goal": "the goal or objective with specifics from previous actions",
-        "tasks": [
-            "task 1",
-            "task 2"
+        "objective": "the objective with specifics from previous actions",
+        "steps": [
+            "step 1",
+            "step 2"
         ]
     }}
 }}`;
@@ -51,16 +51,21 @@ export class Multistep extends Tool {
     }
 
     async _call(input: string, callbackManager?: CallbackManagerForToolRun): Promise<string> {
-        return await Multistep.runAgent(this.model, this.creative, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations || 8, JSON.parse(input), callbackManager);
+        return await Multistep.runAgent(this.model, this.creative, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations || 8, input, callbackManager);
     }
 
     static async runAgent(
-        model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, verbose: boolean, maxIterations: number, plan: {
-            goal: string;
-            tasks: string[];
-        }, callbackManager?: CallbackManagerForToolRun): Promise<string>
-    {
-        const agent = ReActAgent.makeAgent({model, creative, memory, tools, callbacks});
+        model: BaseLanguageModel,
+        creative: BaseLanguageModel,
+        memory: MemoryStore,
+        tools: Tool[],
+        callbacks: Callbacks,
+        verbose: boolean,
+        maxIterations: number,
+        input: string,
+        callbackManager?: CallbackManagerForToolRun
+    ): Promise<string> {
+        const agent = ReActAgent.makeAgent({ model, creative, memory, tools, callbacks });
         const executor = AgentExecutor.fromAgentAndTools({
             agent,
             tools,
@@ -69,29 +74,29 @@ export class Multistep extends Tool {
             maxIterations
         });
 
-        const planner = Planner.makeChain({model: creative, callbacks});
+        const planner = Planner.makeChain({ model: creative, callbacks });
         const interim = await planner.evaluate({
-            goal: plan.goal,
-            tasks: JSON.stringify(plan.tasks)
+            input
         });
-        const newPlan = JSON.parse(interim);
+        const plan = JSON.parse(interim);
+        const objective = plan.objective;
 
         let results = [];
-        for (const task of newPlan.tasks) {
-            await callbackManager?.handleText("Starting: " + task);
+        for (const step of plan.steps) {
+            await callbackManager?.handleText("Starting: " + step);
 
             let inputs = {};
             inputs[CONTEXT_INPUT] = results.length > 0 ? results[results.length - 1] : "";
-            inputs[OBJECTIVE_INPUT] = `${task}`
+            inputs[OBJECTIVE_INPUT] = `${ step }`
 
             const completion = await executor.call(inputs);
             results.push(completion.output);
         }
 
-        const editor = Editor.makeChain({model: creative, callbacks});
+        const editor = Editor.makeChain({ model: creative, callbacks });
         return await editor.evaluate({
             context: results.join("\n\n"),
-            goal: plan.goal
+            objective
         });
     }
 }

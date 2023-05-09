@@ -117,50 +117,19 @@ export class ReActAgent extends Agent {
     }
 
     /**
-     * Decide what to do provided some input.
+     *  Decide what to do provided some input.
      *
-     * @param steps - Steps the LLM has taken so far, along with observations from each.
-     * @param inputs - User inputs.
-     * @param callbackManager - Callback manager to use for this call.
+     *  @param steps - Steps the LLM has taken so far, along with observations from each.
+     *  @param inputs - User inputs.
+     *  @param callbackManager - Callback manager to use for this call.
      *
-     * @returns Action specifying what tool to use.
+     *  @returns Action specifying what tool to use of if the plan is complete.
      */
     async plan(
         steps: AgentStep[],
         inputs: ChainValues,
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
-        // Define the new inputs, as we'll update/replace some values
-        const newInputs: ChainValues = {
-            ...inputs
-        };
-
-        // Provide the tools and descriptions
-        newInputs[TOOL_INPUT] = this.tools.map((tool) => `${ tool.name }: ${ tool.description }`).join("\n");
-
-        // Only update memories if this is the first step or invocation
-        // The memories can be confusing later, and we don't need to repeat them
-        if (steps.length === 0) {
-            const memories = await this.memory.retrieveSnippet(inputs[OBJECTIVE_INPUT], 0.85);
-            newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
-        } else {
-            newInputs[MEMORIES_INPUT] = "";
-        }
-
-        // Remove the chat history to reduce the free space in the context window for more steps
-        if (steps.length !== 0) {
-            newInputs[CONTEXT_INPUT] = "";
-        }
-
-        // Construct the scratchpad and add it to the inputs
-        const thoughts = await this.constructScratchPad(steps);
-        newInputs[SCRATCHPAD_INPUT] = [ thoughts, this.llmPrefix() ].join("\n");
-
-        // Add the appropriate stop phrases for the llm
-        if (this._stop().length !== 0) {
-            newInputs.stop = this._stop();
-        }
-
         try {
             // On the first call to plan, update the objective.
             // This directly modifies the initial inputs, not newInputs as below.
@@ -173,7 +142,7 @@ export class ReActAgent extends Agent {
             }
 
             // Use the base chain for evaluating the right tool to use.
-            const output = await this.llmChain.predict(newInputs, callbackManager);
+            const output = await this.llmChain.predict(inputs, callbackManager);
             const action = await this.outputParser.parse(output);
 
             // If we're calling to use a tool, then parse the output normally.
@@ -182,11 +151,11 @@ export class ReActAgent extends Agent {
                 // This is an action
                 return this.outputParser.parse(output);
             } else {
-                // Ensure we include teh output the previous execution for this final response.
-                newInputs[SCRATCHPAD_INPUT] = [ newInputs[SCRATCHPAD_INPUT], output ].join("\n");
-                newInputs.stop = ""; // Don't stop as we're on our final generation.
+                // Ensure we include the output the previous execution for this final response.
+                inputs[SCRATCHPAD_INPUT] = [ inputs[SCRATCHPAD_INPUT], output ].join("\n");
+                inputs.stop = ""; // Don't stop as we're on our final generation.
                 // Here we use the creative chain to generate a final response.
-                const finalOutput = await this.creativeChain.predict(newInputs, callbackManager);
+                const finalOutput = await this.creativeChain.predict(inputs, callbackManager);
                 return this.outputParser.parse(finalOutput);
             }
         } catch (e) {
@@ -195,6 +164,9 @@ export class ReActAgent extends Agent {
         }
     }
 
+    /**
+     * Create a new agent based on the provided parameters.
+     */
     static makeAgent({
                          model,
                          creative,
@@ -224,13 +196,54 @@ export class ReActAgent extends Agent {
     }
 
     /**
-     * Prepare the agent for output, if needed
+     *  Prepare the agent for output, if needed
      */
     async prepareForOutput(
         _returnValues: AgentFinish["returnValues"],
         _steps: AgentStep[]
     ): Promise<AgentFinish["returnValues"]> {
         return {};
+    }
+
+    /**
+     *  Prepare the inputs for the next step.
+     *
+     *  @param steps - Steps the LLM has taken so far, along with observations from each.
+     *  @param inputs - User inputs.
+     */
+    async prepareInputs(inputs: ChainValues, steps: AgentStep[]): Promise<ChainValues> {
+        // Define the new inputs, as we'll update/replace some values
+        const newInputs: ChainValues = {
+            ...inputs
+        };
+
+        // Provide the tools and descriptions
+        newInputs[TOOL_INPUT] = this.tools.map((tool) => `${ tool.name }: ${ tool.description }`).join("\n");
+
+        // Only update memories if this is no steps have been completed (this is the first parse)
+        // The memories can be confusing later, and we don't need to repeat them
+        if (steps.length === 0) {
+            const memories = await this.memory.retrieveSnippet(inputs[OBJECTIVE_INPUT], 0.85);
+            newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
+        } else {
+            newInputs[MEMORIES_INPUT] = "";
+        }
+
+        // Remove the chat history to increase space available in the context window for more steps
+        if (steps.length !== 0) {
+            newInputs[CONTEXT_INPUT] = "";
+        }
+
+        // Construct the scratchpad and add it to the inputs
+        const thoughts = await this.constructScratchPad(steps);
+        newInputs[SCRATCHPAD_INPUT] = [ thoughts, this.llmPrefix() ].join("\n");
+
+        // Add the appropriate stop phrases for the llm
+        if (this._stop().length !== 0) {
+            newInputs.stop = this._stop();
+        }
+
+        return newInputs;
     }
 
     static validateTools(tools: Tool[]) {

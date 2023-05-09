@@ -4,20 +4,20 @@ import { Callbacks } from "langchain/callbacks";
 import { BaseLanguageModel } from "langchain/dist/base_language";
 
 export const GUIDANCE = `
-This is the goal: {goal}
-And these are the tasks to achieve it: {tasks}
+This is provided input for the planner: 
+{input}
 
-Rewrite the provided tasks: you may add, remove, or change the tasks as you see fit.
+Rewrite the provided input: you may add, remove, or change the steps as you see fit.
 
 When responding, ALWAYS use JSON and include the original objective and the updated tasks.
 
 ALWAYS respond using this format:
 \`\`\`
 {{
-    "goal": "goal",
-    "tasks": [
-        "task 1",
-        "task 2"
+    "objective": "objective",
+    "step": [
+        "step 1",
+        "step 2"
     ]
 }}
 \`\`\`
@@ -45,10 +45,9 @@ export class Planner extends LLMChain {
         });
     }
 
-    async evaluate({goal, tasks}: { goal: string, tasks: string }) {
+    async evaluate({input}: { input: string }) {
         const summary = await this.call({
-            goal,
-            tasks
+            input
         });
         return summary.text;
     }
