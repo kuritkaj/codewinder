@@ -10,6 +10,8 @@ Provided the following text:
 And using this as your guide: {objective}
 
 Rewrite the provided text: you may add, remove, or change the sections and headings as you see fit.
+Use Github Flavored Markdown (GFM) to format your response. Never use HTML.
+The revised text should include sources from the provided text, but you should never make up a url or link.
 `;
 
 interface EditorInput {

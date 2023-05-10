@@ -74,7 +74,7 @@ export class BingSearch extends Tool {
             [],
             this.embeddings
         );
-        const similar = await vectorStore.similaritySearch(input, 10);
+        const similar = await vectorStore.similaritySearch(input, 4);
 
         return similar.map((res) => res.pageContent).join("\n");
     }

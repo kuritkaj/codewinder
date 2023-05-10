@@ -160,7 +160,7 @@ export class ReActAgent extends Agent {
             }
         } catch (e) {
             console.error("Error in LLMChain.predict:", e);
-            return this.outputParser.parse("Error in LLMChain.predict");
+            return this.outputParser.parse("Error in LLMChain.predict: " + e.message);
         }
     }
 
