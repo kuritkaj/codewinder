@@ -6,17 +6,17 @@ import { BaseLanguageModel } from "langchain/base_language";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { Embeddings } from "langchain/embeddings";
 
-const DESCRIPTION = `saves the provided input string to memory for recall later.
-The input string should include enough context to be easily retrievable in the future.
-Alternatively, provide a valid url to save the contents of that page.
+const DESCRIPTION = `only use this tool if directed to by the user.
+Input should be one or more urls, separated by commas - just links, no additional text.
+Alternative, text can be provided as a string to store.
 `;
 
-function extractUrl(str: string): string | null {
-    const urlRegex = /(https?:\/\/[^\s]+)/gi; // regular expression to match URLs
+function extractUrls(str: string): string[] | null {
+    const urlRegex = /(https?:\/\/\S+)/gi; // regular expression to match URLs
     const urls = str.match(urlRegex); // search for URLs in the string
 
     if (urls && urls.length > 0) {
-        return urls[0]; // return the first URL found
+        return urls; // return the first URL found
     } else {
         return null; // no URLs found in the string
     }
@@ -47,15 +47,16 @@ export class MemoryStorage extends Tool {
 
     /** @ignore */
     async _call(input: string, runManager?: CallbackManagerForToolRun): Promise<string> {
-        const url = extractUrl(input);
-        if (url) {
-            // here, we store the full page, since browser has been provided memory.
-            const summary = await this.browser._call(`[${url},""`, runManager);
+        const urls = extractUrls(input);
 
-            // and we store the summary returned as a separate memory for easier retrieval later.
-            await this.memory.storeText(summary);
+        if (urls && urls.length > 0) {
+            let summary;
+            for (const url of urls) {
+                // here, we store the full page, since browser has been provided memory.
+                summary = await this.browser._call(`[${ url },""`, runManager);
+            }
 
-            return "Webpage saved."
+            return summary;
         } else {
             const prompt = `Rewrite this provided input to be easily recalled in the future: ${ input }`;
 
@@ -69,7 +70,7 @@ export class MemoryStorage extends Tool {
 
             await this.memory.storeText(memory);
 
-            return "Memory saved."
+            return memory;
         }
     }
 }

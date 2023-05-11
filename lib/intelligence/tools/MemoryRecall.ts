@@ -10,7 +10,7 @@ interface MemoryRecallParams extends ToolParams {
 
 export class MemoryRecall extends Tool {
     readonly name = "memory-recall";
-    readonly description = "recalls a memory based on the provided string query.";
+    readonly description = "only use this tool when directed to by the user. Input is a string query.";
 
     readonly memory: MemoryStore;
     readonly model: BaseLanguageModel;

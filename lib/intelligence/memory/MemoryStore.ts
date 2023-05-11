@@ -79,7 +79,7 @@ export class MemoryStore {
         // in theory, this does a good job of breaking on sentences...
         const snippetSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: 1000,
-            chunkOverlap: 100
+            chunkOverlap: 100,
         });
 
         // if doc score is greater than threshold, search the doc for the single snippet that best matches the query
@@ -95,12 +95,21 @@ export class MemoryStore {
     }
 
 
-    async storeDocuments(documents: Document[]) {
+    async storeDocuments(documents: Document[], metadata: Record<string, any>[] = []) {
+        // Add created date to metadata for all documents
+        for (const document of documents) {
+            document.metadata = [...metadata, { created: new Date()}]
+        }
         await this.memory.addDocuments(documents);
     }
 
     async storeText(text: string, metadata: Record<string, any>[] = []) {
-        const documents = await this.textSplitter.createDocuments([ text ], [...metadata, { created: new Date()}] );
+        const documents = await this.textSplitter.createDocuments(
+            [ text ]
+        );
+        for (const document of documents) {
+            document.metadata = [...metadata, { created: new Date()}]
+        }
         await this.memory.addDocuments(documents);
     }
 }
