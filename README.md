@@ -29,14 +29,9 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Contributions
-
-This repo is open to contributions. Please feel free to open a PR.  
-Note: package manager is yarn.
-
 ## Inspirations
 
-This repo borrows heavily from
+With a few modest additions, most of this repo is based on the following repos:
 
 - [Chat-Langchainjs](https://github.com/sullivan-sean/chat-langchainjs) - for the frontend
 - [LangChain Chat NextJS](https://github.com/zahidkhawaja/langchain-chat-nextjs) - for the frontend.

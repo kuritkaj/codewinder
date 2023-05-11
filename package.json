@@ -2,11 +2,18 @@
   "name": "codewinder-next",
   "version": "0.1.0",
   "private": true,
+  "author": "Ron Lancaster",
+  "license": "MIT",
+  "packageManager": "yarn@3.4.1",
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nyvyn/codewinder"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
@@ -18,7 +25,7 @@
     "dotenv": "^16.0.3",
     "eslint": "8.34.0",
     "eslint-config-next": "13.1.6",
-    "langchain": "^0.0.72",
+    "langchain": "^0.0.74",
     "next": "13.1.6",
     "openai": "^3.1.0",
     "react": "18.2.0",
