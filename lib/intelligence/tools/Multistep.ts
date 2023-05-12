@@ -6,7 +6,7 @@ import { Editor } from "@/lib/intelligence/chains/Editor";
 import { CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { Planner } from "@/lib/intelligence/chains/Planner";
 import { BaseLanguageModel } from "langchain/base_language";
-import { AgentExecutor } from "@/lib/intelligence/react/AgentExecutor";
+import { AgentExecutor } from "langchain/agents";
 
 const DESCRIPTION = `use this tool for complex objectives that have multiple steps or tasks.
 The tool input should use this format:

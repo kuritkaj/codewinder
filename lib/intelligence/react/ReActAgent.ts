@@ -11,7 +11,6 @@ import {
 import { Agent, ChatCreatePromptArgs, OutputParserArgs } from "langchain/agents";
 import { Tool } from "langchain/tools";
 import {
-    AIMessagePromptTemplate,
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate
@@ -25,7 +24,6 @@ import { BaseLanguageModel } from "langchain/base_language";
 import { Reviser } from "@/lib/intelligence/chains/Reviser";
 
 export const CONTEXT_INPUT = "context";
-export const MEMORIES_INPUT = "memories";
 export const OBJECTIVE_INPUT = "objective";
 export const SCRATCHPAD_INPUT = "scratchpad";
 export const TOOL_INPUT = "tools";
@@ -96,17 +94,12 @@ export class ReActAgent extends Agent {
             FORMAT_INSTRUCTIONS,
             suffix
         ].join("\n");
-        const assistant = [
-            `This is the previous conversation: \`\`\`{${ CONTEXT_INPUT }}\`\`\``,
-            `Which triggered this memory: \`\`\`{${ MEMORIES_INPUT }}\`\`\``
-        ].join("\n\n");
         const human = [
             `${ OBJECTIVE }: {${ OBJECTIVE_INPUT }}`,
             `{${ SCRATCHPAD_INPUT }}`
         ].join("\n\n");
         const messages = [
             SystemMessagePromptTemplate.fromTemplate(system),
-            AIMessagePromptTemplate.fromTemplate(assistant),
             HumanMessagePromptTemplate.fromTemplate(human)
         ];
         return ChatPromptTemplate.fromPromptMessages(messages);
@@ -130,19 +123,21 @@ export class ReActAgent extends Agent {
         inputs: ChainValues,
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
+        const newInputs = await this.prepareInputs(inputs, steps);
+
         try {
             // On the first call to plan, update the objective.
             // This directly modifies the initial inputs, not newInputs as below.
             if (steps.length === 0) {
                 // Revise the provided objective to be more specific
-                inputs[OBJECTIVE_INPUT] = await Reviser.makeChain({
+                newInputs[OBJECTIVE_INPUT] = await Reviser.makeChain({
                     model: this.creativeChain.llm,
                     callbacks: callbackManager
-                }).evaluate({ objective: inputs[OBJECTIVE_INPUT] });
+                }).evaluate({ objective: newInputs[OBJECTIVE_INPUT] });
             }
 
             // Use the base chain for evaluating the right tool to use.
-            const output = await this.llmChain.predict(inputs, callbackManager);
+            const output = await this.llmChain.predict(newInputs, callbackManager);
             const action = await this.outputParser.parse(output);
 
             // If we're calling to use a tool, then parse the output normally.
@@ -152,10 +147,10 @@ export class ReActAgent extends Agent {
                 return this.outputParser.parse(output);
             } else {
                 // Ensure we include the output the previous execution for this final response.
-                inputs[SCRATCHPAD_INPUT] = [ inputs[SCRATCHPAD_INPUT], output ].join("\n");
-                inputs.stop = ""; // Don't stop as we're on our final generation.
+                newInputs[SCRATCHPAD_INPUT] = [ newInputs[SCRATCHPAD_INPUT], output ].join("\n");
+                newInputs.stop = ""; // Don't stop as we're on our final generation.
                 // Here we use the creative chain to generate a final response.
-                const finalOutput = await this.creativeChain.predict(inputs, callbackManager);
+                const finalOutput = await this.creativeChain.predict(newInputs, callbackManager);
                 return this.outputParser.parse(finalOutput);
             }
         } catch (e) {
@@ -219,20 +214,6 @@ export class ReActAgent extends Agent {
 
         // Provide the tools and descriptions
         newInputs[TOOL_INPUT] = this.tools.map((tool) => `${ tool.name }: ${ tool.description }`).join("\n");
-
-        // Only update memories if this is no steps have been completed (this is the first parse)
-        // The memories can be confusing later, and we don't need to repeat them
-        if (steps.length === 0) {
-            const memories = await this.memory.retrieveSnippet(inputs[OBJECTIVE_INPUT], 0.85);
-            newInputs[MEMORIES_INPUT] = memories.map((m) => m.pageContent).join("\n");
-        } else {
-            newInputs[MEMORIES_INPUT] = "";
-        }
-
-        // Remove the chat history to increase space available in the context window for more steps
-        if (steps.length !== 0) {
-            newInputs[CONTEXT_INPUT] = "";
-        }
 
         // Construct the scratchpad and add it to the inputs
         const thoughts = await this.constructScratchPad(steps);

@@ -3,7 +3,6 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { JavascriptEvaluator } from "@/lib/intelligence/tools/JavascriptEvaluator";
 import { BingSearch } from "@/lib/intelligence/tools/BingSearch";
-import { AgentExecutor } from "@/lib/intelligence/react/AgentExecutor";
 import { Callbacks } from "langchain/callbacks";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
@@ -12,6 +11,7 @@ import { BingNews } from "@/lib/intelligence/tools/BingNews";
 import { Multistep } from "@/lib/intelligence/tools/Multistep";
 import { MemoryRecall } from "@/lib/intelligence/tools/MemoryRecall";
 import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
+import { AgentExecutor } from "langchain/agents";
 
 const MAX_ITERATIONS = 8;
 
