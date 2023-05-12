@@ -7,6 +7,7 @@ import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import * as PDFParse from "pdf-parse";
 
 const DESCRIPTION = `finding or summarizing webpage content from a provided url.
 Never make up a link, only use a valid url returned as a result of a previous web search.
@@ -16,6 +17,67 @@ The tool input should use this format:
   "action": "tool name",
   "action_input": ["https://www.google.com","how to make a cake"]
 }}`;
+
+const getContent = async (
+    baseUrl: string,
+    h: Headers
+): Promise<string | Blob> => {
+    const domain = new URL(baseUrl).hostname;
+
+    const headers = { ...h };
+    // these appear to be positional, which means they have to exist in the headers passed in
+    headers["Host"] = domain;
+    headers["Alt-Used"] = domain;
+
+    let response;
+    try {
+        response = await fetch(baseUrl, {
+            method: "GET",
+            headers,
+        });
+    } catch (e) {
+        if (e.response && e.response.status) {
+            throw new Error(`http response ${ e.response.status }`);
+        }
+        throw e;
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (contentType.includes("text/html")) {
+        return await response.text();
+    } else if (contentType.includes("application/pdf")) {
+        return await response.blob();
+    } else {
+        throw new Error("Unsupported content type.");
+    }
+};
+
+async function getPdf(content: Blob): Promise<{ text: string, title: string }> {
+    const parsePdf = async (): Promise<ArrayBuffer> => {
+        try {
+            return await content.arrayBuffer();
+        } catch (error) {
+            throw new Error("Failed to read Blob as ArrayBuffer.");
+        }
+    };
+
+    try {
+        const buffer = await parsePdf();
+        const pdfData = await PDFParse(buffer);
+        const pdfExtract = pdfData.text;
+        const pdfTitle = pdfData.info.Title || "Untitled";
+
+        return {
+            title: pdfTitle,
+            text: pdfExtract
+        };
+    } catch (error) {
+        // Handle any parsing errors
+        console.error("Error parsing PDF:", error);
+        throw new Error("Failed to parse the PDF.");
+    }
+}
+
 
 export const getText = (
     html: string,
@@ -64,33 +126,6 @@ export const getText = (
     const cleansed = text.trim().replace(/\n+/g, " ");
     const title = $("title").text().trim();
     return { text: cleansed, title };
-};
-
-const getHtml = async (
-    baseUrl: string,
-    h: Headers
-) => {
-    const domain = new URL(baseUrl).hostname;
-
-    const headers = { ...h };
-    // these appear to be positional, which means they have to exist in the headers passed in
-    headers["Host"] = domain;
-    headers["Alt-Used"] = domain;
-
-    let htmlResponse;
-    try {
-        htmlResponse = await fetch(baseUrl, {
-            method: "GET",
-            headers,
-        });
-    } catch (e) {
-        if (e.response && e.response.status) {
-            throw new Error(`http response ${ e.response.status }`);
-        }
-        throw e;
-    }
-
-    return await htmlResponse.text();
 };
 
 const DEFAULT_HEADERS = {
@@ -157,10 +192,16 @@ export class WebBrowser extends Tool {
         let text;
         let title;
         try {
-            const html = await getHtml(baseUrl, this.headers);
-            const result = getText(html, baseUrl, doSummary);
-            text = result.text;
-            title = result.title;
+            const content = await getContent(baseUrl, this.headers);
+            if (content instanceof Blob) {
+                const result = await getPdf(content);
+                text = result.text;
+                title = result.title;
+            } else {
+                const result = getText(content, baseUrl, doSummary);
+                text = result.text;
+                title = result.title;
+            }
         } catch (e) {
             if (e) {
                 return e.toString();

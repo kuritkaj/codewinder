@@ -11,8 +11,8 @@ You are an AI assistant with the responsibility to improve on a stated objective
 This is the stated objective: {${OBJECTIVE_INPUT}}
 
 Rewrite the stated objective to be more specific and detailed without changing the meaning or intent.
-Simple greetings or statements of fact do not need to be improved.
-If no improvements are necessary, then repeat the original stated objective.
+If no improvements are necessary, then reply with the provided stated objective.
+For example, simple greetings or statements of fact do not need to be improved.
 `;
 
 interface ReviserInput {
