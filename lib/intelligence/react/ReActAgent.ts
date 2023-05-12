@@ -2,6 +2,7 @@ import {
     FINAL_RESPONSE,
     FORMAT_INSTRUCTIONS,
     GUIDANCE,
+    MEMORY,
     OBJECTIVE,
     OBSERVATION,
     SYSTEM,
@@ -10,11 +11,7 @@ import {
 } from "@/lib/intelligence/react/prompts";
 import { Agent, ChatCreatePromptArgs, OutputParserArgs } from "langchain/agents";
 import { Tool } from "langchain/tools";
-import {
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    SystemMessagePromptTemplate
-} from "langchain/prompts";
+import { ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
 import { LLMChain } from "langchain";
 import { CallbackManager, Callbacks } from "langchain/callbacks";
@@ -31,16 +28,18 @@ export const TOOL_INPUT = "tools";
 interface ReActAgentInput {
     creativeChain: LLMChain;
     llmChain: LLMChain;
+    maxIterations?: number;
     memory: MemoryStore;
     tools: Tool[];
 }
 
 export class ReActAgent extends Agent {
     readonly creativeChain: LLMChain;
+    readonly maxIterations: number;
     readonly memory: MemoryStore;
     readonly tools: Tool[];
 
-    constructor({ creativeChain, llmChain, memory, tools }: ReActAgentInput) {
+    constructor({ creativeChain, llmChain, memory, tools, maxIterations }: ReActAgentInput) {
         const outputParser = ReActAgent.getDefaultOutputParser();
         super({
             llmChain,
@@ -49,6 +48,7 @@ export class ReActAgent extends Agent {
         });
 
         this.creativeChain = creativeChain;
+        this.maxIterations = maxIterations;
         this.memory = memory;
         this.tools = tools;
     }
@@ -57,8 +57,16 @@ export class ReActAgent extends Agent {
         return "react-agent-description" as const;
     }
 
+    finalPrefix() {
+        return `${ FINAL_RESPONSE }:`;
+    }
+
     llmPrefix() {
         return `${ THOUGHT }:`;
+    }
+
+    memoryPrefix() {
+        return `${ MEMORY }:`;
     }
 
     observationPrefix() {
@@ -167,8 +175,9 @@ export class ReActAgent extends Agent {
                          creative,
                          memory,
                          tools,
-                         callbacks
-                     }: { model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks }): ReActAgent {
+                         callbacks,
+                         maxIterations
+                     }: { model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, maxIterations }): ReActAgent {
         ReActAgent.validateTools(tools);
         const prompt = ReActAgent.createPrompt(tools);
         const llmChain = new LLMChain({
@@ -187,6 +196,7 @@ export class ReActAgent extends Agent {
             creativeChain,
             memory,
             tools,
+            maxIterations
         });
     }
 
@@ -217,7 +227,16 @@ export class ReActAgent extends Agent {
 
         // Construct the scratchpad and add it to the inputs
         const thoughts = await this.constructScratchPad(steps);
-        newInputs[SCRATCHPAD_INPUT] = [ thoughts, this.llmPrefix() ].join("\n");
+        const memories = await this.memory.retrieveSnippet(
+            steps.length > 0 ? steps.pop().observation : inputs[OBJECTIVE_INPUT],
+            0.85
+        );
+        newInputs[SCRATCHPAD_INPUT] = [
+            thoughts,
+            this.memoryPrefix(),
+            (memories && memories.length > 0 ? memories.pop().pageContent : "No memories"),
+            (steps.length + 1 <= this.maxIterations ? this.llmPrefix() : this.finalPrefix())
+        ].join("\n");
 
         // Add the appropriate stop phrases for the llm
         if (this._stop().length !== 0) {

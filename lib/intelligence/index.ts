@@ -13,7 +13,7 @@ import { MemoryRecall } from "@/lib/intelligence/tools/MemoryRecall";
 import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
 import { AgentExecutor } from "langchain/agents";
 
-const MAX_ITERATIONS = 8;
+const MAX_ITERATIONS = 10;
 
 export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promise<AgentExecutor> => {
     const openAIApiKey = process.env.OPENAI_API_KEY;
@@ -45,7 +45,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         await MemoryStore.makeShortTermStore(embeddings);
 
     const tools: Tool[] = [
-        new WebBrowser({ model: predictable, embeddings, callbacks }),
+        new WebBrowser({ model: predictable, memory, embeddings, callbacks }),
         new JavascriptEvaluator(),
         new MemoryRecall({ model: predictable, memory }),
         new MemoryStorage({ model: predictable, memory, embeddings })
@@ -55,21 +55,22 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         tools.push(new BingSearch({ apiKey: bingApiKey, embeddings, callbacks }));
     }
     const multistep = new Multistep({
-        model: predictable,
-        creative,
-        memory,
-        tools,
         callbacks,
-        maxIterations: MAX_ITERATIONS
+        creative,
+        maxIterations: MAX_ITERATIONS,
+        model: predictable,
+        memory,
+        tools
     });
     const toolset = [ ...tools, multistep ];
 
     const agent = ReActAgent.makeAgent({
-        model: predictable,
+        callbacks,
         creative,
+        maxIterations: MAX_ITERATIONS,
         memory,
-        tools: toolset,
-        callbacks
+        model: predictable,
+        tools: toolset
     });
 
     return AgentExecutor.fromAgentAndTools({
@@ -77,6 +78,6 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         callbacks,
         maxIterations: MAX_ITERATIONS,
         tools: toolset,
-        verbose: true,
+        verbose: true
     });
 }

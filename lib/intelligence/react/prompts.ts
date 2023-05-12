@@ -1,5 +1,6 @@
 export const ACTION = "Action";
 export const FINAL_RESPONSE = "Final Response";
+export const MEMORY = "Memory";
 export const OBJECTIVE = "Objective";
 export const OBSERVATION = "Observation";
 export const THOUGHT = "Thought";
@@ -21,6 +22,7 @@ Guidance on tool use:
 export const FORMAT_INSTRUCTIONS = `
 Always use this format:
 ${OBJECTIVE}: the objective
+${MEMORY}: a thought or memory that might be useful
 ${THOUGHT}: let's think about this step-by-step
 ${ACTION}:
 \`\`\`

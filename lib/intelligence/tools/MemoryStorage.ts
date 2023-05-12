@@ -8,7 +8,7 @@ import { Embeddings } from "langchain/embeddings";
 
 const DESCRIPTION = `only use this tool if directed to by the user.
 Input should be one or more urls, separated by commas - just links, no additional text.
-Alternative, text can be provided as a string to store.
+Alternative, text can be provided as a string to store and should include a name and url if applicable.
 `;
 
 function extractUrls(str: string): string[] | null {

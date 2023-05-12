@@ -21,21 +21,21 @@ If the response is asking for clarification or more information, then always res
 If you respond with \`${ELABORATION_REQUIRED}\`, provide guidance that will help provide a better response next time.
 `;
 
-interface CriticInput {
+interface EvaluatorInput {
     model: BaseLanguageModel;
     callbacks?: Callbacks;
 }
 
-export class Critic extends LLMChain {
+export class Evaluator extends LLMChain {
 
     constructor(inputs: LLMChainInput) {
         super(inputs);
     }
 
-    static makeChain({ model, callbacks }: CriticInput): Critic {
+    static makeChain({ model, callbacks }: EvaluatorInput): Evaluator {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
-        return new Critic({
+        return new Evaluator({
             llm: model,
             callbacks: callbacks,
             prompt
