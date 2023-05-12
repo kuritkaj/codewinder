@@ -21,8 +21,6 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         throw new Error('OpenAI api key not found.');
     }
     const bingApiKey = process.env.BING_API_KEY;
-    const gpt4 = process.env.GPT4 || "false";
-    console.log(`GPT4: ${ gpt4 }`);
 
     // This is GPT3.5 with temp of 0
     const predictable = new ChatOpenAI({
@@ -32,19 +30,10 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         callbacks,
         maxRetries: 2
     });
-    // This is GPT4 with temp of 0
-    // const capable = new ChatOpenAI({
-    //     openAIApiKey,
-    //     modelName: Boolean(gpt4) ? 'gpt-4' : 'gpt-3.5-turbo',
-    //     temperature: 0,
-    //     streaming: Boolean(callbacks),
-    //     callbacks,
-    //     maxRetries: 2
-    // });
     // This is GPT4 with temp of the default
     const creative = new ChatOpenAI({
         openAIApiKey,
-        modelName: Boolean(gpt4) ? 'gpt-4' : 'gpt-3.5-turbo',
+        modelName: 'gpt-4',
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2

@@ -12,6 +12,7 @@ Rewrite the provided input: you may add, remove, or change the steps as you see 
 When responding, ALWAYS use JSON and include the original objective and the updated tasks.
 
 ALWAYS respond using this format:
+\`\`\`
 {{
     "objective": "objective",
     "step": [
@@ -19,8 +20,9 @@ ALWAYS respond using this format:
         "step 2 + context from the objective"
     ]
 }}
-... (each step won't have access to the objective, so the context from the objective should be included in each step)
-... (the response should only contain a SINGLE objective, do NOT return a list of multiple objectives)
+\`\`\`
+   (each step won't have access to the objective, so the context from the objective should be included in each step)
+   (the response should only contain a SINGLE objective, do NOT return a list of multiple objectives)
 `;
 
 interface PlannerInput {

@@ -3,7 +3,7 @@ import { LLMChain, LLMChainInput } from "langchain/chains";
 import { Callbacks } from "langchain/callbacks";
 import { BaseLanguageModel } from "langchain/base_language";
 
-export const ELABORATION_REQUIRED = "NO";
+export const ELABORATION_REQUIRED = "ELABORATION_REQUIRED";
 export const OBJECTIVE_INPUT = "objective";
 export const RESPONSE_INPUT = "response";
 

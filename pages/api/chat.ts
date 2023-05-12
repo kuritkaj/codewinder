@@ -60,7 +60,7 @@ const Service: NextApiHandler = async (req, res) => {
     try {
         let inputs = {};
         inputs[OBJECTIVE_INPUT] = objective;
-        inputs[CONTEXT_INPUT] = context.length > 0 ? context.map(chat => chat.join["\n" ]).join("\n\n") : "";
+        inputs[CONTEXT_INPUT] = JSON.stringify(context);
 
         const response = await chain.call(inputs);
         sendClear();

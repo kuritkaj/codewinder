@@ -97,8 +97,8 @@ export class ReActAgent extends Agent {
             suffix
         ].join("\n");
         const assistant = [
-            `This is the previous conversation: {${ CONTEXT_INPUT }}`,
-            `Which triggered this memory: {${ MEMORIES_INPUT }}`
+            `This is the previous conversation: \`\`\`{${ CONTEXT_INPUT }}\`\`\``,
+            `Which triggered this memory: \`\`\`{${ MEMORIES_INPUT }}\`\`\``
         ].join("\n\n");
         const human = [
             `${ OBJECTIVE }: {${ OBJECTIVE_INPUT }}`,
