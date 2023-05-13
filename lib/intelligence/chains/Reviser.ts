@@ -11,6 +11,7 @@ You are an AI assistant with the responsibility to improve on a stated objective
 This is the stated objective: {${OBJECTIVE_INPUT}}
 
 Rewrite the stated objective to be more specific and detailed without changing the meaning or intent.
+Do not rewrite entities that you don't understand. They're likely for a subject that you don't know about.
 If no improvements are necessary, then reply with the provided stated objective.
 For example, simple greetings or statements of fact do not need to be improved.
 `;
