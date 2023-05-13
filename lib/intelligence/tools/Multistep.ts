@@ -51,7 +51,7 @@ export class Multistep extends Tool {
     }
 
     async _call(input: string, callbackManager?: CallbackManagerForToolRun): Promise<string> {
-        return await Multistep.runAgent(this.model, this.creative, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations || 8, input, callbackManager);
+        return await Multistep.runAgent(this.model, this.creative, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations, input, callbackManager);
     }
 
     static async runAgent(
@@ -65,7 +65,7 @@ export class Multistep extends Tool {
         input: string,
         callbackManager?: CallbackManagerForToolRun
     ): Promise<string> {
-        const agent = ReActAgent.makeAgent({ model, creative, memory, tools, callbacks });
+        const agent = ReActAgent.makeAgent({ model, creative, memory, tools, callbacks, maxIterations });
         const executor = AgentExecutor.fromAgentAndTools({
             agent,
             tools,

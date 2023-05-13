@@ -176,8 +176,8 @@ export class ReActAgent extends Agent {
                          memory,
                          tools,
                          callbacks,
-                         maxIterations
-                     }: { model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, maxIterations }): ReActAgent {
+                         maxIterations = undefined
+                     }: { model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, maxIterations?: number }): ReActAgent {
         ReActAgent.validateTools(tools);
         const prompt = ReActAgent.createPrompt(tools);
         const llmChain = new LLMChain({
@@ -235,7 +235,7 @@ export class ReActAgent extends Agent {
             thoughts,
             this.memoryPrefix(),
             (memories && memories.length > 0 ? memories.pop().pageContent : "No memories"),
-            (steps.length + 1 <= this.maxIterations ? this.llmPrefix() : this.finalPrefix())
+            (steps.length + 1 <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
         ].join("\n");
 
         // Add the appropriate stop phrases for the llm
