@@ -4,6 +4,9 @@ The chat has history of the current interaction (refresh the page to clear the h
 a multistep agent which provides a way for the chat to break down an action into multiple steps,
 and short-term memory for coordination between steps of a multi-step action.
 
+## Demo
+[Video demoing key functionality](https://share.descript.com/view/R70Rc6aQjBQ)
+
 ## Getting Started
 
 The server requires the following environment variables:
