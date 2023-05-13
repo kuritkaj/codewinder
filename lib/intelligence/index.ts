@@ -30,6 +30,15 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         callbacks,
         maxRetries: 2
     });
+    // This is GPT4 with temp of 0
+    // const capable = new ChatOpenAI({
+    //     openAIApiKey,
+    //     temperature: 0,
+    //     modelName: 'gpt-4',
+    //     streaming: Boolean(callbacks),
+    //     callbacks,
+    //     maxRetries: 2
+    // });
     // This is GPT4 with temp of the default
     const creative = new ChatOpenAI({
         openAIApiKey,
@@ -45,6 +54,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         await MemoryStore.makeShortTermStore(embeddings);
 
     const tools: Tool[] = [
+        // new LocalBrowser({ model: capable }),
         new WebBrowser({ model: predictable, memory, embeddings, callbacks }),
         new JavascriptEvaluator(),
         new MemoryRecall({ model: predictable, memory }),
