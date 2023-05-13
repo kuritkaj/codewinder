@@ -37,9 +37,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 With a few modest additions, most of this repo is based on the following repos:
 
 - [Chat-Langchainjs](https://github.com/sullivan-sean/chat-langchainjs) - for the frontend
-- [LangChain Chat NextJS](https://github.com/zahidkhawaja/langchain-chat-nextjs) - for the frontend.
+- [LangChain Chat NextJS](https://github.com/zahidkhawaja/langchain-chat-nextjs) - for the frontend
 - [ChatLangChain](https://github.com/hwchase17/chat-langchain) - for the backend and data ingestion logic
-- [LangchainJS](https://github.com/hwchase17/langchainjs) - for the building blocks upon which these other projects are built.
+- [LangchainJS](https://github.com/hwchase17/langchainjs) - for the building blocks upon which these other projects are built
+- [BrowserGPT](https://github.com/mayt/BrowserGPT) - provides tool for controlling local browser
 
 ## Advanced
 ### Supabase Setup

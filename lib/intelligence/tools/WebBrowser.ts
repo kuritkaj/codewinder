@@ -1,4 +1,5 @@
-import * as cheerio from "cheerio";
+import cheerio from "cheerio";
+import PDFParse from "pdf-parse";
 import { BaseLanguageModel } from "langchain/base_language";
 import { Tool, ToolParams } from "langchain/tools";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
@@ -7,7 +8,6 @@ import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
-import * as PDFParse from "pdf-parse";
 
 const DESCRIPTION = `finding or summarizing webpage content from a provided url.
 Never make up a link, only use a valid url returned as a result of a previous web search.
@@ -63,7 +63,7 @@ async function getPdf(content: Blob): Promise<{ text: string, title: string }> {
 
     try {
         const buffer = await parsePdf();
-        const pdfData = await PDFParse(buffer);
+        const pdfData = await PDFParse(Buffer.from(buffer));
         const pdfExtract = pdfData.text;
         const pdfTitle = pdfData.info.Title || "Untitled";
 
@@ -85,7 +85,7 @@ export const getText = (
     summary: boolean
 ): { text: string, title: string } => {
     // scriptingEnabled so noscript elements are parsed
-    const $ = cheerio.load(html, { scriptingEnabled: true });
+    const $ = cheerio.load(html);
 
     let text = "";
 
