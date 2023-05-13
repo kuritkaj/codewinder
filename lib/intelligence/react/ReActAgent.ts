@@ -233,8 +233,7 @@ export class ReActAgent extends Agent {
         );
         newInputs[SCRATCHPAD_INPUT] = [
             thoughts,
-            this.memoryPrefix(),
-            (memories && memories.length > 0 ? memories.pop().pageContent : "No memories"),
+            `${this.memoryPrefix()} ${(memories && memories.length > 0 ? memories.pop().pageContent : "No memories")}`,
             (steps.length + 1 <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
         ].join("\n");
 
