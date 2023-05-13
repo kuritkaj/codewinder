@@ -6,14 +6,14 @@ import { BaseLanguageModel } from "langchain/dist/base_language";
 export const OBJECTIVE_INPUT = "objective";
 
 export const GUIDANCE = `
-You are an AI assistant with the responsibility to improve on a stated objective.
+You are an AI assistant with the responsibility to improve on a stated objective without changing the meaning or intent.
 
 This is the stated objective: {${OBJECTIVE_INPUT}}
 
-Rewrite the stated objective to be more specific and detailed without changing the meaning or intent.
-Do not rewrite entities that you don't understand. They're likely for a subject that you don't know about.
-If no improvements are necessary, then reply with the provided stated objective.
-For example, simple greetings or statements of fact do not need to be improved.
+Notes:
+* Do not rewrite entities and acronyms including proper nouns.
+* If no improvements are necessary, then reply with the provided stated objective.
+* For example, simple greetings or statements of fact do not need to be improved.
 `;
 
 interface ReviserInput {
