@@ -12,7 +12,6 @@ import { Multistep } from "@/lib/intelligence/tools/Multistep";
 import { MemoryRecall } from "@/lib/intelligence/tools/MemoryRecall";
 import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
 import { AgentExecutor } from "langchain/agents";
-import { CreativeWriter } from "@/lib/intelligence/tools/CreativeWriter";
 
 const MAX_ITERATIONS = 10;
 
@@ -56,7 +55,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
 
     const tools: Tool[] = [
         // new LocalBrowser({ model: capable }),
-        new CreativeWriter({ model: creative, callbacks }),
+        // new CreativeWriter({ model: creative, callbacks }),
         new WebBrowser({ model: predictable, memory, embeddings, callbacks }),
         new JavascriptEvaluator(),
         new MemoryRecall({ model: predictable, memory }),
