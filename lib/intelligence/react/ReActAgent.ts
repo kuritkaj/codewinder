@@ -149,7 +149,8 @@ export class ReActAgent extends Agent {
             } else {
                 // Ensure we include the output the previous execution for this final response.
                 newInputs[SCRATCHPAD_INPUT] = [ newInputs[SCRATCHPAD_INPUT], output ].join("\n");
-                newInputs.stop = ""; // Don't stop as we're on our final generation.
+                // Only stop on Observations in case this is a fall through from the base chain.
+                newInputs.stop = this._stop().pop();
                 // Here we use the creative chain to generate a final response.
                 const finalOutput = await this.creativeChain.predict(newInputs, callbackManager);
                 return this.outputParser.parse(finalOutput);

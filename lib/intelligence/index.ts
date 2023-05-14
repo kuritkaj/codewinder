@@ -16,15 +16,26 @@ import { AgentExecutor } from "langchain/agents";
 const MAX_ITERATIONS = 10;
 
 export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promise<AgentExecutor> => {
-    const openAIApiKey = process.env.OPENAI_API_KEY;
-    if (!Boolean(openAIApiKey)) {
+    const openAiApiKey = process.env.OPENAI_API_KEY;
+    if (!Boolean(openAiApiKey)) {
         throw new Error('OpenAI api key not found.');
     }
     const bingApiKey = process.env.BING_API_KEY;
+    // const replicateApiKey = process.env.REPLICATE_API_KEY;
+    //
+    // const replicate = new Replicate({
+    //     apiKey: replicateApiKey,
+    //     model: "replicate/vicuna-13b:e6d469c2b11008bb0e446c3e9629232f9674581224536851272c54871f84076e",
+    //     input: {
+    //         temperature: 0.1,
+    //         max_length: 4096,
+    //     },
+    //     callbacks
+    // });
 
     // This is GPT3.5 with temp of 0
     const predictable = new ChatOpenAI({
-        openAIApiKey,
+        openAIApiKey: openAiApiKey,
         temperature: 0,
         streaming: Boolean(callbacks),
         callbacks,
@@ -32,7 +43,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     });
     // This is GPT4 with temp of 0
     // const capable = new ChatOpenAI({
-    //     openAIApiKey,
+    //     openAIApiKey: openAIApiKey,
     //     temperature: 0,
     //     modelName: 'gpt-4',
     //     streaming: Boolean(callbacks),
@@ -41,14 +52,14 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     // });
     // This is GPT4 with temp of the default
     const creative = new ChatOpenAI({
-        openAIApiKey,
+        openAIApiKey: openAiApiKey,
         modelName: 'gpt-4',
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2
     });
 
-    const embeddings = new OpenAIEmbeddings({ openAIApiKey });
+    const embeddings = new OpenAIEmbeddings({ openAIApiKey: openAiApiKey });
     const memory = process.env.SUPABASE_URL ?
         await MemoryStore.makeLongTermStore(embeddings) :
         await MemoryStore.makeShortTermStore(embeddings);
