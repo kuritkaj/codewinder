@@ -3,7 +3,7 @@ import { Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { CallbackManagerForToolRun } from "langchain/dist/callbacks/manager";
 import { Editor } from "@/lib/intelligence/chains/Editor";
-import { CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
+import { OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { Planner } from "@/lib/intelligence/chains/Planner";
 import { BaseLanguageModel } from "langchain/base_language";
 import { AgentExecutor } from "langchain/agents";
@@ -86,7 +86,6 @@ export class Multistep extends Tool {
             await callbackManager?.handleText("Starting: " + step);
 
             let inputs = {};
-            inputs[CONTEXT_INPUT] = results.length > 0 ? results[results.length - 1] : "";
             inputs[OBJECTIVE_INPUT] = `${ step }`
 
             const completion = await executor.call(inputs);

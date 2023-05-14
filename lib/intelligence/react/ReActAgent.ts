@@ -11,7 +11,11 @@ import {
 } from "@/lib/intelligence/react/prompts";
 import { Agent, ChatCreatePromptArgs, OutputParserArgs } from "langchain/agents";
 import { Tool } from "langchain/tools";
-import { ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
+import {
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate
+} from "langchain/prompts";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
 import { LLMChain } from "langchain";
 import { CallbackManager, Callbacks } from "langchain/callbacks";
@@ -104,7 +108,7 @@ export class ReActAgent extends Agent {
         const human = [
             `${ OBJECTIVE }: {${ OBJECTIVE_INPUT }}`,
             `{${ SCRATCHPAD_INPUT }}`
-        ].join("\n\n");
+        ].join("\n");
         const messages = [
             SystemMessagePromptTemplate.fromTemplate(system),
             HumanMessagePromptTemplate.fromTemplate(human)
@@ -172,7 +176,7 @@ export class ReActAgent extends Agent {
         const llmChain = new LLMChain({
             prompt,
             llm: model,
-            callbacks,
+            callbacks
         });
         const creativeChain = new LLMChain({
             prompt,
@@ -220,9 +224,12 @@ export class ReActAgent extends Agent {
             steps.length > 0 ? steps.pop().observation : inputs[OBJECTIVE_INPUT],
             0.85
         );
+        // If memories were found, then retrieve the page content of the first one (which is the highest scoring).
+        let memory = memories && memories.length > 0 ? memories.pop().pageContent : "";
+
         newInputs[SCRATCHPAD_INPUT] = [
             thoughts,
-            `${this.memoryPrefix()} ${(memories && memories.length > 0 ? memories.pop().pageContent : "No memories")}`,
+            `${ this.memoryPrefix() } ${ memory ? memory : "No memories." }`,
             (steps.length + 1 <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
         ].join("\n");
 
