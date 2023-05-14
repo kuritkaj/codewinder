@@ -1,0 +1,123 @@
+.apimessage, .usermessage, .usermessagewaiting {
+    display: flex;
+}
+
+.apimessage {
+    background: #141619;
+    padding: 1.5rem;
+    color: #ECECF1;
+    animation: fadein 0.5s;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.boticon, .usericon {
+    margin-right: 1rem;
+    border-radius: 0.1rem;
+}
+
+.markdownanswer {
+    line-height: 1.75;
+}
+
+.markdownanswer :first-child {
+    margin-top: 0 !important;
+}
+
+.markdownanswer :last-child {
+    margin-bottom: 0 !important;
+}
+
+.markdownanswer a:hover {
+    opacity: 0.8;
+}
+
+.markdownanswer a {
+    color: #16bed7;
+    font-weight: 500;
+}
+
+.markdownanswer code {
+    color: #15cb19;
+    font-weight: 500;
+    white-space: pre-wrap !important;
+}
+
+.markdownanswer h1, .markdownanswer h2, .markdownanswer h3 {
+    font-size: inherit;
+}
+.markdownanswer :not(:first-child) h1,
+.markdownanswer :not(:first-child) h2,
+.markdownanswer :not(:first-child) h3 {
+    margin-top: 1rem;
+}
+
+.markdownanswer ol, .markdownanswer ul {
+    margin: 1rem;
+}
+
+.markdownanswer p {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.markdownanswer table {
+    border-collapse:collapse;
+    font-size: 0.95rem;
+}
+
+.markdownanswer td,
+.markdownanswer th {
+    border: 1px solid white;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.messagelist {
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    border-radius: 0.5rem;
+}
+
+.messagelistloading {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.usermessage {
+    background: #070809;
+    padding: 1.5rem;
+    color: #ECECF1;
+}
+
+.usermessagewaiting{
+    padding: 1.5rem;
+    color: #ECECF1;
+    background-size: 200% 200%;
+    background: linear-gradient(to left, #070809, #1a1c20, #070809) -100% 0;
+    animation: loading-gradient 2s ease-in-out infinite;
+    animation-direction: alternate;
+    animation-name: loading-gradient;
+}
+
+@keyframes loading-gradient {
+    0% {
+        background-position: -100% 0;
+    }
+    100% {
+        background-position: 100% 0;
+    }
+}
+
+/* Mobile optimization */
+@media (max-width: 600px) {
+    .markdownanswer code {
+        white-space : pre-wrap !important;
+    }
+}
