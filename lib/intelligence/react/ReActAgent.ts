@@ -18,7 +18,6 @@ import { CallbackManager, Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
 import { BaseLanguageModel } from "langchain/base_language";
-import { Reviser } from "@/lib/intelligence/chains/Reviser";
 
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
@@ -134,16 +133,6 @@ export class ReActAgent extends Agent {
         const newInputs = await this.prepareInputs(inputs, steps);
 
         try {
-            // On the first call to plan, update the objective.
-            // This directly modifies the initial inputs, not newInputs as below.
-            if (steps.length === 0) {
-                // Revise the provided objective to be more specific
-                newInputs[OBJECTIVE_INPUT] = await Reviser.makeChain({
-                    model: this.creativeChain.llm,
-                    callbacks: callbackManager
-                }).evaluate({ objective: newInputs[OBJECTIVE_INPUT] });
-            }
-
             // Use the base chain for evaluating the right tool to use.
             const output = await this.llmChain.predict(newInputs, callbackManager);
             const action = await this.outputParser.parse(output);

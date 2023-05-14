@@ -32,6 +32,7 @@ ${ACTION}:
 }}
 \`\`\`
    (the ${ACTION} should only contain a SINGLE action, NEVER return more than one action)
+   (the action can also be a response to the user and does not have to be JSON)
 ${OBSERVATION}: the result of the action (this is never shared, pretend it's a secret)
    (${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
 ${THOUGHT}: critical evaluation and self-reflection (this is never shared, pretend it's a secret)
@@ -42,6 +43,7 @@ ${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including source refer
 export const GUIDANCE = `
 Note: If the ${OBJECTIVE} is a casual greeting or conversation, then respond directly.
 Note: If the ${OBJECTIVE} asked for a creative response such as a joke or a poem, then respond directly.
+Note: If the ${OBJECTIVE} is a request to edit, debug, or to explain code, then respond directly.
 Note: If the ${OBJECTIVE} triggered a memory and it meets the ${OBJECTIVE}, then respond directly.
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended. Never ask for clarification.
 Note: If the ${OBJECTIVE} needs information that you don't have, use a tool to learn more.
