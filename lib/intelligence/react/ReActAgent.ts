@@ -13,7 +13,7 @@ import { Agent, ChatCreatePromptArgs, OutputParserArgs } from "langchain/agents"
 import { Tool } from "langchain/tools";
 import {
     ChatPromptTemplate,
-    HumanMessagePromptTemplate,
+    HumanMessagePromptTemplate, PromptTemplate,
     SystemMessagePromptTemplate
 } from "langchain/prompts";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
@@ -27,6 +27,10 @@ export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
 export const SCRATCHPAD_INPUT = "scratchpad";
 export const TOOL_INPUT = "tools";
+
+interface ReActChatArgs extends ChatCreatePromptArgs {
+    chat: boolean;
+}
 
 interface ReActAgentInput {
     creativeChain: LLMChain;
@@ -95,7 +99,7 @@ export class ReActAgent extends Agent {
         }, "");
     }
 
-    static createPrompt(tools: Tool[], args?: ChatCreatePromptArgs) {
+    static createPrompt(tools: Tool[], args?: ReActChatArgs) {
         const { prefix = SYSTEM, suffix = GUIDANCE } = args ?? {};
 
         const system = [
@@ -113,7 +117,9 @@ export class ReActAgent extends Agent {
             SystemMessagePromptTemplate.fromTemplate(system),
             HumanMessagePromptTemplate.fromTemplate(human)
         ];
-        return ChatPromptTemplate.fromPromptMessages(messages);
+
+        if (args?.chat) return ChatPromptTemplate.fromPromptMessages(messages);
+        else return new PromptTemplate({ template: [system, human].join("\n"), inputVariables: [TOOL_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT] });
     }
 
     static getDefaultOutputParser(_fields?: OutputParserArgs) {
@@ -173,14 +179,14 @@ export class ReActAgent extends Agent {
                          maxIterations = undefined
                      }: { model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, maxIterations?: number }): ReActAgent {
         ReActAgent.validateTools(tools);
-        const prompt = ReActAgent.createPrompt(tools);
+
         const llmChain = new LLMChain({
-            prompt,
+            prompt: ReActAgent.createPrompt(tools, { chat: false }),
             llm: model,
             callbacks
         });
         const creativeChain = new LLMChain({
-            prompt,
+            prompt: ReActAgent.createPrompt(tools, { chat: true }),
             llm: creative,
             callbacks
         });

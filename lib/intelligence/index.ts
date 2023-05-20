@@ -1,5 +1,5 @@
 import { Tool } from "langchain/tools";
-import { ChatOpenAI } from "langchain/chat_models/openai";
+// import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { JavascriptEvaluator } from "@/lib/intelligence/tools/JavascriptEvaluator";
 import { BingSearch } from "@/lib/intelligence/tools/BingSearch";
@@ -12,6 +12,9 @@ import { Multistep } from "@/lib/intelligence/tools/Multistep";
 import { MemoryRecall } from "@/lib/intelligence/tools/MemoryRecall";
 import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
 import { AgentExecutor } from "langchain/agents";
+// import { OpenAI } from "langchain";
+// import { Replicate } from "langchain/llms";
+import { ChatOpenAI } from "langchain/chat_models/openai";
 
 const MAX_ITERATIONS = 10;
 
@@ -23,7 +26,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     const bingApiKey = process.env.BING_API_KEY;
     // const replicateApiKey = process.env.REPLICATE_API_KEY;
     //
-    // const replicate = new Replicate({
+    // const predictable = new Replicate({
     //     apiKey: replicateApiKey,
     //     model: "replicate/vicuna-13b:e6d469c2b11008bb0e446c3e9629232f9674581224536851272c54871f84076e",
     //     input: {
@@ -32,7 +35,6 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     //     },
     //     callbacks
     // });
-
     // This is GPT3.5 with temp of 0
     const predictable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
@@ -41,6 +43,18 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         callbacks,
         maxRetries: 2
     });
+    // This is GPT4all with temp of 0
+    // This is GPT3.5 with temp of 0
+    // const predictable = new OpenAI({
+    //     modelName: "wizardLM-7B.q4_2",
+    //     temperature: 0,
+    //     streaming: Boolean(callbacks),
+    //     callbacks,
+    //     maxRetries: 2,
+    //     verbose: true,
+    // }, {
+    //     basePath: "http://127.0.0.1:4891/v1",
+    // });
     // This is GPT4 with temp of 0
     // const capable = new ChatOpenAI({
     //     openAIApiKey: openAIApiKey,
@@ -50,6 +64,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     //     callbacks,
     //     maxRetries: 2
     // });
+
     // This is GPT4 with temp of the default
     const creative = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
