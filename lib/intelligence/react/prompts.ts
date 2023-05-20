@@ -44,7 +44,6 @@ export const GUIDANCE = `
 Note: If the ${OBJECTIVE} is a casual greeting or conversation, then respond directly.
 Note: If the ${OBJECTIVE} asked for a creative response such as a joke or a poem, then respond directly.
 Note: If the ${OBJECTIVE} is a request to edit, debug, or to explain code, then respond directly.
-Note: If the ${OBJECTIVE} triggered a memory and it meets the ${OBJECTIVE}, then respond directly.
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended. Never ask for clarification.
 Note: If the ${OBJECTIVE} needs information that you don't have, use a tool to learn more.
 Note: If the ${OBJECTIVE} is to make a table or document, then use markdown formatting to create it.
