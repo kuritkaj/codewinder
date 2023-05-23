@@ -87,13 +87,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dqbd/tiktoken@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "@dqbd/tiktoken@npm:1.0.7"
-  checksum: 81049797dcffa101c57b68a78be19b11958edf6e6cfffab7ccd3ec2e5290e3b27bc25f1060a1c34e1cb94f22e0f46d9aafa925d383fb4559738b644aa01c0fb1
-  languageName: node
-  linkType: hard
-
 "@emotion/babel-plugin@npm:^11.10.8":
   version: 11.10.8
   resolution: "@emotion/babel-plugin@npm:11.10.8"
@@ -1323,6 +1316,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"base64-js@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "base64-js@npm:1.5.1"
+  checksum: 669632eb3745404c2f822a18fc3a0122d2f9a7a13f7fb8b5823ee19d1d2ff9ee5b52c53367176ea4ad093c332fd5ab4bd0ebae5a8e27917a4105a4cfc86b1005
+  languageName: node
+  linkType: hard
+
 "binary-extensions@npm:^2.2.0":
   version: 2.2.0
   resolution: "binary-extensions@npm:2.2.0"
@@ -1369,13 +1369,6 @@ __metadata:
   dependencies:
     fill-range: ^7.0.1
   checksum: e2a8e769a863f3d4ee887b5fe21f63193a891c68b612ddb4b68d82d1b5f3ff9073af066c343e9867a393fe4c2555dcb33e89b937195feb9c1613d259edfcd459
-  languageName: node
-  linkType: hard
-
-"browser-or-node@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "browser-or-node@npm:2.1.1"
-  checksum: b1650b579345574d2c1905c73d385915a032523066ef9589036cf129b23b27b85096b6713476dffb88feb83cda798ed0774363e699117aa2724a0409adea25aa
   languageName: node
   linkType: hard
 
@@ -1552,7 +1545,7 @@ __metadata:
     dotenv: ^16.0.3
     eslint: 8.34.0
     eslint-config-next: 13.1.6
-    langchain: ^0.0.74
+    langchain: ^0.0.78
     next: 13.1.6
     openai: ^3.1.0
     pdf-parse: ^1.1.1
@@ -3356,6 +3349,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-tiktoken@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "js-tiktoken@npm:1.0.6"
+  dependencies:
+    base64-js: ^1.5.1
+  checksum: 05a1b3f895447194a0ac17a56229e47eae3816cd851f12ee947b5cdc2f4439773ed52938f4f6459f5c45dc0f4a15ac1a882cde61e47e31b6a84b7129fe1f63c2
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^3.0.0 || ^4.0.0, js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -3430,17 +3432,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langchain@npm:^0.0.74":
-  version: 0.0.74
-  resolution: "langchain@npm:0.0.74"
+"langchain@npm:^0.0.78":
+  version: 0.0.78
+  resolution: "langchain@npm:0.0.78"
   dependencies:
     "@anthropic-ai/sdk": ^0.4.3
-    "@dqbd/tiktoken": ^1.0.7
     ansi-styles: ^5.0.0
     binary-extensions: ^2.2.0
-    browser-or-node: ^2.1.1
     expr-eval: ^2.0.2
     flat: ^5.0.2
+    js-tiktoken: ^1.0.6
     jsonpointer: ^5.0.1
     ml-distance: ^4.0.0
     object-hash: ^3.0.0
@@ -3455,6 +3456,7 @@ __metadata:
     "@aws-sdk/client-dynamodb": ^3.310.0
     "@aws-sdk/client-lambda": ^3.310.0
     "@aws-sdk/client-s3": ^3.310.0
+    "@aws-sdk/client-sagemaker-runtime": ^3.310.0
     "@clickhouse/client": ^0.0.14
     "@getmetal/metal-sdk": "*"
     "@huggingface/inference": ^1.5.1
@@ -3465,17 +3467,21 @@ __metadata:
     "@tensorflow/tfjs-converter": "*"
     "@tensorflow/tfjs-core": "*"
     "@zilliz/milvus2-sdk-node": ^2.2.0
+    apify-client: ^2.7.1
     axios: "*"
     cheerio: ^1.0.0-rc.12
     chromadb: ^1.4.0
     cohere-ai: ^5.0.2
     d3-dsv: ^2.0.0
     epub2: ^3.0.1
+    faiss-node: ^0.1.1
     hnswlib-node: ^1.4.2
     html-to-text: ^9.0.5
     mammoth: "*"
+    meriyah: "*"
     mongodb: ^5.2.0
     pdf-parse: 1.1.1
+    pickleparser: ^0.1.0
     playwright: ^1.32.1
     puppeteer: ^19.7.2
     redis: ^4.6.4
@@ -3489,6 +3495,8 @@ __metadata:
     "@aws-sdk/client-lambda":
       optional: true
     "@aws-sdk/client-s3":
+      optional: true
+    "@aws-sdk/client-sagemaker-runtime":
       optional: true
     "@clickhouse/client":
       optional: true
@@ -3510,6 +3518,8 @@ __metadata:
       optional: true
     "@zilliz/milvus2-sdk-node":
       optional: true
+    apify-client:
+      optional: true
     axios:
       optional: true
     cheerio:
@@ -3522,15 +3532,21 @@ __metadata:
       optional: true
     epub2:
       optional: true
+    faiss-node:
+      optional: true
     hnswlib-node:
       optional: true
     html-to-text:
       optional: true
     mammoth:
       optional: true
+    meriyah:
+      optional: true
     mongodb:
       optional: true
     pdf-parse:
+      optional: true
+    pickleparser:
       optional: true
     playwright:
       optional: true
@@ -3546,7 +3562,7 @@ __metadata:
       optional: true
     weaviate-ts-client:
       optional: true
-  checksum: 00fdaf8ae2a1bf523c7bb50757eaacf4a476c7d0612504f222834a38720a8d2993f4d008290e770668737830b878012c48809096ba484de77a8d03924aded36f
+  checksum: 90897ab521284f508932e1d5b9f68757b9068ee7f61a323e927418e25694a3183b7225898e7039dd7f0bc5fcd1841b6360a60ad0dda8677ce8872c0ec76be5f6
   languageName: node
   linkType: hard
 

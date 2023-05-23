@@ -156,7 +156,7 @@ export class ReActAgent extends Agent {
                 // Ensure we include the output the previous execution for this final response.
                 newInputs[SCRATCHPAD_INPUT] = [ newInputs[SCRATCHPAD_INPUT], output ].join("\n");
                 // Only stop on Observations in case this is a fall through from the base chain.
-                newInputs.stop = this._stop().pop();
+                newInputs.stop = this._stop().slice(0, 1);
                 // Here we use the creative chain to generate a final response.
                 const finalOutput = await this.creativeChain.predict(newInputs, callbackManager);
                 return this.outputParser.parse(finalOutput);
@@ -181,7 +181,7 @@ export class ReActAgent extends Agent {
         ReActAgent.validateTools(tools);
 
         const llmChain = new LLMChain({
-            prompt: ReActAgent.createPrompt(tools, { chat: false }),
+            prompt: ReActAgent.createPrompt(tools, { chat: true }),
             llm: model,
             callbacks
         });
