@@ -6,7 +6,7 @@ import { Editor } from "@/lib/intelligence/chains/Editor";
 import { OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { Planner } from "@/lib/intelligence/chains/Planner";
 import { BaseLanguageModel } from "langchain/base_language";
-import { AgentExecutor } from "langchain/agents";
+import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 
 const DESCRIPTION = `use this tool for complex objectives that have multiple steps or tasks or objectives that have more than one part.
 The tool input should use this format:
@@ -66,7 +66,7 @@ export class Multistep extends Tool {
         callbackManager?: CallbackManagerForToolRun
     ): Promise<string> {
         const agent = ReActAgent.makeAgent({ model, creative, memory, tools, callbacks, maxIterations });
-        const executor = AgentExecutor.fromAgentAndTools({
+        const executor = ReActExecutor.fromAgentAndTools({
             agent,
             tools,
             verbose,

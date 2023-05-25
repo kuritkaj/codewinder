@@ -22,6 +22,7 @@ import { CallbackManager, Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
 import { BaseLanguageModel } from "langchain/base_language";
+import { Reflection } from "@/lib/intelligence/chains/Reflection";
 
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
@@ -122,6 +123,22 @@ export class ReActAgent extends Agent {
         else return new PromptTemplate({ template: [system, human].join("\n"), inputVariables: [TOOL_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT] });
     }
 
+    async evaluateOutputs(
+        action: AgentAction,
+        steps: AgentStep[],
+        inputs: ChainValues,
+        callbackManager?: CallbackManager
+    ): Promise<AgentAction | AgentFinish> {
+        const critic = Reflection.makeChain({ model: this.llmChain.llm, callbacks: callbackManager });
+        const evaluation = await critic.evaluate({
+            objective: inputs[OBJECTIVE_INPUT],
+            response: action.log,
+            scratchpad: inputs[SCRATCHPAD_INPUT],
+            tools: inputs[TOOL_INPUT],
+        });
+        return this.outputParser.parse(evaluation);
+    }
+
     static getDefaultOutputParser(_fields?: OutputParserArgs) {
         return new ReActAgentActionOutputParser(_fields);
     }
@@ -140,11 +157,9 @@ export class ReActAgent extends Agent {
         inputs: ChainValues,
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
-        const newInputs = await this.prepareInputs(inputs, steps);
-
         try {
             // Use the base chain for evaluating the right tool to use.
-            const output = await this.llmChain.predict(newInputs, callbackManager);
+            const output = await this.llmChain.predict(inputs, callbackManager);
             const action = await this.outputParser.parse(output);
 
             // If we're calling to use a tool, then parse the output normally.
@@ -154,11 +169,11 @@ export class ReActAgent extends Agent {
                 return this.outputParser.parse(output);
             } else {
                 // Ensure we include the output the previous execution for this final response.
-                newInputs[SCRATCHPAD_INPUT] = [ newInputs[SCRATCHPAD_INPUT], output ].join("\n");
+                inputs[SCRATCHPAD_INPUT] = [ inputs[SCRATCHPAD_INPUT], output ].join("\n");
                 // Only stop on Observations in case this is a fall through from the base chain.
-                newInputs.stop = this._stop().slice(0, 1);
+                inputs.stop = this._stop().slice(0, 1);
                 // Here we use the creative chain to generate a final response.
-                const finalOutput = await this.creativeChain.predict(newInputs, callbackManager);
+                const finalOutput = await this.creativeChain.predict(inputs, callbackManager);
                 return this.outputParser.parse(finalOutput);
             }
         } catch (e) {
@@ -198,16 +213,6 @@ export class ReActAgent extends Agent {
             tools,
             maxIterations
         });
-    }
-
-    /**
-     *  Prepare the agent for output, if needed
-     */
-    async prepareForOutput(
-        _returnValues: AgentFinish["returnValues"],
-        _steps: AgentStep[]
-    ): Promise<AgentFinish["returnValues"]> {
-        return {};
     }
 
     /**

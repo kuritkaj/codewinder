@@ -10,12 +10,14 @@ import { BingNews } from "@/lib/intelligence/tools/BingNews";
 import { Multistep } from "@/lib/intelligence/tools/Multistep";
 import { MemoryRecall } from "@/lib/intelligence/tools/MemoryRecall";
 import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
-import { AgentExecutor } from "langchain/agents";
+// import { OpenAI } from "langchain";
+// import { Replicate } from "langchain/llms";
 import { ChatOpenAI } from "langchain/chat_models/openai";
+import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 
 const MAX_ITERATIONS = 10;
 
-export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promise<AgentExecutor> => {
+export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promise<ReActExecutor> => {
     const openAiApiKey = process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
         throw new Error('OpenAI api key not found.');
@@ -107,7 +109,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         tools: toolset
     });
 
-    return AgentExecutor.fromAgentAndTools({
+    return ReActExecutor.fromAgentAndTools({
         agent,
         callbacks,
         maxIterations: MAX_ITERATIONS,

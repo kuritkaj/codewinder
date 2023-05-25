@@ -32,7 +32,6 @@ ${ACTION}:
 }}
 \`\`\`
    (the ${ACTION} should only contain a SINGLE action, NEVER return more than one action)
-   (the action can also be a response to the user and does not have to be JSON)
 ${OBSERVATION}: the result of the action (this is never shared, pretend it's a secret)
    (${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
 ${THOUGHT}: critical evaluation and self-reflection (this is never shared, pretend it's a secret)
