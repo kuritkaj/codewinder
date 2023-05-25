@@ -54,7 +54,7 @@ export class BingNews extends Tool {
         }
 
         const res = await response.json();
-        const results: { name: string, description: string, url: string }[] = res.value;
+        const results: { name: string, description: string, url: string }[] = res?.value ? res.value : [];
 
         if (results.length === 0) {
             await runManager?.handleText("No useful results found.");

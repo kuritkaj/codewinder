@@ -16,7 +16,10 @@ Here is the history of past actions and experiences to achieve this objective: {
 
 Based on these past actions and experiences, the AI has now responded with: {${ RESPONSE_INPUT }}
 
-Does the tool selected and proposed input meet the stated objective based on the past actions and experiences? 
+And these are the allowed tools: {${ TOOL_INPUT }}
+
+Does the tool selected and proposed input meet the stated objective based on the past actions and experiences?
+And is the selected tool from the allowed tools and appropriate input?
 Explain why or why not.
 
 Then, if so, respond with the action using this format:
@@ -30,9 +33,7 @@ Action:
    (the Action: should only contain a SINGLE action, NEVER return more than one action)
    
 If not, respond with a new action and action input, using the previous format.
-
-If you choose a new action to take, you must select from the following tools: {${ TOOL_INPUT }}
-Never select a tool name that isn't in the allowed list.
+Never select a tool name that isn't in the allowed list and only use the tool input appropriate for the selected tool.
 `;
 
 interface EvaluatorInput {
