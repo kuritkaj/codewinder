@@ -11,11 +11,7 @@ import {
 } from "@/lib/intelligence/react/prompts";
 import { Agent, ChatCreatePromptArgs, OutputParserArgs } from "langchain/agents";
 import { Tool } from "langchain/tools";
-import {
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate, PromptTemplate,
-    SystemMessagePromptTemplate
-} from "langchain/prompts";
+import { PromptTemplate } from "langchain/prompts";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
 import { LLMChain } from "langchain";
 import { CallbackManager, Callbacks } from "langchain/callbacks";
@@ -114,13 +110,8 @@ export class ReActAgent extends Agent {
             `${ OBJECTIVE }: {${ OBJECTIVE_INPUT }}`,
             `{${ SCRATCHPAD_INPUT }}`
         ].join("\n");
-        const messages = [
-            SystemMessagePromptTemplate.fromTemplate(system),
-            HumanMessagePromptTemplate.fromTemplate(human)
-        ];
 
-        if (args?.chat) return ChatPromptTemplate.fromPromptMessages(messages);
-        else return new PromptTemplate({ template: [system, human].join("\n"), inputVariables: [TOOL_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT] });
+        return new PromptTemplate({ template: [system, human].join("\n"), inputVariables: [TOOL_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT] });
     }
 
     async evaluateOutputs(
@@ -196,12 +187,12 @@ export class ReActAgent extends Agent {
         ReActAgent.validateTools(tools);
 
         const llmChain = new LLMChain({
-            prompt: ReActAgent.createPrompt(tools, { chat: true }),
+            prompt: ReActAgent.createPrompt(tools),
             llm: model,
             callbacks
         });
         const creativeChain = new LLMChain({
-            prompt: ReActAgent.createPrompt(tools, { chat: true }),
+            prompt: ReActAgent.createPrompt(tools),
             llm: creative,
             callbacks
         });

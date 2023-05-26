@@ -18,7 +18,8 @@ Based on these past actions and experiences, the AI has now responded with: {${ 
 
 And these are the allowed tools: {${ TOOL_INPUT }}
 
-Does the tool selected and proposed input meet the stated objective based on the past actions and experiences?
+Does the selected tool and proposed input meet the stated objective based on the past actions and experiences?
+Is the previous step a duplicate of a past action? (Avoid trying the same thing more than once)
 And is the selected tool from the allowed tools and appropriate input?
 Explain why or why not.
 

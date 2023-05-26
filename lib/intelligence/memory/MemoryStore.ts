@@ -33,7 +33,7 @@ export class MemoryStore {
         });
     }
 
-    static async makeLongTermStore(embeddings: OpenAIEmbeddings) {
+    static async makeDurableStore(embeddings: OpenAIEmbeddings) {
         const supabaseApiKey = process.env.SUPABASE_API_KEY;
         if (!Boolean(supabaseApiKey)) {
             throw new Error('Supabase api key not found.');
@@ -53,7 +53,7 @@ export class MemoryStore {
         return new MemoryStore(memory);
     }
 
-    static async makeShortTermStore(embeddings: OpenAIEmbeddings) {
+    static async makeTransientStore(embeddings: OpenAIEmbeddings) {
         const memory = await new MemoryVectorStore(embeddings);
         return new MemoryStore(memory);
     }
@@ -93,7 +93,6 @@ export class MemoryStore {
         // search the vector store for the best single match
         return await vectorStore.similaritySearch(query, 1);
     }
-
 
     async storeDocuments(documents: Document[], metadata: Record<string, any>[] = []) {
         // Add created date to metadata for all documents
