@@ -4,6 +4,14 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 
+const NAME = "news-search";
+const DESCRIPTION = `find answers on the web. 
+Input format:
+{{
+  "action": "${ NAME }",
+  "action_input": "web search query"
+}}`;
+
 export interface BingSearchParams extends ToolParams {
     apiKey: string | undefined;
     embeddings: Embeddings;
@@ -12,8 +20,8 @@ export interface BingSearchParams extends ToolParams {
 }
 
 export class BingSearch extends Tool {
-    readonly name = "web-search";
-    readonly description = "find answers on the web. Input is a string for a web search query.";
+    readonly name = NAME;
+    readonly description = DESCRIPTION;
 
     readonly embeddings: Embeddings;
     readonly key: string;

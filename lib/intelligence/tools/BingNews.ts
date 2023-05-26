@@ -4,6 +4,14 @@ import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 
+const NAME = "news-search";
+const DESCRIPTION = `find headlines and articles on trending topics.
+Input format:
+{{
+  "action": "${ NAME }",
+  "action_input": "search query"
+}}`;
+
 export interface BingNewParams extends ToolParams {
     apiKey: string | undefined;
     embeddings: Embeddings;
@@ -12,8 +20,8 @@ export interface BingNewParams extends ToolParams {
 }
 
 export class BingNews extends Tool {
-    readonly name = "news-search";
-    readonly description = "find headlines and articles on trending topics. Input is a string for a web search query.";
+    readonly name = NAME;
+    readonly description = DESCRIPTION;
 
     readonly embeddings: Embeddings;
     readonly key: string;
@@ -43,14 +51,14 @@ export class BingNews extends Tool {
         const params = { q: input, textDecorations: "true", textFormat: "HTML", count: "20" };
         const searchUrl = new URL("https://api.bing.microsoft.com/v7.0/news/search");
 
-        Object.entries(params).forEach(([key, value]) => {
+        Object.entries(params).forEach(([ key, value ]) => {
             searchUrl.searchParams.append(key, value);
         });
 
         const response = await fetch(searchUrl, { headers });
 
         if (!response.ok) {
-            throw new Error(`HTTP error ${response.status}`);
+            throw new Error(`HTTP error ${ response.status }`);
         }
 
         const res = await response.json();

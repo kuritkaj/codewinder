@@ -3,6 +3,7 @@ import { LLMChain, LLMChainInput } from "langchain/chains";
 import { Callbacks } from "langchain/callbacks";
 import { BaseLanguageModel } from "langchain/base_language";
 
+export const FINAL_RESPONSE = "Final Response";
 export const OBJECTIVE_INPUT = "objective";
 export const RESPONSE_INPUT = "response";
 export const SCRATCHPAD_INPUT = "scratchpad";
@@ -18,9 +19,12 @@ Based on these past actions and experiences, the AI has now responded with: {${ 
 
 And these are the allowed tools: {${ TOOL_INPUT }}
 
-Does the selected tool and proposed input meet the stated objective based on the past actions and experiences?
-Is the previous step a duplicate of a past action? (Avoid trying the same thing more than once)
-And is the selected tool from the allowed tools and appropriate input?
+Evaluate the provided response and determine if the AI assistant should continue with the proposed action or not:
+* Does the selected tool and proposed input meet the stated objective based on the past actions and experiences?
+* Is the action starting to go on a tangent?
+* Is the previous step a duplicate of a past action? (Avoid trying the same thing more than once)
+* Is the selected tool from the allowed tools and appropriate input?
+* Is the action starting to drift from the original objective? If so, correct that.
 Explain why or why not.
 
 Then, if so, respond with the action using this format:
