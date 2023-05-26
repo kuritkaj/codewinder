@@ -1,5 +1,5 @@
 # Codewinder
-This provides a web chat interface over OpenAI's ChatGPT-3 API and LangChain's backend.  
+This provides a web chat interface over OpenAI's GPT-3/4 APIs and LangChain's backend.  
 The chat has history of the current interaction (refresh the page to clear the history),
 a multistep agent which provides a way for the chat to break down an action into multiple steps,
 and short-term memory for coordination between steps of a multi-step action.
