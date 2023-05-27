@@ -27,7 +27,10 @@ Evaluate the provided response and determine if the AI assistant should continue
 * Is the action starting to drift from the original objective? If so, correct that.
 Explain why or why not.
 
-Then, if so, respond with the action using this format:
+ImproveIf the proposed action is a good course of action, then repeat it.
+Alternatively, propose a better one which could be a new tool or the same tool with an improved tool input.
+
+Always respond with this format:
 Action:
 \`\`\`
 {{
@@ -36,9 +39,6 @@ Action:
 }}
 \`\`\`
    (the Action: should only contain a SINGLE action, NEVER return more than one action)
-   
-If not, respond with a new action and action input, using the previous format.
-Never select a tool name that isn't in the allowed list and only use the tool input appropriate for the selected tool.
 `;
 
 interface EvaluatorInput {

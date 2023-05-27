@@ -17,6 +17,7 @@ export const TOOLING = `
 Guidance on tool use:
 * Tools can't access ${OBSERVATION}s, so the tool input must include all necessary details.
 * Tools have a cost, use as few as possible to meet the ${OBJECTIVE}.
+* If a search tool is available, prefer that over searing with the browser tool.
 `;
 
 export const FORMAT_INSTRUCTIONS = `
@@ -30,7 +31,7 @@ If so, then reply with ${FINAL_RESPONSE}: and your response.
 Otherwise, use this format:
 ${OBJECTIVE}: the objective
 ${MEMORY}: a thought or memory that might be useful
-${THOUGHT}: reason about the best approach
+${THOUGHT}: think about this step-by-step
 ${ACTION}:
 \`\`\`
 {{

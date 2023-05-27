@@ -10,8 +10,6 @@ import { BingNews } from "@/lib/intelligence/tools/BingNews";
 import { Multistep } from "@/lib/intelligence/tools/Multistep";
 import { MemoryRecall } from "@/lib/intelligence/tools/MemoryRecall";
 import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
-// import { OpenAI } from "langchain";
-// import { Replicate } from "langchain/llms";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 
@@ -38,6 +36,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     const predictable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         temperature: 0,
+        topP: 0.1,
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2

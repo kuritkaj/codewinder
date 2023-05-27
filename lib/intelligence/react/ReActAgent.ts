@@ -23,7 +23,7 @@ import { Reflection } from "@/lib/intelligence/chains/Reflection";
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
 export const SCRATCHPAD_INPUT = "scratchpad";
-export const TOOL_INPUT = "tools";
+export const TOOLING_INPUT = "tools";
 
 interface ReActChatArgs extends ChatCreatePromptArgs {
     chat: boolean;
@@ -102,7 +102,7 @@ export class ReActAgent extends Agent {
         const system = [
             prefix,
             TOOLING,
-            `Allowed tools:\n{${ TOOL_INPUT }}`,
+            `Allowed tools:\n{${ TOOLING_INPUT }}`,
             FORMAT_INSTRUCTIONS,
             suffix
         ].join("\n");
@@ -111,7 +111,7 @@ export class ReActAgent extends Agent {
             `{${ SCRATCHPAD_INPUT }}`
         ].join("\n");
 
-        return new PromptTemplate({ template: [system, human].join("\n"), inputVariables: [TOOL_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT] });
+        return new PromptTemplate({ template: [system, human].join("\n"), inputVariables: [TOOLING_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT] });
     }
 
     async evaluateOutputs(
@@ -125,7 +125,7 @@ export class ReActAgent extends Agent {
             objective: inputs[OBJECTIVE_INPUT],
             response: action.log,
             scratchpad: inputs[SCRATCHPAD_INPUT],
-            tools: inputs[TOOL_INPUT],
+            tools: inputs[TOOLING_INPUT],
         });
         return this.outputParser.parse(evaluation);
     }
@@ -219,7 +219,7 @@ export class ReActAgent extends Agent {
         };
 
         // Provide the tools and descriptions
-        newInputs[TOOL_INPUT] = this.tools.map((tool) => `${ tool.name }: ${ tool.description }`).join("\n");
+        newInputs[TOOLING_INPUT] = this.tools.map((tool) => `${ tool.name }: ${ tool.description }`).join("\n");
 
         // Construct the scratchpad and add it to the inputs
         const thoughts = await this.constructScratchPad(steps);
