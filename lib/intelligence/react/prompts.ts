@@ -30,7 +30,7 @@ If so, then reply with ${FINAL_RESPONSE}: and your response.
 Otherwise, use this format:
 ${OBJECTIVE}: the objective
 ${MEMORY}: a thought or memory that might be useful
-${THOUGHT}: let's think about this step-by-step
+${THOUGHT}: reason about the best approach
 ${ACTION}:
 \`\`\`
 {{
