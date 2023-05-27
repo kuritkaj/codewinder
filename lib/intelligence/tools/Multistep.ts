@@ -8,8 +8,8 @@ import { Planner } from "@/lib/intelligence/chains/Planner";
 import { BaseLanguageModel } from "langchain/base_language";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 
-const DESCRIPTION = `use this tool for complex objectives that have multiple steps or tasks or objectives that have more than one part.
-The tool input should use this format:
+const DESCRIPTION = `for complex objectives that have multiple steps or tasks or objectives that have more than one part.
+Input format:
 {{
   "action": "tool name",
   "action_input": {{
