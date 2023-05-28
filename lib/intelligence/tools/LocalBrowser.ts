@@ -204,7 +204,8 @@ Note: if you are already on the correct page, you do not need to go to it again.
     }
 }
 
-const DESCRIPTION = `finding or summarizing webpage content from a provided url.
+export const NAME = "local-browser";
+export const DESCRIPTION = `finding or summarizing webpage content from a provided url.
 Input should be "ONE valid http URL including protocol","action to take on page".
 The tool input should use this format:
 {{
@@ -217,10 +218,10 @@ interface LocalBrowserParams extends ToolParams {
 }
 
 export class LocalBrowser extends Tool {
-    readonly name = "local-browser";
-    readonly description = DESCRIPTION;
+    public readonly name = NAME;
+    public readonly description = DESCRIPTION;
 
-    readonly model: BaseLanguageModel;
+    private readonly model: BaseLanguageModel;
 
     constructor({ model, verbose, callbacks }: LocalBrowserParams) {
         super(verbose, callbacks);

@@ -18,7 +18,7 @@ import { CallbackManager, Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
 import { BaseLanguageModel } from "langchain/base_language";
-import { Reflection } from "@/lib/intelligence/chains/Reflection";
+import { Reflection } from "@/lib/intelligence/react/Reflection";
 
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";

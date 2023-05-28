@@ -1,7 +1,7 @@
 import { OutputParserArgs } from "langchain/agents";
 import { ACTION, FINAL_RESPONSE, FORMAT_INSTRUCTIONS } from "@/lib/intelligence/react/prompts";
 import { AgentAction, AgentFinish } from "langchain/schema";
-import { Multistep } from "@/lib/intelligence/tools/Multistep";
+import { NAME as MultistepName } from "@/lib/intelligence/tools/Multistep";
 import { BaseOutputParser } from "langchain/schema/output_parser";
 
 export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction | AgentFinish> {
@@ -43,16 +43,18 @@ export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction |
                 const json = (matches && matches.length > 0) ? matches.pop() : output;
                 const actions = JSON.parse(json);
 
-                if (Array.isArray(actions)) {
+                if (Array.isArray(actions) && actions.length > 1) {
+                    const toolInput = `{ "steps": [${actions.map(action => { return action.action + ": " + action.action_input; }).join(",\n") }] }`;
                     return {
-                        tool: Multistep.name,
-                        toolInput: actions.join('\n'),
+                        tool: MultistepName,
+                        toolInput,
                         log: text,
                     };
                 } else {
+                    let action = Array.isArray(actions) ? actions.pop() : actions;
                     return {
-                        tool: actions.action,
-                        toolInput: typeof actions.action_input === 'string' ? actions.action_input : JSON.stringify(actions.action_input),
+                        tool: action.action,
+                        toolInput: typeof action.action_input === 'string' ? action.action_input : JSON.stringify(action.action_input),
                         log: text,
                     };
                 }

@@ -6,7 +6,8 @@ import { BaseLanguageModel } from "langchain/base_language";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { Embeddings } from "langchain/embeddings";
 
-const DESCRIPTION = `only use this tool if directed to by the user.
+export const NAME = "memory-storage";
+export const DESCRIPTION = `only use this tool if directed to by the user.
 Input should be one or more urls, separated by commas - just links, no additional text.
 Alternative, text can be provided as a string to store and should include a name and url if applicable.
 `;
@@ -29,12 +30,12 @@ interface MemoryStorageParams extends ToolParams {
 }
 
 export class MemoryStorage extends Tool {
-    readonly name = "memory-storage";
-    readonly description = DESCRIPTION;
+    public readonly name = NAME;
+    public readonly description = DESCRIPTION;
 
-    readonly browser: WebBrowser;
-    readonly memory: MemoryStore;
-    readonly model: BaseLanguageModel;
+    private readonly browser: WebBrowser;
+    private readonly memory: MemoryStore;
+    private readonly model: BaseLanguageModel;
 
     constructor({ model, memory, embeddings, verbose, callbacks }: MemoryStorageParams) {
         super(verbose, callbacks);

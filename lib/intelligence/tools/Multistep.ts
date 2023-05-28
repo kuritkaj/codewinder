@@ -8,8 +8,8 @@ import { Planner } from "@/lib/intelligence/chains/Planner";
 import { BaseLanguageModel } from "langchain/base_language";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 
-const NAME = "multi-step";
-const DESCRIPTION = `for complex objectives that have multiple steps or tasks or objectives that have more than one part.
+export const NAME = "multi-step";
+export const DESCRIPTION = `for complex objectives that have multiple steps or tasks or objectives that have more than one part.
 Input format:
 {{
   "action": "${ NAME }",
@@ -31,8 +31,8 @@ interface MultistepToolParams extends ToolParams {
 }
 
 export class Multistep extends Tool {
-    readonly name = NAME;
-    readonly description = DESCRIPTION;
+    public readonly name = NAME;
+    public readonly description = DESCRIPTION;
 
     private readonly creative: BaseLanguageModel;
     private readonly maxIterations?: number;
@@ -47,6 +47,7 @@ export class Multistep extends Tool {
         this.maxIterations = maxIterations;
         this.memory = memory;
         this.model = model;
+        this.returnDirect = true;
         this.tools = tools;
     }
 

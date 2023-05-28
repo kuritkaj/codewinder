@@ -9,13 +9,6 @@ import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
-const DESCRIPTION = `finding or summarizing webpage content from a provided url.
-Input format:
-{{
-  "action": "tool name",
-  "action_input": ["https://www.google.com","how to make a cake"]
-}}`;
-
 const getContent = async (
     baseUrl: string,
     h: Headers
@@ -141,6 +134,16 @@ const DEFAULT_HEADERS = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Headers = Record<string, any>;
 
+export const NAME = "web-browser";
+export const DESCRIPTION = `finding or summarizing webpage content from a provided url.
+Never make up a link, only use a valid url returned as a result of a previous web search.
+Input should be "ONE valid http URL including protocol","what to find on the page".
+Input format:
+{{
+  "action": "tool name",
+  "action_input": ["https://www.google.com","how to make a cake"]
+}}`;
+
 export interface WebBrowserParams extends ToolParams {
     embeddings: Embeddings;
     headers?: Headers;
@@ -149,8 +152,8 @@ export interface WebBrowserParams extends ToolParams {
 }
 
 export class WebBrowser extends Tool {
-    readonly name = "web-browser";
-    readonly description = DESCRIPTION;
+    public readonly name = NAME;
+    public readonly description = DESCRIPTION;
 
     private readonly embeddings: Embeddings;
     private readonly headers: Headers;

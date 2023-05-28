@@ -6,8 +6,8 @@ import { LLMChain } from "langchain";
 import { PromptTemplate } from "langchain/prompts";
 import * as vm from "node:vm";
 
-const NAME = "javascript-evaluator";
-const DESCRIPTION = `an AI-powered JavaScript evaluator. 
+export const NAME = "javascript-evaluator";
+export const DESCRIPTION = `an AI-powered JavaScript evaluator. 
 Write a description for a function that will return the desired output as a string.
 Input format:
 {{
@@ -57,8 +57,8 @@ export interface JavascriptEvaluatorParams extends ToolParams {
 }
 
 export class JavascriptEvaluator extends Tool {
-    readonly name = NAME;
-    readonly description = DESCRIPTION;
+    public readonly name = NAME;
+    public readonly description = DESCRIPTION;
 
     private readonly llmChain: LLMChain;
 

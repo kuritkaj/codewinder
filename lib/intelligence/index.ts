@@ -106,9 +106,11 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         maxIterations: MAX_ITERATIONS,
         memory,
         model: predictable,
-        tools: toolset
+        tools
     });
 
+    // The Executor gets all tools including the multistep, since that's a tool that could be returned by the ReActAgent
+    // (see ReActAgentOutputParser). However, the ReActAgent itself does not get the multistep, so that it's not selected directly.
     return ReActExecutor.fromAgentAndTools({
         agent,
         callbacks,

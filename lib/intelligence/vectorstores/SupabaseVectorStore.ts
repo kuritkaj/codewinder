@@ -2,7 +2,7 @@
 // In order to change to upsert of new docs in addVectors().
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { VectorStore } from "langchain/vectorstores";
+import { VectorStore } from "langchain/vectorstores/base";
 import { Embeddings } from "langchain/embeddings";
 import { Document } from "langchain/document";
 

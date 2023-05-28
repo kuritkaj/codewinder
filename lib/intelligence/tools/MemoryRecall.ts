@@ -3,17 +3,20 @@ import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { BaseLanguageModel } from "langchain/base_language";
 
+export const NAME = "memory-recall";
+export const DESCRIPTION = `only use this tool when directed to by the user. Input is a string query.`;
+
 interface MemoryRecallParams extends ToolParams {
     memory: MemoryStore;
     model: BaseLanguageModel;
 }
 
 export class MemoryRecall extends Tool {
-    readonly name = "memory-recall";
-    readonly description = "only use this tool when directed to by the user. Input is a string query.";
+    public readonly name = NAME;
+    public readonly description = DESCRIPTION;
 
-    readonly memory: MemoryStore;
-    readonly model: BaseLanguageModel;
+    private readonly memory: MemoryStore;
+    private readonly model: BaseLanguageModel;
 
     constructor({ model, memory, verbose, callbacks }: MemoryRecallParams) {
         super(verbose, callbacks);
