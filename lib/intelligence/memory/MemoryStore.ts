@@ -7,8 +7,8 @@ import { createClient } from "@supabase/supabase-js";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 
 export class MemoryStore {
-    memory: VectorStore;
-    textSplitter: TextSplitter;
+    private readonly memory: VectorStore;
+    private readonly textSplitter: TextSplitter;
 
     constructor(memory: VectorStore) {
         this.memory = memory;
@@ -59,10 +59,13 @@ export class MemoryStore {
     }
 
     async retrieve(query: string, k?: number, filter?: VectorStore["FilterType"] | undefined): Promise<Document[]> {
+        if (!query) throw new Error("A query is required to retrieve memories.");
         return await this.memory.similaritySearch(query, k, filter);
     }
 
     async retrieveSnippet(query: string, threshold): Promise<Document[]> {
+        if (!query) throw new Error("A query is required to retrieve memories.");
+
         // search the memory for the top 1 document that matches the query
         const docsWithScores = await this.memory.similaritySearchWithScore(query, 1);
         if (docsWithScores.length === 0) return [];
@@ -95,6 +98,7 @@ export class MemoryStore {
     }
 
     async storeDocuments(documents: Document[], metadata: Record<string, any>[] = []) {
+        if (!documents || documents.length === 0) throw new Error("Documents are required to store memories.");
         // Add created date to metadata for all documents
         for (const document of documents) {
             document.metadata = [...metadata, { created: new Date()}]
@@ -103,6 +107,7 @@ export class MemoryStore {
     }
 
     async storeText(text: string, metadata: Record<string, any>[] = []) {
+        if (!text) throw new Error("Text is required to store memories.");
         const documents = await this.textSplitter.createDocuments(
             [ text ]
         );

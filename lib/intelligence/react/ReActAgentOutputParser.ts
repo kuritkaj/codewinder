@@ -5,7 +5,7 @@ import { Multistep } from "@/lib/intelligence/tools/Multistep";
 import { BaseOutputParser } from "langchain/schema/output_parser";
 
 export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction | AgentFinish> {
-    finishToolName: string;
+    private readonly finishToolName: string;
 
     constructor(fields?: OutputParserArgs) {
         super();

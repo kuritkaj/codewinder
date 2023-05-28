@@ -152,10 +152,10 @@ export class WebBrowser extends Tool {
     readonly name = "web-browser";
     readonly description = DESCRIPTION;
 
-    readonly embeddings: Embeddings;
-    readonly headers: Headers;
-    readonly memory: MemoryStore;
-    readonly model: BaseLanguageModel;
+    private readonly embeddings: Embeddings;
+    private readonly headers: Headers;
+    private readonly memory: MemoryStore;
+    private readonly model: BaseLanguageModel;
 
     constructor({
                     model,

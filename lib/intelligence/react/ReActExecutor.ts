@@ -18,11 +18,11 @@ export interface AgentExecutorInput extends ChainInputs {
  * @augments BaseChain
  */
 export class ReActExecutor extends BaseChain {
-    readonly agent: ReActAgent;
-    readonly earlyStoppingMethod: StoppingMethod = "force";
-    readonly maxIterations?: number = 15;
-    readonly returnIntermediateSteps: boolean = false;
-    readonly tools: Tool[];
+    private readonly agent: ReActAgent;
+    private readonly earlyStoppingMethod: StoppingMethod = "force";
+    private readonly maxIterations?: number = 15;
+    private readonly returnIntermediateSteps: boolean = false;
+    private readonly tools: Tool[];
 
     get inputKeys() {
         return this.agent.inputKeys;

@@ -80,7 +80,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         // new LocalBrowser({ model: capable }),
         // new CreativeWriter({ model: creative, callbacks }),
         new WebBrowser({ model: predictable, memory, embeddings, callbacks }),
-        new JavascriptEvaluator(),
+        new JavascriptEvaluator({creative, callbacks}),
         new MemoryRecall({ model: predictable, memory }),
         new MemoryStorage({ model: predictable, memory, embeddings })
     ];

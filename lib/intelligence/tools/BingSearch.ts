@@ -23,10 +23,10 @@ export class BingSearch extends Tool {
     readonly name = NAME;
     readonly description = DESCRIPTION;
 
-    readonly embeddings: Embeddings;
-    readonly key: string;
-    readonly memory: MemoryStore;
-    readonly params: Record<string, string>;
+    private readonly embeddings: Embeddings;
+    private readonly key: string;
+    private readonly memory: MemoryStore;
+    private readonly params: Record<string, string>;
 
     constructor({ apiKey, params, memory, embeddings, verbose, callbacks }: BingSearchParams) {
         super(verbose, callbacks);

@@ -38,10 +38,10 @@ interface ReActAgentInput {
 }
 
 export class ReActAgent extends Agent {
-    readonly creativeChain: LLMChain;
-    readonly maxIterations: number;
-    readonly memory: MemoryStore;
-    readonly tools: Tool[];
+    private readonly creativeChain: LLMChain;
+    private readonly maxIterations: number;
+    private readonly memory: MemoryStore;
+    private readonly tools: Tool[];
 
     constructor({ creativeChain, llmChain, memory, tools, maxIterations }: ReActAgentInput) {
         const outputParser = ReActAgent.getDefaultOutputParser();
@@ -223,8 +223,9 @@ export class ReActAgent extends Agent {
 
         // Construct the scratchpad and add it to the inputs
         const thoughts = await this.constructScratchPad(steps);
+        const lastStep = steps.length > 0 ? steps[steps.length - 1] : undefined;
         const memories = await this.memory.retrieveSnippet(
-            steps.length > 0 ? steps.pop().observation : inputs[OBJECTIVE_INPUT],
+            lastStep?.observation ? lastStep?.observation : inputs[OBJECTIVE_INPUT],
             0.85
         );
         // If memories were found, then retrieve the page content of the first one (which is the highest scoring).
@@ -232,7 +233,7 @@ export class ReActAgent extends Agent {
 
         newInputs[SCRATCHPAD_INPUT] = [
             thoughts,
-            `${ this.memoryPrefix() } ${ memory ? memory : "No memories." }`,
+            `${ this.memoryPrefix() } \"\"\"${ memory ? memory : "No memories." }\"\"\"`,
             (steps.length + 1 <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
         ].join("\n");
 
