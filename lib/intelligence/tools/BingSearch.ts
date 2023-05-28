@@ -4,7 +4,7 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 
-const NAME = "news-search";
+const NAME = "web-search";
 const DESCRIPTION = `find answers on the web. 
 Input format:
 {{
@@ -71,7 +71,7 @@ export class BingSearch extends Tool {
         }
 
         for (const result of results) {
-            if (this.memory) await this.memory.storeText(result.snippet, [ { name: result.name }, { url: result.url } ]);
+            if (this.memory) await this.memory.storeTexts([result.snippet], [ { name: result.name }, { url: result.url } ]);
         }
 
         const links = results.map(result => `[${ result.name }](${ result.url }) - ${ result.snippet }`);

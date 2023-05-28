@@ -68,7 +68,7 @@ export class MemoryStorage extends Tool {
 
             const memory = res.generations[0][0].text;
 
-            await this.memory.storeText(memory);
+            await this.memory.storeTexts([memory]);
 
             return memory;
         }

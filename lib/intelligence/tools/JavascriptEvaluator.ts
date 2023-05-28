@@ -53,7 +53,7 @@ Considerations:
 `;
 
 export interface JavascriptEvaluatorParams extends ToolParams {
-    creative: BaseLanguageModel;
+    model: BaseLanguageModel;
 }
 
 export class JavascriptEvaluator extends Tool {
@@ -62,13 +62,13 @@ export class JavascriptEvaluator extends Tool {
 
     private readonly llmChain: LLMChain;
 
-    constructor({ creative, verbose, callbacks }: JavascriptEvaluatorParams) {
+    constructor({ model, verbose, callbacks }: JavascriptEvaluatorParams) {
         super(verbose, callbacks);
 
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         this.llmChain = new LLMChain({
-            llm: creative,
+            llm: model,
             callbacks: callbacks,
             prompt
         });

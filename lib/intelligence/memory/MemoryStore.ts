@@ -2,9 +2,9 @@ import { VectorStore } from "langchain/dist/vectorstores/base";
 import { RecursiveCharacterTextSplitter, TextSplitter, TokenTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { Document } from "langchain/document";
-import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import { createClient } from "@supabase/supabase-js";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { SupabaseVectorStore } from "@/lib/intelligence/vectorstores/SupabaseVectorStore";
 
 export class MemoryStore {
     private readonly memory: VectorStore;
@@ -33,7 +33,7 @@ export class MemoryStore {
         });
     }
 
-    static async makeDurableStore(embeddings: OpenAIEmbeddings) {
+    static async makeDurableStore(index: string, embeddings: OpenAIEmbeddings) {
         const supabaseApiKey = process.env.SUPABASE_API_KEY;
         if (!Boolean(supabaseApiKey)) {
             throw new Error('Supabase api key not found.');
@@ -46,8 +46,8 @@ export class MemoryStore {
         const client = createClient(supabaseUrl, supabaseApiKey);
         const memory = await SupabaseVectorStore.fromExistingIndex(embeddings, {
             client,
-            tableName: "memories",
-            queryName: "match_memories",
+            tableName: index,
+            queryName: `match_${index}`,
         });
 
         return new MemoryStore(memory);
@@ -59,12 +59,12 @@ export class MemoryStore {
     }
 
     async retrieve(query: string, k?: number, filter?: VectorStore["FilterType"] | undefined): Promise<Document[]> {
-        if (!query) throw new Error("A query is required to retrieve memories.");
+        if (!query) throw new Error("A query is required.");
         return await this.memory.similaritySearch(query, k, filter);
     }
 
     async retrieveSnippet(query: string, threshold): Promise<Document[]> {
-        if (!query) throw new Error("A query is required to retrieve memories.");
+        if (!query) throw new Error("A query is required.");
 
         // search the memory for the top 1 document that matches the query
         const docsWithScores = await this.memory.similaritySearchWithScore(query, 1);
@@ -98,7 +98,7 @@ export class MemoryStore {
     }
 
     async storeDocuments(documents: Document[], metadata: Record<string, any>[] = []) {
-        if (!documents || documents.length === 0) throw new Error("Documents are required to store memories.");
+        if (!documents || documents.length === 0) throw new Error("Documents are required.");
         // Add created date to metadata for all documents
         for (const document of documents) {
             document.metadata = [...metadata, { created: new Date()}]
@@ -106,10 +106,10 @@ export class MemoryStore {
         await this.memory.addDocuments(documents);
     }
 
-    async storeText(text: string, metadata: Record<string, any>[] = []) {
-        if (!text) throw new Error("Text is required to store memories.");
+    async storeTexts(texts: string[], metadata: Record<string, any>[] = []) {
+        if (!texts || texts.length === 0) throw new Error("Texts are required.");
         const documents = await this.textSplitter.createDocuments(
-            [ text ]
+            texts
         );
         for (const document of documents) {
             document.metadata = [...metadata, { created: new Date()}]

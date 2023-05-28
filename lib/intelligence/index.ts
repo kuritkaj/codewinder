@@ -31,6 +31,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     //     },
     //     callbacks
     // });
+
     // This is GPT3.5 with temp of 0
     const predictable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
@@ -40,8 +41,8 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         callbacks,
         maxRetries: 2
     });
+
     // This is GPT4all with temp of 0
-    // This is GPT3.5 with temp of 0
     // const predictable = new OpenAI({
     //     modelName: "wizardLM-7B.q4_2",
     //     temperature: 0,
@@ -52,19 +53,21 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     // }, {
     //     basePath: "http://127.0.0.1:4891/v1",
     // });
-    // This is GPT4 with temp of 0
-    // const capable = new ChatOpenAI({
-    //     openAIApiKey: openAIApiKey,
-    //     temperature: 0,
-    //     modelName: 'gpt-4',
-    //     streaming: Boolean(callbacks),
-    //     callbacks,
-    //     maxRetries: 2
-    // });
 
-    // This is GPT4 with temp of the default
+    // This is GPT4 with temp of 0.5
+    const powerful = new ChatOpenAI({
+        openAIApiKey: openAiApiKey,
+        temperature: 0.5,
+        modelName: 'gpt-4',
+        streaming: Boolean(callbacks),
+        callbacks,
+        maxRetries: 2
+    });
+
+    // This is GPT4 with temp of 0.7 (which is the default)
     const creative = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
+        temperature: 0.7,
         modelName: 'gpt-4',
         streaming: Boolean(callbacks),
         callbacks,
@@ -73,14 +76,14 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
 
     const embeddings = new OpenAIEmbeddings({ openAIApiKey: openAiApiKey });
     const memory = process.env.SUPABASE_URL ?
-        await MemoryStore.makeDurableStore(embeddings) :
+        await MemoryStore.makeDurableStore("memories", embeddings) :
         await MemoryStore.makeTransientStore(embeddings);
 
     const tools: Tool[] = [
         // new LocalBrowser({ model: capable }),
         // new CreativeWriter({ model: creative, callbacks }),
         new WebBrowser({ model: predictable, memory, embeddings, callbacks }),
-        new JavascriptEvaluator({creative, callbacks}),
+        new JavascriptEvaluator({ model: powerful, callbacks }),
         new MemoryRecall({ model: predictable, memory }),
         new MemoryStorage({ model: predictable, memory, embeddings })
     ];

@@ -208,7 +208,7 @@ export class WebBrowser extends Tool {
         }
 
         // Store the full text for later retrieval
-        if (this.memory) await this.memory.storeText(text, [ { name: title }, { url: baseUrl } ]);
+        if (this.memory) await this.memory.storeTexts([text], [ { name: title }, { url: baseUrl } ]);
 
         const textSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: 2000,
