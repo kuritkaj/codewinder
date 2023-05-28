@@ -6,7 +6,6 @@ import { Callbacks } from "langchain/callbacks";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { BingNews } from "@/lib/intelligence/tools/BingNews";
 import { Multistep } from "@/lib/intelligence/tools/Multistep";
 import { MemoryRecall } from "@/lib/intelligence/tools/MemoryRecall";
 import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
@@ -86,7 +85,6 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         new MemoryStorage({ model: predictable, memory, embeddings })
     ];
     if (Boolean(bingApiKey)) {
-        tools.push(new BingNews({ apiKey: bingApiKey, embeddings, callbacks }));
         tools.push(new BingSearch({ apiKey: bingApiKey, embeddings, callbacks }));
     }
     const multistep = new Multistep({
