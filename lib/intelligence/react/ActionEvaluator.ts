@@ -14,7 +14,7 @@ export const GUIDANCE = `
 An AI assistant is helping a user achieve this specific objective: {${ OBJECTIVE_INPUT }}
 The AI assistant was asked to use one or more tools to achieve this objective.
 
-Here is the history of past actions and experiences to achieve this objective: {${ SCRATCHPAD_INPUT }}
+Here is the history of past actions and experiences: {${ SCRATCHPAD_INPUT }}
 
 Based on these past actions and experiences, the AI has now responded with: {${ RESPONSE_INPUT }}
 
@@ -27,7 +27,8 @@ Provide a step-by-step evaluation of the response based on the following criteri
 * Does the response only select one or more tools from the allowed tools list?
 * Are too many steps required to achieve the objective?
 
-Based on this evaluation, provide a score from 1 to 5 (low to high) representing your confidence that the response will achieve the stated objective.
+Based on this evaluation, score the response on a scale of 1 to 5 with 1 being low and 5 is high.
+This score should represent your confidence level of whether or note the responses will meet the objective.
 
 Use this format to respond:
 ${EVALUATION}: evaluation of the response

@@ -44,7 +44,7 @@ export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction |
                 const actions = JSON.parse(json);
 
                 if (Array.isArray(actions) && actions.length > 1) {
-                    const toolInput = `{ "steps": [${actions.map(action => { return action.action + ": " + action.action_input; }).join(",\n") }] }`;
+                    const toolInput = `{ "steps": [${actions.map(action => { return action.action_input; }).join(",\n") }] }`;
                     return {
                         tool: MultistepName,
                         toolInput,

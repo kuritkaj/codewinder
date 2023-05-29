@@ -30,7 +30,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     //     callbacks
     // });
 
-    // This is GPT3.5 with temp of 0
+    // This should represent intelligence that is great at determiing the best tool to use.
     const predictable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         modelName: "gpt-3.5-turbo",
@@ -53,7 +53,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     //     basePath: "http://127.0.0.1:4891/v1",
     // });
 
-    // This is GPT4 with temp of 0.5
+    // This should represent intelligence that is great at writing code.
     const powerful = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         modelName: "gpt-4",
@@ -63,7 +63,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         maxRetries: 2
     });
 
-    // This is GPT4 with temp of 0.7 (which is the default)
+    // This should represent intelligence that is creative.
     const creative = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         temperature: 0.7,

@@ -275,9 +275,9 @@ export class ReActAgent extends Agent {
         }
 
         const tokenCount = await this.llmChain.llm.getNumTokens([thoughts, memory, suggestion].join("\n"));
-        if (tokenCount < this.maxTokens && steps.length > 0) {
+        if (tokenCount > this.maxTokens && steps.length > 0) {
             // Remove the first step and try again, recursive call to keep length down.
-            return this.prepareInputs(inputs, steps.splice(0, 1));
+            return this.prepareInputs(inputs, steps.slice(1));
         } else {
             return newInputs;
         }
