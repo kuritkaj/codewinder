@@ -1581,6 +1581,7 @@ __metadata:
     react-textarea-autosize: ^8.4.1
     remark-gfm: ^3.0.1
     replicate: ^0.12.1
+    tiktoken: ^1.0.7
     ts-node: ^10.9.1
     typescript: 4.9.5
     ws: ^8.12.1
@@ -5875,6 +5876,13 @@ __metadata:
   version: 0.2.0
   resolution: "text-table@npm:0.2.0"
   checksum: b6937a38c80c7f84d9c11dd75e49d5c44f71d95e810a3250bd1f1797fc7117c57698204adf676b71497acc205d769d65c16ae8fa10afad832ae1322630aef10a
+  languageName: node
+  linkType: hard
+
+"tiktoken@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "tiktoken@npm:1.0.7"
+  checksum: 289fc400c18992bf5bc1f5c4fa95e564d8ac0640084d89712d449314c2a94ea76efdbbd3b0aa21c1d89846982e097e0713c6a0c3db7ff0f9fecf2b1956bc8022
   languageName: node
   linkType: hard
 

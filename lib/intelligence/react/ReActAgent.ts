@@ -42,6 +42,7 @@ export class ReActAgent extends Agent {
     private readonly creativeChain: LLMChain;
     private readonly maxIterations: number;
     private readonly memory: MemoryStore;
+    private readonly maxTokens: number;
     private readonly tools: Tool[];
 
     constructor({ creativeChain, llmChain, memory, tools, maxIterations }: ReActAgentInput) {
@@ -54,6 +55,7 @@ export class ReActAgent extends Agent {
 
         this.creativeChain = creativeChain;
         this.maxIterations = maxIterations;
+        this.maxTokens = 4096 - 1000; // Rough estimate for GPT-3 with room for prompt - https://platform.openai.com/tokenizer
         this.memory = memory;
         this.tools = tools;
     }
@@ -259,12 +261,12 @@ export class ReActAgent extends Agent {
         const recent = memories && memories.length > 0 ? memories.pop() : undefined;
         const content = recent ? recent.pageContent + " " + JSON.stringify(recent.metadata) : "";
         const memory = `${ this.memoryPrefix() } \"\"\"${ content ? content : "No relevant memories recalled." }\"\"\"`
-        const prompt = (steps.length + 1 <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
+        const suggestion = (steps.length + 1 <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
 
         newInputs[SCRATCHPAD_INPUT] = [
             thoughts,
             memory,
-            prompt
+            suggestion
         ].join("\n");
 
         // Add the appropriate stop phrases for the llm
@@ -272,7 +274,13 @@ export class ReActAgent extends Agent {
             newInputs.stop = this._stop();
         }
 
-        return newInputs;
+        const tokenCount = await this.llmChain.llm.getNumTokens([thoughts, memory, suggestion].join("\n"));
+        if (tokenCount < this.maxTokens && steps.length > 0) {
+            // Remove the first step and try again, recursive call to keep length down.
+            return this.prepareInputs(inputs, steps.splice(0, 1));
+        } else {
+            return newInputs;
+        }
     }
 
     static validateTools(tools: Tool[]) {
