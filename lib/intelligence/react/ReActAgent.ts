@@ -111,7 +111,10 @@ export class ReActAgent extends Agent {
             `{${ SCRATCHPAD_INPUT }}`
         ].join("\n");
 
-        return new PromptTemplate({ template: [system, human].join("\n"), inputVariables: [TOOLING_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT] });
+        return new PromptTemplate({
+            template: [system, human].join("\n"),
+            inputVariables: [CONTEXT_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT, TOOLING_INPUT]
+        });
     }
 
     async evaluateOutputs(
@@ -132,6 +135,39 @@ export class ReActAgent extends Agent {
 
     static getDefaultOutputParser(_fields?: OutputParserArgs) {
         return new ReActAgentActionOutputParser(_fields);
+    }
+
+    /**
+     * Create a new agent based on the provided parameters.
+     */
+    static makeAgent({
+                         model,
+                         creative,
+                         memory,
+                         tools,
+                         callbacks,
+                         maxIterations = undefined
+                     }: { model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, maxIterations?: number }): ReActAgent {
+        ReActAgent.validateTools(tools);
+
+        const llmChain = new LLMChain({
+            prompt: ReActAgent.createPrompt(tools),
+            llm: model,
+            callbacks
+        });
+        const creativeChain = new LLMChain({
+            prompt: ReActAgent.createPrompt(tools),
+            llm: creative,
+            callbacks
+        });
+
+        return new ReActAgent({
+            llmChain,
+            creativeChain,
+            memory,
+            tools,
+            maxIterations
+        });
     }
 
     /**
@@ -174,39 +210,6 @@ export class ReActAgent extends Agent {
     }
 
     /**
-     * Create a new agent based on the provided parameters.
-     */
-    static makeAgent({
-                         model,
-                         creative,
-                         memory,
-                         tools,
-                         callbacks,
-                         maxIterations = undefined
-                     }: { model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, maxIterations?: number }): ReActAgent {
-        ReActAgent.validateTools(tools);
-
-        const llmChain = new LLMChain({
-            prompt: ReActAgent.createPrompt(tools),
-            llm: model,
-            callbacks
-        });
-        const creativeChain = new LLMChain({
-            prompt: ReActAgent.createPrompt(tools),
-            llm: creative,
-            callbacks
-        });
-
-        return new ReActAgent({
-            llmChain,
-            creativeChain,
-            memory,
-            tools,
-            maxIterations
-        });
-    }
-
-    /**
      *  Prepare the inputs for the next step.
      *
      *  @param steps - Steps the LLM has taken so far, along with observations from each.
@@ -233,7 +236,7 @@ export class ReActAgent extends Agent {
 
         newInputs[SCRATCHPAD_INPUT] = [
             thoughts,
-            `${ this.memoryPrefix() } \"\"\"${ memory ? memory : "No memories." }\"\"\"`,
+            `${ this.memoryPrefix() } \"\"\"${ memory ? memory : inputs[CONTEXT_INPUT] }\"\"\"`,
             (steps.length + 1 <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
         ].join("\n");
 

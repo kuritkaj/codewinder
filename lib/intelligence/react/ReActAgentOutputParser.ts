@@ -1,7 +1,7 @@
 import { OutputParserArgs } from "langchain/agents";
 import { ACTION, FINAL_RESPONSE, FORMAT_INSTRUCTIONS } from "@/lib/intelligence/react/prompts";
 import { AgentAction, AgentFinish } from "langchain/schema";
-import { NAME as MultistepName } from "@/lib/intelligence/tools/Multistep";
+import { NAME as MultistepName } from "@/lib/intelligence/multistep/Multistep";
 import { BaseOutputParser } from "langchain/schema/output_parser";
 
 export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction | AgentFinish> {

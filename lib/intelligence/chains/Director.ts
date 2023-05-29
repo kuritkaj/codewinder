@@ -6,8 +6,6 @@ import { BaseLanguageModel } from "langchain/base_language";
 export const FINAL_RESPONSE = "Final Response";
 export const OBJECTIVE = "Objective";
 export const OBJECTIVE_INPUT = "objective";
-export const THOUGHT = "Thought";
-export const TOOLING_INPUT = "tooling";
 
 export const GUIDANCE = `
 You are an AI assistant with the responsibility to determine if a stated objective can be easily responded to - or if it requires further research or is a multi-part problem.

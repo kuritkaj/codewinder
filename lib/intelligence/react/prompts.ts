@@ -21,14 +21,7 @@ Guidance on tool use:
 `;
 
 export const FORMAT_INSTRUCTIONS = `
-Is this:
-* a casual greeting, 
-* a conversation, 
-* a request to edit, debug or explain code
-* or something that requires a creative response such as a joke or a poem?
-If so, then reply with ${FINAL_RESPONSE}: and your response.
-
-Otherwise, use this format to reason about the best course of action:
+Use this format to reason about the best course of action:
 ${OBJECTIVE}: the objective
 ${MEMORY}: a thought or memory that might be useful
 ${THOUGHT}: think about this step-by-step
@@ -47,6 +40,10 @@ ${FINAL_RESPONSE}: the final response to the ${OBJECTIVE} including source refer
 `;
 
 export const GUIDANCE = `
+Note: If the ${OBJECTIVE} is a casual greeting or conversation, then respond with \`${FINAL_RESPONSE}:\`.
+Note: If the ${OBJECTIVE} asked for a creative response such as a joke or a poem, then respond with \`${FINAL_RESPONSE}:\`.
+Note: If the ${OBJECTIVE} is a request to edit, debug, or to explain code, then respond with \`${FINAL_RESPONSE}:\`.
+Note: If the ${OBJECTIVE} triggered a memory and it meets the ${OBJECTIVE}, then respond with \`${FINAL_RESPONSE}:\`.
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended. Never ask for clarification.
 Note: If the ${OBJECTIVE} needs information that you don't have, use a tool to learn more.
 Note: If the ${OBJECTIVE} is to make a table or document, then use markdown formatting to create it.

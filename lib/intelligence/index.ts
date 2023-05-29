@@ -6,7 +6,7 @@ import { Callbacks } from "langchain/callbacks";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { Multistep } from "@/lib/intelligence/tools/Multistep";
+import { Multistep } from "@/lib/intelligence/multistep/Multistep";
 import { MemoryRecall } from "@/lib/intelligence/tools/MemoryRecall";
 import { MemoryStorage } from "@/lib/intelligence/tools/MemoryStorage";
 import { ChatOpenAI } from "langchain/chat_models/openai";
