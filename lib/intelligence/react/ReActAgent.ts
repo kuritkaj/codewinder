@@ -18,7 +18,7 @@ import { CallbackManager, Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
 import { BaseLanguageModel } from "langchain/base_language";
-import { Reflection } from "@/lib/intelligence/react/Reflection";
+import { ActionEvaluator } from "@/lib/intelligence/react/ActionEvaluator";
 
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
@@ -123,7 +123,7 @@ export class ReActAgent extends Agent {
         inputs: ChainValues,
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
-        const critic = Reflection.makeChain({ model: this.llmChain.llm, callbacks: callbackManager });
+        const critic = ActionEvaluator.makeChain({ model: this.llmChain.llm, callbacks: callbackManager });
         const evaluation = await critic.evaluate({
             objective: inputs[OBJECTIVE_INPUT],
             response: action.log,
@@ -207,6 +207,10 @@ export class ReActAgent extends Agent {
             console.error("Error in LLMChain.predict:", e);
             return this.outputParser.parse("Error in LLMChain.predict: " + e.message);
         }
+    }
+
+    async prepareForOutput(_returnValues: AgentFinish["returnValues"], _steps: AgentStep[]): Promise<AgentFinish["returnValues"]> {
+        return _returnValues;
     }
 
     /**
