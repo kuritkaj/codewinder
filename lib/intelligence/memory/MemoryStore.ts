@@ -5,12 +5,19 @@ import { Document } from "langchain/document";
 import { createClient } from "@supabase/supabase-js";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { SupabaseVectorStore } from "@/lib/intelligence/vectorstores/SupabaseVectorStore";
+import { HNSWLib } from "langchain/vectorstores/hnswlib";
+import * as path from "path";
+import * as fs from "fs";
+
+export const CACHE_DIR = ".cache";
 
 export class MemoryStore {
+    private readonly index: string;
     private readonly memory: VectorStore;
     private readonly textSplitter: TextSplitter;
 
-    constructor(memory: VectorStore) {
+    constructor(memory: VectorStore, index: string) {
+        this.index = index;
         this.memory = memory;
 
         const getEmbeddingContextSize = (modelName?: string): number => {
@@ -35,27 +42,35 @@ export class MemoryStore {
 
     static async makeDurableStore(index: string, embeddings: OpenAIEmbeddings) {
         const supabaseApiKey = process.env.SUPABASE_API_KEY;
-        if (!Boolean(supabaseApiKey)) {
-            throw new Error('Supabase api key not found.');
-        }
         const supabaseUrl = process.env.SUPABASE_URL;
-        if (!Boolean(supabaseUrl)) {
-            throw new Error('Supabase url not found.');
+
+        if (Boolean(supabaseApiKey) && Boolean(supabaseUrl)) {
+            const client = createClient(supabaseUrl, supabaseApiKey);
+            const vectorStore = await SupabaseVectorStore.fromExistingIndex(embeddings, {
+                client,
+                tableName: index,
+                queryName: `match_${ index }`,
+            });
+
+            return new MemoryStore(vectorStore, index);
+        } else {
+            const directory = path.join(process.cwd(), CACHE_DIR, index);
+            if (!fs.existsSync(directory)) fs.mkdirSync(directory);
+
+            let vectorStore: HNSWLib;
+            if (fs.readdirSync(directory).length > 0) {
+                vectorStore = await HNSWLib.load(directory, embeddings);
+            } else {
+                vectorStore = await HNSWLib.fromTexts(["initialize"], {}, embeddings);
+                await vectorStore.save(directory);
+            }
+            return new MemoryStore(vectorStore, index);
         }
-
-        const client = createClient(supabaseUrl, supabaseApiKey);
-        const memory = await SupabaseVectorStore.fromExistingIndex(embeddings, {
-            client,
-            tableName: index,
-            queryName: `match_${index}`,
-        });
-
-        return new MemoryStore(memory);
     }
 
-    static async makeTransientStore(embeddings: OpenAIEmbeddings) {
+    static async makeTransientStore(index: string, embeddings: OpenAIEmbeddings) {
         const memory = await new MemoryVectorStore(embeddings);
-        return new MemoryStore(memory);
+        return new MemoryStore(memory, index);
     }
 
     async retrieve(query: string, k?: number, filter?: VectorStore["FilterType"] | undefined): Promise<Document[]> {
@@ -97,6 +112,14 @@ export class MemoryStore {
         return await vectorStore.similaritySearch(query, 1);
     }
 
+    private async save() {
+        const directory = path.join(process.cwd(), CACHE_DIR, this.index);
+
+        if (this.memory instanceof HNSWLib) {
+            await this.memory.save(directory);
+        }
+    }
+
     async storeDocuments(documents: Document[], metadata: Record<string, any>[] = []) {
         if (!documents || documents.length === 0) throw new Error("Documents are required.");
         // Add created date to metadata for all documents
@@ -104,6 +127,7 @@ export class MemoryStore {
             document.metadata = [...metadata, { created: new Date()}]
         }
         await this.memory.addDocuments(documents);
+        await this.save();
     }
 
     async storeTexts(texts: string[], metadata: Record<string, any>[] = []) {
@@ -115,5 +139,6 @@ export class MemoryStore {
             document.metadata = [...metadata, { created: new Date()}]
         }
         await this.memory.addDocuments(documents);
+        await this.save();
     }
 }

@@ -75,11 +75,8 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     });
 
     const embeddings = new OpenAIEmbeddings({ openAIApiKey: openAiApiKey });
-    const memory = process.env.SUPABASE_URL ?
-        await MemoryStore.makeDurableStore("memories", embeddings) :
-        await MemoryStore.makeTransientStore(embeddings);
-
-    const knowledge = await MemoryStore.makeTransientStore(embeddings);
+    const memory = await MemoryStore.makeDurableStore("memories", embeddings);
+    const knowledge = await MemoryStore.makeDurableStore("knowledge", embeddings);
 
     const tools: Tool[] = [
         // new LocalBrowser({ model: capable }),
