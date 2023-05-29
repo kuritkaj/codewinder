@@ -84,3 +84,37 @@ begin
   limit match_count;
 end;
 $$;
+
+-- Create a table to store your memories
+create table knowledge (
+  id bigserial primary key,
+  content text, -- corresponds to Langchain's Document.pageContent
+  metadata jsonb, -- corresponds to Langchain's Document.metadata
+  embedding vector(1536) -- 1536 works for OpenAI embeddings, change if needed
+);
+
+-- Create a function to search for knowledge
+create function match_knowledge (
+  query_embedding vector(1536),
+  match_count int
+) returns table (
+  id bigint,
+  content text,
+  metadata jsonb,
+  similarity float
+)
+language plpgsql
+as $$
+#variable_conflict use_column
+begin
+  return query
+  select
+    id,
+    content,
+    metadata,
+    1 - (knowledge.embedding <=> query_embedding) as similarity
+  from memories
+  order by knowledge.embedding <=> query_embedding
+  limit match_count;
+end;
+$$;

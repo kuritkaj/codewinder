@@ -19,6 +19,7 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
 import { BaseLanguageModel } from "langchain/base_language";
 import { ActionEvaluator } from "@/lib/intelligence/react/ActionEvaluator";
+import { MemoryCondenser } from "@/lib/intelligence/react/MemoryCondenser";
 
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
@@ -90,7 +91,7 @@ export class ReActAgent extends Agent {
                 [
                     this.llmPrefix(),
                     action.log,
-                    `${ this.observationPrefix() } ${ observation }`
+                    `${ this.observationPrefix() } \"\"\"${ observation }\"\"\"`
                 ].join(separator)
             );
         }, "");
@@ -124,13 +125,14 @@ export class ReActAgent extends Agent {
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
         const critic = ActionEvaluator.makeChain({ model: this.llmChain.llm, callbacks: callbackManager });
+        const scratchpad = await this.constructScratchPad(steps);
         const evaluation = await critic.evaluate({
             objective: inputs[OBJECTIVE_INPUT],
             response: action.log,
-            scratchpad: inputs[SCRATCHPAD_INPUT],
+            scratchpad,
             tools: inputs[TOOLING_INPUT],
         });
-        const parsed = this.outputParser.parse(evaluation);
+        const parsed = await this.outputParser.parse(evaluation);
         // If a new action is provided, then return that. Otherwise, return the original.
         if ("tool" in parsed) {
             return parsed;
@@ -138,7 +140,6 @@ export class ReActAgent extends Agent {
             return action;
         }
     }
-
 
     static getDefaultOutputParser(_fields?: OutputParserArgs) {
         return new ReActAgentActionOutputParser(_fields);
@@ -200,7 +201,7 @@ export class ReActAgent extends Agent {
             // Otherwise, switch from the baseChain to the creativeChain for the final output.
             if ("tool" in action) {
                 // This is an action
-                return this.outputParser.parse(output);
+                return action;
             } else {
                 // Ensure we include the output the previous execution for this final response.
                 inputs[SCRATCHPAD_INPUT] = [ inputs[SCRATCHPAD_INPUT], output ].join("\n");
@@ -217,7 +218,19 @@ export class ReActAgent extends Agent {
     }
 
     async prepareForOutput(_returnValues: AgentFinish["returnValues"], _steps: AgentStep[]): Promise<AgentFinish["returnValues"]> {
-        return _returnValues;
+        // If there are no steps, then this is a simple greeting or similar.
+        // Or, the response was derived from a previous memory and we should not store again.
+        if (_steps && _steps.length > 0) {
+            const condenser = MemoryCondenser.makeChain({ model: this.llmChain.llm });
+            const scratchpad = await this.constructScratchPad(_steps);
+            const memory = await condenser.evaluate({
+                response: _returnValues.output,
+                scratchpad,
+            });
+            await this.memory.storeTexts([ memory ]);
+        }
+
+        return []; // No additional return values, this is just to store the above memory.
     }
 
     /**
@@ -239,16 +252,19 @@ export class ReActAgent extends Agent {
         const thoughts = await this.constructScratchPad(steps);
         const lastStep = steps.length > 0 ? steps[steps.length - 1] : undefined;
         const memories = await this.memory.retrieveSnippet(
-            lastStep?.observation ? lastStep?.observation : inputs[OBJECTIVE_INPUT],
-            0.85
+            lastStep?.action.toolInput ? lastStep?.action.toolInput : inputs[OBJECTIVE_INPUT],
+            0.75
         );
         // If memories were found, then retrieve the page content of the first one (which is the highest scoring).
-        let memory = memories && memories.length > 0 ? memories.pop().pageContent : "";
+        const recent = memories && memories.length > 0 ? memories.pop() : undefined;
+        const content = recent ? recent.pageContent + " " + JSON.stringify(recent.metadata) : "";
+        const memory = `${ this.memoryPrefix() } \"\"\"${ content ? content : "No relevant memories recalled." }\"\"\"`
+        const prompt = (steps.length + 1 <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
 
         newInputs[SCRATCHPAD_INPUT] = [
             thoughts,
-            `${ this.memoryPrefix() } \"\"\"${ memory ? memory : inputs[CONTEXT_INPUT] }\"\"\"`,
-            (steps.length + 1 <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
+            memory,
+            prompt
         ].join("\n");
 
         // Add the appropriate stop phrases for the llm

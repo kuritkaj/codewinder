@@ -33,7 +33,7 @@ Use this format to respond:
 ${EVALUATION}: evaluation of the response
 ${SCORE}: confidence score of the response from 1 to 5 (low to high)
 
-If the score is low (1, 2, or 3), then provide a new set of actions to take using this format:
+If the score is low, then provide a new set of actions to take using this format:
 Action:
 \`\`\`
 [{{
@@ -41,6 +41,8 @@ Action:
   "action_input": "tool input"
 }}]
 \`\`\`
+
+Note: steps are expensive; combine and remove steps that are redundant or unnecessary.
 `;
 
 interface EvaluatorInput {

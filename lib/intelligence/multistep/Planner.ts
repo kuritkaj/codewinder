@@ -8,6 +8,7 @@ This is provided input for the planner:
 {input}
 
 Rewrite the provided input: you may add, remove, or change the steps as you see fit.
+Note: steps are expensive; combine and remove steps that are redundant or unnecessary.
 
 When responding, ALWAYS use JSON and include the original objective and the updated tasks.
 
