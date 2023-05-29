@@ -13,7 +13,7 @@ import { Agent, ChatCreatePromptArgs, OutputParserArgs } from "langchain/agents"
 import { Tool } from "langchain/tools";
 import { PromptTemplate } from "langchain/prompts";
 import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
-import { LLMChain } from "langchain";
+import { LLMChain } from "langchain/chains";
 import { CallbackManager, Callbacks } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
@@ -130,8 +130,15 @@ export class ReActAgent extends Agent {
             scratchpad: inputs[SCRATCHPAD_INPUT],
             tools: inputs[TOOLING_INPUT],
         });
-        return this.outputParser.parse(evaluation);
+        const parsed = this.outputParser.parse(evaluation);
+        // If a new action is provided, then return that. Otherwise, return the original.
+        if ("tool" in parsed) {
+            return parsed;
+        } else {
+            return action;
+        }
     }
+
 
     static getDefaultOutputParser(_fields?: OutputParserArgs) {
         return new ReActAgentActionOutputParser(_fields);

@@ -5,21 +5,21 @@ import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 
 export const NAME = "web-search";
-export const DESCRIPTION = `find answers on the web. 
+export const DESCRIPTION = `find answers on the internet and knowledge stores. 
 Input format:
 {{
   "action": "${ NAME }",
-  "action_input": "web search query"
+  "action_input": "search query"
 }}`;
 
-export interface BingSearchParams extends ToolParams {
+export interface WebSearchParams extends ToolParams {
     apiKey: string | undefined;
     embeddings: Embeddings;
     memory?: MemoryStore;
     params?: Record<string, string>;
 }
 
-export class BingSearch extends Tool {
+export class WebSearch extends Tool {
     public readonly name = NAME;
     public readonly description = DESCRIPTION;
 
@@ -28,7 +28,7 @@ export class BingSearch extends Tool {
     private readonly memory: MemoryStore;
     private readonly params: Record<string, string>;
 
-    constructor({ apiKey, params, memory, embeddings, verbose, callbacks }: BingSearchParams) {
+    constructor({ apiKey, params, memory, embeddings, verbose, callbacks }: WebSearchParams) {
         super(verbose, callbacks);
 
         if (!apiKey) {

@@ -1,7 +1,7 @@
 import { Tool } from "langchain/tools";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { JavascriptEvaluator } from "@/lib/intelligence/tools/JavascriptEvaluator";
-import { BingSearch } from "@/lib/intelligence/tools/BingSearch";
+import { WebSearch } from "@/lib/intelligence/tools/WebSearch";
 import { Callbacks } from "langchain/callbacks";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
@@ -79,16 +79,18 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         await MemoryStore.makeDurableStore("memories", embeddings) :
         await MemoryStore.makeTransientStore(embeddings);
 
+    const knowledge = await MemoryStore.makeTransientStore(embeddings);
+
     const tools: Tool[] = [
         // new LocalBrowser({ model: capable }),
         // new CreativeWriter({ model: creative, callbacks }),
-        new WebBrowser({ model: predictable, memory, embeddings, callbacks }),
+        new WebBrowser({ model: predictable, memory: knowledge, embeddings, callbacks }),
         new JavascriptEvaluator({ model: powerful, callbacks }),
         new MemoryRecall({ model: predictable, memory }),
         new MemoryStorage({ model: predictable, memory, embeddings })
     ];
     if (Boolean(bingApiKey)) {
-        tools.push(new BingSearch({ apiKey: bingApiKey, embeddings, callbacks }));
+        tools.push(new WebSearch({ apiKey: bingApiKey, embeddings, callbacks }));
     }
     const multistep = new Multistep({
         callbacks,

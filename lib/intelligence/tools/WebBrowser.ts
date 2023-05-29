@@ -69,7 +69,6 @@ async function getPdf(content: Blob): Promise<{ text: string, title: string }> {
     }
 }
 
-
 export const getText = (
     html: string,
     baseUrl: string,
@@ -131,7 +130,6 @@ const DEFAULT_HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0",
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Headers = Record<string, any>;
 
 export const NAME = "web-browser";
