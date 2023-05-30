@@ -76,10 +76,11 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     const embeddings = new OpenAIEmbeddings({ openAIApiKey: openAiApiKey });
     const memory = await MemoryStore.makeDurableStore("memories", embeddings);
     const knowledge = await MemoryStore.makeDurableStore("knowledge", embeddings);
+    const code = await MemoryStore.makeDurableStore("code", embeddings);
 
     const tools: Tool[] = [
         new WebBrowser({ model: predictable, memory: knowledge, embeddings, callbacks }),
-        new JavascriptEvaluator({ model: powerful, callbacks }),
+        new JavascriptEvaluator({ model: powerful, memory: code, callbacks }),
         // new MemoryRecall({ model: predictable, memory }),
         // new MemoryStorage({ model: predictable, memory, embeddings })
         // new LocalBrowser({ model: capable }),

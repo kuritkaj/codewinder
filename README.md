@@ -85,7 +85,7 @@ begin
 end;
 $$;
 
--- Create a table to store your memories
+-- Create a table to store your documents
 create table knowledge (
   id bigserial primary key,
   content text, -- corresponds to Langchain's Document.pageContent
@@ -113,8 +113,42 @@ begin
     content,
     metadata,
     1 - (knowledge.embedding <=> query_embedding) as similarity
-  from memories
+  from knowledge
   order by knowledge.embedding <=> query_embedding
+  limit match_count;
+end;
+$$;
+
+-- Create a table to store your code/functions
+create table code (
+  id bigserial primary key,
+  content text, -- corresponds to Langchain's Document.pageContent
+  metadata jsonb, -- corresponds to Langchain's Document.metadata
+  embedding vector(1536) -- 1536 works for OpenAI embeddings, change if needed
+);
+
+-- Create a function to search for code
+create function match_code (
+  query_embedding vector(1536),
+  match_count int
+) returns table (
+  id bigint,
+  content text,
+  metadata jsonb,
+  similarity float
+)
+language plpgsql
+as $$
+#variable_conflict use_column
+begin
+  return query
+  select
+    id,
+    content,
+    metadata,
+    1 - (code.embedding <=> query_embedding) as similarity
+  from code
+  order by code.embedding <=> query_embedding
   limit match_count;
 end;
 $$;
