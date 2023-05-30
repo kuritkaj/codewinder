@@ -9,7 +9,7 @@ import { BaseLanguageModel } from "langchain/base_language";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 
 export const NAME = "multi-step";
-export const DESCRIPTION = `for complex objectives that have multiple steps or tasks or objectives that have more than one part.
+export const DESCRIPTION = `for complex objectives that require multiple steps or tasks to complete.
 Input format:
 {{
   "action": "${ NAME }",
@@ -22,7 +22,7 @@ Input format:
     }}
 }}`;
 
-interface MultistepToolParams extends ToolParams {
+interface MultistepParams extends ToolParams {
     creative: BaseLanguageModel;
     model: BaseLanguageModel;
     tools: Tool[];
@@ -30,7 +30,7 @@ interface MultistepToolParams extends ToolParams {
     memory: MemoryStore;
 }
 
-export class Multistep extends Tool {
+export class MultistepExecutor extends Tool {
     public readonly name = NAME;
     public readonly description = DESCRIPTION;
 
@@ -40,7 +40,7 @@ export class Multistep extends Tool {
     private readonly model: BaseLanguageModel;
     private readonly tools: Tool[];
 
-    constructor({ model, creative, memory, tools, maxIterations, verbose, callbacks }: MultistepToolParams) {
+    constructor({ model, creative, memory, tools, maxIterations, verbose, callbacks }: MultistepParams) {
         super(verbose, callbacks);
 
         this.creative = creative;
@@ -52,7 +52,7 @@ export class Multistep extends Tool {
     }
 
     async _call(input: string, callbackManager?: CallbackManagerForToolRun): Promise<string> {
-        return await Multistep.runAgent(this.model, this.creative, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations, input, callbackManager);
+        return await MultistepExecutor.runAgent(this.model, this.creative, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations, input, callbackManager);
     }
 
     static async runAgent(

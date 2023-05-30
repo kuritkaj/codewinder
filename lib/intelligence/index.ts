@@ -6,7 +6,7 @@ import { Callbacks } from "langchain/callbacks";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { Multistep } from "@/lib/intelligence/multistep/Multistep";
+import { MultistepExecutor } from "@/lib/intelligence/multistep/MultistepExecutor";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 
@@ -90,7 +90,8 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     if (Boolean(bingApiKey)) {
         tools.push(new WebSearch({ apiKey: bingApiKey, embeddings, callbacks }));
     }
-    const multistep = new Multistep({
+
+    const multistep = new MultistepExecutor({
         callbacks,
         creative,
         maxIterations: MAX_ITERATIONS,
