@@ -31,7 +31,10 @@ The code you write should take into account these considerations:
 * Code should be as simple as possible to meet the specification.
 * All output should be software that is expected to immediately be interpreted and executed so as to return a string.
 
-Here's a function you wrote similar to this in the past: {example}
+Here's a function you wrote similar to this in the past:
+\`\`\`javascript
+{example}
+\`\`\`
 
 Now, translate the natural language description into JavaScript code for immediate evaluation and return.
 

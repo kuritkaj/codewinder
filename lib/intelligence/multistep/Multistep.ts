@@ -67,9 +67,10 @@ export class Multistep extends Tool {
         callbackManager?: CallbackManagerForToolRun
     ): Promise<string> {
         const agent = ReActAgent.makeAgent({ model, creative, memory, tools, callbacks, maxIterations });
+        const toolset = [...tools, this as unknown as Tool];
         const executor = ReActExecutor.fromAgentAndTools({
             agent,
-            tools,
+            tools: toolset,
             verbose,
             callbacks,
             maxIterations

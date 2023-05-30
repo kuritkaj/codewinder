@@ -16,7 +16,7 @@ ALWAYS respond using this format:
 \`\`\`
 {{
     "objective": "objective",
-    "step": [
+    "steps": [
         "step 1 + context from the objective",
         "step 2 + context from the objective"
     ]

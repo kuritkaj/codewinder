@@ -85,16 +85,15 @@ export class ReActAgent extends Agent {
     }
 
     async constructScratchPad(steps: AgentStep[]): Promise<string> {
-        return steps.reduce((thoughts, { action, observation }, index, array) => {
-            const isLastElement = index === array.length - 1;
-            const separator = isLastElement ? "" : "\n";
+        return steps.reduce((thoughts, { action, observation }) => {
             return (
                 thoughts +
                 [
                     this.llmPrefix(),
                     action.log,
-                    `${ this.observationPrefix() } \"\"\"${ observation }\"\"\"`
-                ].join(separator)
+                    this.observationPrefix(),
+                    `\"\"\"${ observation }\"\"\"`
+                ].join("\n")
             );
         }, "");
     }
