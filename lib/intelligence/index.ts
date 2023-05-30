@@ -18,6 +18,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         throw new Error('OpenAI api key not found.');
     }
     const bingApiKey = process.env.BING_API_KEY;
+
     // const replicateApiKey = process.env.REPLICATE_API_KEY;
     //
     // const predictable = new Replicate({
@@ -30,17 +31,6 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     //     callbacks
     // });
 
-    // This should represent intelligence that is great at determiing the best tool to use.
-    const predictable = new ChatOpenAI({
-        openAIApiKey: openAiApiKey,
-        modelName: "gpt-3.5-turbo",
-        temperature: 0,
-        topP: 0.1,
-        streaming: Boolean(callbacks),
-        callbacks,
-        maxRetries: 2
-    });
-
     // This is GPT4all with temp of 0
     // const predictable = new OpenAI({
     //     modelName: "wizardLM-7B.q4_2",
@@ -52,6 +42,17 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     // }, {
     //     basePath: "http://127.0.0.1:4891/v1",
     // });
+
+    // This should represent intelligence that is great at determiing the best tool to use.
+    const predictable = new ChatOpenAI({
+        openAIApiKey: openAiApiKey,
+        modelName: "gpt-3.5-turbo",
+        temperature: 0,
+        topP: 0.1,
+        streaming: Boolean(callbacks),
+        callbacks,
+        maxRetries: 2
+    });
 
     // This should represent intelligence that is great at writing code.
     const powerful = new ChatOpenAI({
