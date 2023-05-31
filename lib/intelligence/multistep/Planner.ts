@@ -48,9 +48,9 @@ export class Planner extends LLMChain {
     }
 
     async evaluate({input}: { input: string }) {
-        const summary = await this.call({
+        const completion = await this.call({
             input
         });
-        return summary.text;
+        return completion.text;
     }
 }

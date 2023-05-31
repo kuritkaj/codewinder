@@ -42,10 +42,10 @@ export class MemoryCondenser extends LLMChain {
     }
 
     async evaluate({ response, scratchpad }: { response: string; scratchpad: string; }): Promise<string> {
-        const summary = await this.call({
+        const completion = await this.call({
             response,
             scratchpad
         });
-        return summary.text;
+        return completion.text;
     }
 }

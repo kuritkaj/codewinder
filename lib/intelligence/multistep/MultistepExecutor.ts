@@ -89,7 +89,7 @@ export class MultistepExecutor extends Tool {
 
             let inputs = {};
             inputs[OBJECTIVE_INPUT] = `${ step }`
-            if (results.length > 0) inputs[CONTEXT_INPUT] = `\"\"\"Context: ${results[results.length - 1]}\"\"\"`;
+            if (results.length > 0) inputs[CONTEXT_INPUT] = results[results.length - 1]
 
             const completion = await executor.call(inputs);
             results.push(completion.output);

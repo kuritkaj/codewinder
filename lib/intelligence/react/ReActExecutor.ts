@@ -5,6 +5,10 @@ import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/sche
 import { CallbackManagerForChainRun } from "langchain/callbacks";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 
+export type AgentContinue = {
+    log: string;
+};
+
 export interface AgentExecutorInput extends ChainInputs {
     agent: ReActAgent;
     tools: Tool[];
@@ -115,10 +119,16 @@ export class ReActExecutor extends BaseChain {
 
         // Loop until the number of iterations are met, or the plan returns with AgentFinish.
         while (this.shouldContinue(iterations)) {
-            iterations += 1;
-
             // Prepare the inputs
             const newInputs = await this.agent.prepareInputs(inputs, steps);
+
+            // Evaluate the inputs to determine if the agent can exit early.
+            const evaluation = await this.agent.evaluateInputs(newInputs, steps, runManager?.getChild());
+
+            // Check if the agent has finished
+            if ("returnValues" in evaluation) {
+                return getOutput(evaluation);
+            }
 
             // Execute the plan with the new inputs
             const output = await this.agent.plan(
@@ -132,12 +142,15 @@ export class ReActExecutor extends BaseChain {
                 return getOutput(output);
             }
 
+            // If not, then double-check the work to ensure the plan is sound.
             const newOutput = await this.agent.evaluateOutputs(output, steps, newInputs, runManager?.getChild());
 
+            // Check if the agent has finished
             if ("returnValues" in newOutput) {
                 return getOutput(newOutput);
             }
 
+            // If the output is an array, then we have multiple actions to execute.
             let newActions: AgentAction[];
             if (Array.isArray(newOutput)) {
                 newActions = newOutput as AgentAction[];
@@ -173,6 +186,8 @@ export class ReActExecutor extends BaseChain {
                     log: "",
                 });
             }
+
+            iterations += 1;
         }
 
         const finish = await this.agent.returnStoppedResponse(

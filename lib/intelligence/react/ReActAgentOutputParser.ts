@@ -1,7 +1,7 @@
 import { OutputParserArgs } from "langchain/agents";
 import { ACTION, FINAL_RESPONSE, FORMAT_INSTRUCTIONS } from "@/lib/intelligence/react/prompts";
 import { AgentAction, AgentFinish } from "langchain/schema";
-import { NAME as MultistepName } from "@/lib/intelligence/multistep/Multistep";
+import { NAME as MultistepName } from "@/lib/intelligence/multistep/MultistepExecutor";
 import { BaseOutputParser } from "langchain/schema/output_parser";
 
 export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction | AgentFinish> {
@@ -16,7 +16,7 @@ export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction |
         return `${ ACTION }:`;
     }
 
-    responsePrefix() {
+    finalPrefix() {
         return `${ FINAL_RESPONSE }:`;
     }
 
@@ -25,8 +25,8 @@ export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction |
             return { returnValues: { output: `${ response }` }, log: response };
         }
 
-        if (text.includes(`${ this.responsePrefix() }`)) {
-            const parts = text.split(`${ this.responsePrefix() }`);
+        if (text.includes(`${ this.finalPrefix() }`)) {
+            const parts = text.split(`${ this.finalPrefix() }`);
             const output = parts[parts.length - 1].trim();
             return await responder(output);
         }

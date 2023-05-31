@@ -36,10 +36,10 @@ export class Editor extends LLMChain {
     }
 
     async evaluate({context, objective}: { context: string; objective: string }) {
-        const summary = await this.call({
+        const completion = await this.call({
             context,
             objective
         });
-        return summary.text;
+        return completion.text;
     }
 }

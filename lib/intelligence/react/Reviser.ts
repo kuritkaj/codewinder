@@ -9,7 +9,8 @@ export const OBJECTIVE_INPUT = "objective";
 export const GUIDANCE = `
 You are an AI assistant with the responsibility to improve on a stated objective without changing the meaning or intent.
 
-This is the stated objective: {${OBJECTIVE_INPUT}}
+This is the stated objective: 
+\"\"\"{${OBJECTIVE_INPUT}}\"\"\"
 
 Notes:
 * Do not rewrite entities and acronyms including proper nouns.
@@ -46,9 +47,9 @@ export class Reviser extends LLMChain {
     }
 
     async evaluate({objective}: { objective: string }): Promise<string> {
-        const summary = await this.call({
+        const completion = await this.call({
             objective
         });
-        return summary.text;
+        return completion.text;
     }
 }

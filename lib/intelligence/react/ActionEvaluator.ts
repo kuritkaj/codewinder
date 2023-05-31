@@ -7,7 +7,7 @@ export const EVALUATION = "Evaluation";
 export const OBJECTIVE_INPUT = "objective";
 export const RESPONSE_INPUT = "response";
 export const SCRATCHPAD_INPUT = "scratchpad";
-export const SCORE = "score";
+export const SCORE = "Score";
 export const TOOL_INPUT = "tools";
 
 export const GUIDANCE = `
@@ -70,12 +70,12 @@ export class ActionEvaluator extends LLMChain {
     async evaluate({ objective, response, scratchpad, tools }: {
         objective: string; response: string; scratchpad: string; tools: string
     }): Promise<string> {
-        const summary = await this.call({
+        const completion = await this.call({
             objective,
             response,
             scratchpad,
             tools
         });
-        return summary.text;
+        return completion.text;
     }
 }

@@ -20,6 +20,8 @@ import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgen
 import { BaseLanguageModel } from "langchain/base_language";
 import { ActionEvaluator } from "@/lib/intelligence/react/ActionEvaluator";
 import { MemoryCondenser } from "@/lib/intelligence/react/MemoryCondenser";
+import { Director } from "@/lib/intelligence/react/Director";
+import { AgentContinue } from "@/lib/intelligence/react/ReActExecutor";
 
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
@@ -84,6 +86,18 @@ export class ReActAgent extends Agent {
         return [ `${ OBSERVATION }:`, `${ FINAL_RESPONSE }:` ];
     }
 
+    private async constructMemories(steps: AgentStep[], inputs: ChainValues) {
+        const lastStep = steps.length > 0 ? steps[steps.length - 1] : undefined;
+        const memories = await this.memory.retrieveSnippet(
+            lastStep?.action.toolInput ? lastStep?.action.toolInput : inputs[OBJECTIVE_INPUT],
+            0.75
+        );
+        // If memories were found, then retrieve the page content of the first one (which is the highest scoring).
+        const recent = memories && memories.length > 0 ? memories.pop() : undefined;
+        const content = recent ? recent.pageContent + " " + JSON.stringify(recent.metadata) : "";
+        return `${ this.memoryPrefix() } \"\"\"${ content ? content : "No relevant memories recalled." }\"\"\"`
+    }
+
     async constructScratchPad(steps: AgentStep[]): Promise<string> {
         return steps.reduce((thoughts, { action, observation }) => {
             return (
@@ -115,8 +129,32 @@ export class ReActAgent extends Agent {
 
         return new PromptTemplate({
             template: [system, human].join("\n"),
-            inputVariables: [CONTEXT_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT, TOOLING_INPUT]
+            inputVariables: [OBJECTIVE_INPUT, SCRATCHPAD_INPUT, TOOLING_INPUT]
         });
+    }
+
+    async evaluateInputs(
+        inputs: ChainValues,
+        steps: AgentStep[],
+        callbackManager?: CallbackManager
+    ): Promise<AgentContinue | AgentAction | AgentFinish> {
+        if (steps.length === 0) {
+            const memory = await this.constructMemories(steps, inputs);
+
+            const direction = Director.makeChain({ model: this.creativeChain.llm, callbacks: callbackManager });
+            const completion = await direction.evaluate({
+                context: inputs[CONTEXT_INPUT],
+                objective: inputs[OBJECTIVE_INPUT],
+                memory: memory,
+            });
+            if (completion.includes(`${ this.finalPrefix() }`)) {
+                return await this.outputParser.parse(completion);
+            } else {
+                return { log: completion } as AgentContinue;
+            }
+        }
+
+        return { log: "Skipped as steps present."} as AgentContinue;
     }
 
     async evaluateOutputs(
@@ -125,7 +163,7 @@ export class ReActAgent extends Agent {
         inputs: ChainValues,
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
-        const critic = ActionEvaluator.makeChain({ model: this.llmChain.llm, callbacks: callbackManager });
+        const critic = ActionEvaluator.makeChain({ model: this.creativeChain.llm, callbacks: callbackManager });
         const scratchpad = await this.constructScratchPad(steps);
         const evaluation = await critic.evaluate({
             objective: inputs[OBJECTIVE_INPUT],
@@ -220,7 +258,7 @@ export class ReActAgent extends Agent {
 
     async prepareForOutput(_returnValues: AgentFinish["returnValues"], _steps: AgentStep[]): Promise<AgentFinish["returnValues"]> {
         // If there are no steps, then this is a simple greeting or similar.
-        // Or, the response was derived from a previous memory and we should not store again.
+        // Or, the response was derived from a previous memory, and we should not store again.
         if (_steps && _steps.length > 0) {
             const condenser = MemoryCondenser.makeChain({ model: this.llmChain.llm });
             const scratchpad = await this.constructScratchPad(_steps);
@@ -251,16 +289,8 @@ export class ReActAgent extends Agent {
 
         // Construct the scratchpad and add it to the inputs
         const thoughts = await this.constructScratchPad(steps);
-        const lastStep = steps.length > 0 ? steps[steps.length - 1] : undefined;
-        const memories = await this.memory.retrieveSnippet(
-            lastStep?.action.toolInput ? lastStep?.action.toolInput : inputs[OBJECTIVE_INPUT],
-            0.75
-        );
-        // If memories were found, then retrieve the page content of the first one (which is the highest scoring).
-        const recent = memories && memories.length > 0 ? memories.pop() : undefined;
-        const content = recent ? recent.pageContent + " " + JSON.stringify(recent.metadata) : "";
-        const memory = `${ this.memoryPrefix() } \"\"\"${ content ? content : "No relevant memories recalled." }\"\"\"`
-        const suggestion = (steps.length + 1 <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
+        const memory = await this.constructMemories(steps, inputs);
+        const suggestion = (steps.length <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
 
         newInputs[SCRATCHPAD_INPUT] = [
             thoughts,
@@ -275,7 +305,7 @@ export class ReActAgent extends Agent {
 
         const tokenCount = await this.llmChain.llm.getNumTokens([thoughts, memory, suggestion].join("\n"));
         if (tokenCount > this.maxTokens && steps.length > 0) {
-            // Remove the first step and try again, recursive call to keep length down.
+            // Remove the first step and try again, recursive call to keep context length below threshold.
             return this.prepareInputs(inputs, steps.slice(1));
         } else {
             return newInputs;
