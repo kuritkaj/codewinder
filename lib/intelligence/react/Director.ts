@@ -31,10 +31,10 @@ Is the ${ OBJECTIVE }:
 If so, then respond with \`${ FINAL_RESPONSE }:\` followed by your response.
 
 Alternatively, does the ${ OBJECTIVE }:
-* require more than one step to complete
+* require more than one step or is comprised of multiple parts or directions
 * made up of a complex series of calculations
 * a request to execute code in a secure environment
-* search or browse the internet, web, or a database, etc.
+* request or require searching or browsing the internet, web, or a database, etc.
 * require access to one or more tools to accomplish the task
 If so, then respond with \`${ CONTINUE_RESPONSE }\` without further explanation.
 

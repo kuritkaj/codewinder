@@ -20,7 +20,7 @@ Based on these past actions and experiences, the AI has now responded with: {${ 
 
 And these are the allowed tools: {${ TOOL_INPUT }}
 
-Provide a step-by-step evaluation of the response based on the following criteria:
+Evaluate the response based on the following criteria:
 * Does the response meet the stated objective based on the past actions and experiences?
 * Is the response starting to go on a tangent or starting to drift from the original objective?
 * Does the response duplicate past actions? (Avoid trying the same thing more than once)
@@ -42,8 +42,6 @@ Action:
   "action_input": "tool input"
 }}]
 \`\`\`
-
-Note: steps are expensive; combine and remove steps that are redundant or unnecessary.
 `;
 
 interface EvaluatorInput {

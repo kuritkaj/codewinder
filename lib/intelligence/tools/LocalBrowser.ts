@@ -1,4 +1,4 @@
-import cheerio from 'cheerio';
+import cheerio from "cheerio";
 import { Tool, ToolParams } from "langchain/tools";
 import { BaseLanguageModel } from "langchain/base_language";
 import { chromium } from "playwright";
@@ -7,7 +7,7 @@ import {
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate
 } from "langchain/prompts";
-import { LLMChain } from "langchain";
+import { LLMChain } from "langchain/chains";
 
 const AsyncFunction = async function () {
 }.constructor;

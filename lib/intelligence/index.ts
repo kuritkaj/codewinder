@@ -6,7 +6,6 @@ import { Callbacks } from "langchain/callbacks";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { MultistepExecutor } from "@/lib/intelligence/multistep/MultistepExecutor";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 
@@ -57,7 +56,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     // This should represent intelligence that is great at writing code.
     const powerful = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: "gpt-4",
+        modelName: "gpt-3.5-turbo",
         temperature: 0.5,
         streaming: Boolean(callbacks),
         callbacks,
@@ -68,7 +67,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     const creative = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         temperature: 0.7,
-        modelName: "gpt-4",
+        modelName: "gpt-3.5-turbo",
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2
@@ -91,16 +90,6 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         tools.push(new WebSearch({ apiKey: bingApiKey, embeddings, callbacks }));
     }
 
-    const multistep = new MultistepExecutor({
-        callbacks,
-        creative,
-        maxIterations: MAX_ITERATIONS,
-        model: predictable,
-        memory,
-        tools
-    });
-    const toolset = [ ...tools, multistep ];
-
     const agent = ReActAgent.makeAgent({
         callbacks,
         creative,
@@ -114,9 +103,10 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     // (see ReActAgentOutputParser). However, the ReActAgent itself does not get the multistep, so that it's not selected directly.
     return ReActExecutor.fromAgentAndTools({
         agent,
-        callbacks,
+        creative,
         maxIterations: MAX_ITERATIONS,
-        tools: toolset,
-        verbose: true
+        memory,
+        model: predictable,
+        tools
     });
 }

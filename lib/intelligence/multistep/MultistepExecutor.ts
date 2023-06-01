@@ -1,18 +1,17 @@
-import { Tool, ToolParams } from "langchain/tools";
-import { Callbacks } from "langchain/callbacks";
-import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
-import { CallbackManagerForToolRun } from "langchain/dist/callbacks/manager";
-import { Editor } from "@/lib/intelligence/multistep/Editor";
-import { CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
-import { Planner } from "@/lib/intelligence/multistep/Planner";
-import { BaseLanguageModel } from "langchain/base_language";
-import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
+import {Tool, ToolParams} from "langchain/tools";
+import {CallbackManagerForToolRun} from "langchain/dist/callbacks/manager";
+import {Editor} from "@/lib/intelligence/multistep/Editor";
+import {CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent} from "@/lib/intelligence/react/ReActAgent";
+import {Planner} from "@/lib/intelligence/multistep/Planner";
+import {BaseLanguageModel} from "langchain/base_language";
+import {ReActExecutor} from "@/lib/intelligence/react/ReActExecutor";
+import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
 
 export const NAME = "multi-step";
 export const DESCRIPTION = `for complex objectives that require multiple steps or tasks to complete.
 Input format:
 {{
-  "action": "${ NAME }",
+  "action": "${NAME}",
   "action_input": {{
         "objective": "the objective with specifics from previous actions",
         "steps": [
@@ -40,7 +39,7 @@ export class MultistepExecutor extends Tool {
     private readonly model: BaseLanguageModel;
     private readonly tools: Tool[];
 
-    constructor({ model, creative, memory, tools, maxIterations, verbose, callbacks }: MultistepParams) {
+    constructor({model, creative, memory, tools, maxIterations, verbose, callbacks}: MultistepParams) {
         super(verbose, callbacks);
 
         this.creative = creative;
@@ -52,31 +51,37 @@ export class MultistepExecutor extends Tool {
     }
 
     async _call(input: string, callbackManager?: CallbackManagerForToolRun): Promise<string> {
-        return await MultistepExecutor.runAgent(this.model, this.creative, this.memory, this.tools, this.callbacks, this.verbose, this.maxIterations, input, callbackManager);
+        return await MultistepExecutor.runAgent({
+            callbackManager: callbackManager,
+            creative: this.creative,
+            input: input,
+            maxIterations: this.maxIterations,
+            memory: this.memory,
+            model: this.model,
+            tools: this.tools
+        });
     }
 
-    static async runAgent(
-        model: BaseLanguageModel,
+    static async runAgent({callbackManager, creative, input, model, maxIterations, memory, tools}: {
+        callbackManager?: CallbackManagerForToolRun,
         creative: BaseLanguageModel,
+        input: string,
+        model: BaseLanguageModel,
+        maxIterations: number,
         memory: MemoryStore,
         tools: Tool[],
-        callbacks: Callbacks,
-        verbose: boolean,
-        maxIterations: number,
-        input: string,
-        callbackManager?: CallbackManagerForToolRun
-    ): Promise<string> {
-        const agent = ReActAgent.makeAgent({ model, creative, memory, tools, callbacks, maxIterations });
-        const toolset = [...tools, this as unknown as Tool];
+    }): Promise<string> {
+        const agent = ReActAgent.makeAgent({creative, maxIterations, memory, model, tools});
         const executor = ReActExecutor.fromAgentAndTools({
             agent,
-            tools: toolset,
-            verbose,
-            callbacks,
-            maxIterations
+            creative,
+            maxIterations,
+            memory,
+            model,
+            tools
         });
 
-        const planner = Planner.makeChain({ model: creative, callbacks });
+        const planner = Planner.makeChain({model: creative});
         const interim = await planner.evaluate({
             input
         });
@@ -88,14 +93,14 @@ export class MultistepExecutor extends Tool {
             await callbackManager?.handleText("Starting: " + step);
 
             let inputs = {};
-            inputs[OBJECTIVE_INPUT] = `${ step }`
+            inputs[OBJECTIVE_INPUT] = `${step}`
             if (results.length > 0) inputs[CONTEXT_INPUT] = results[results.length - 1]
 
             const completion = await executor.call(inputs);
             results.push(completion.output);
         }
 
-        const editor = Editor.makeChain({ model: creative, callbacks });
+        const editor = Editor.makeChain({model: creative});
         return await editor.evaluate({
             context: results.join("\n\n"),
             objective

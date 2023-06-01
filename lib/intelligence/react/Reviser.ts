@@ -1,7 +1,7 @@
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain, LLMChainInput } from "langchain/chains";
 import { Callbacks } from "langchain/callbacks";
-import { BaseLanguageModel } from "langchain/dist/base_language";
+import { BaseLanguageModel } from "langchain/base_language";
 
 export const FINAL_RESPONSE = "Final Response";
 export const OBJECTIVE_INPUT = "objective";

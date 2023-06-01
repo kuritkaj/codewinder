@@ -1,20 +1,26 @@
-import { BaseChain, ChainInputs, SerializedLLMChain } from "langchain/chains";
-import { Tool } from "langchain/tools";
-import { StoppingMethod } from "langchain/agents";
-import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
-import { CallbackManagerForChainRun } from "langchain/callbacks";
-import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
+import {BaseChain, SerializedLLMChain} from "langchain/chains";
+import {Tool} from "langchain/tools";
+import {StoppingMethod} from "langchain/agents";
+import {AgentAction, AgentFinish, AgentStep, ChainValues} from "langchain/schema";
+import {CallbackManagerForChainRun} from "langchain/callbacks";
+import {ReActAgent} from "@/lib/intelligence/react/ReActAgent";
+import {BaseLanguageModel} from "langchain/base_language";
+import {MultistepExecutor} from "@/lib/intelligence/multistep/MultistepExecutor";
+import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
 
 export type AgentContinue = {
     log: string;
 };
 
-export interface AgentExecutorInput extends ChainInputs {
+export interface ReActExecutorInput {
     agent: ReActAgent;
-    tools: Tool[];
-    returnIntermediateSteps?: boolean;
-    maxIterations?: number;
+    creative: BaseLanguageModel;
     earlyStoppingMethod?: StoppingMethod;
+    maxIterations?: number;
+    memory: MemoryStore;
+    model: BaseLanguageModel;
+    returnIntermediateSteps?: boolean;
+    tools: Tool[];
 }
 
 /**
@@ -38,30 +44,27 @@ export class ReActExecutor extends BaseChain {
 
     constructor({
                     agent,
-                    callbacks,
+                    creative,
                     earlyStoppingMethod,
                     maxIterations,
                     memory,
+                    model,
                     returnIntermediateSteps,
-                    tools,
-                    verbose
-                }: AgentExecutorInput) {
-        super(
+                    tools
+                }: ReActExecutorInput) {
+        super();
+        const multistep = new MultistepExecutor({
+            creative,
+            maxIterations,
+            model,
             memory,
-            verbose,
-            callbacks
-        );
+            tools
+        });
+        const toolset = [...tools, multistep];
+
         this.agent = agent;
-        this.tools = tools;
-        if (this.agent._agentActionType() === "multi") {
-            for (const tool of this.tools) {
-                if (tool.returnDirect) {
-                    throw new Error(
-                        `Tool with return direct ${ tool.name } not supported for multi-action agent.`
-                    );
-                }
-            }
-        }
+        this.tools = toolset;
+
         this.returnIntermediateSteps =
             returnIntermediateSteps ?? this.returnIntermediateSteps;
         this.maxIterations = maxIterations ?? this.maxIterations;
@@ -72,23 +75,23 @@ export class ReActExecutor extends BaseChain {
     /** Create from agent and a list of tools. */
     static fromAgentAndTools({
                                  agent,
-                                 callbacks,
+                                 creative,
                                  earlyStoppingMethod,
                                  maxIterations,
                                  memory,
+                                 model,
                                  returnIntermediateSteps,
-                                 tools,
-                                 verbose
-                             }: AgentExecutorInput): ReActExecutor {
+                                 tools
+                             }: ReActExecutorInput): ReActExecutor {
         return new ReActExecutor({
             agent,
-            callbacks,
+            creative,
             earlyStoppingMethod,
             maxIterations,
             memory,
+            model,
             returnIntermediateSteps,
-            tools,
-            verbose
+            tools
         });
     }
 
@@ -101,20 +104,20 @@ export class ReActExecutor extends BaseChain {
         runManager?: CallbackManagerForChainRun
     ): Promise<ChainValues> {
         const toolsByName = Object.fromEntries(
-            this.tools.map((t) => [ t.name.toLowerCase(), t ])
+            this.tools.map((t) => [t.name.toLowerCase(), t])
         );
         let steps: AgentStep[] = [];
         let iterations = 0;
 
         const getOutput = async (finishStep: AgentFinish) => {
-            const { returnValues } = finishStep;
+            const {returnValues} = finishStep;
             const additional = await this.agent.prepareForOutput(returnValues, steps);
 
             if (this.returnIntermediateSteps) {
-                return { ...returnValues, intermediateSteps: steps, ...additional };
+                return {...returnValues, intermediateSteps: steps, ...additional};
             }
             await runManager?.handleAgentEnd(finishStep);
-            return { ...returnValues, ...additional };
+            return {...returnValues, ...additional};
         };
 
         // Loop until the number of iterations are met, or the plan returns with AgentFinish.
@@ -155,7 +158,7 @@ export class ReActExecutor extends BaseChain {
             if (Array.isArray(newOutput)) {
                 newActions = newOutput as AgentAction[];
             } else {
-                newActions = [ newOutput as AgentAction ];
+                newActions = [newOutput as AgentAction];
             }
 
             // Here, we execute the actions and gather the observations.
@@ -166,9 +169,9 @@ export class ReActExecutor extends BaseChain {
                     const tool = toolsByName[action.tool?.toLowerCase()];
                     const observation = tool
                         ? await tool.call(action.toolInput, runManager?.getChild())
-                        : `${ action.tool } is not a valid tool, try another one.`;
+                        : `${action.tool} is not a valid tool, try another one.`;
 
-                    return { action, observation };
+                    return {action, observation};
                 })
             );
 
@@ -182,7 +185,7 @@ export class ReActExecutor extends BaseChain {
             // Given this is positional, that would mean any multi-action observations are ignored.
             if (lastTool?.returnDirect) {
                 return getOutput({
-                    returnValues: { [this.agent.returnValues[0]]: lastStep.observation },
+                    returnValues: {[this.agent.returnValues[0]]: lastStep.observation},
                     log: "",
                 });
             }

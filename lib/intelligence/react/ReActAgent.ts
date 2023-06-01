@@ -9,19 +9,19 @@ import {
     THOUGHT,
     TOOLING
 } from "@/lib/intelligence/react/prompts";
-import { Agent, ChatCreatePromptArgs, OutputParserArgs } from "langchain/agents";
-import { Tool } from "langchain/tools";
-import { PromptTemplate } from "langchain/prompts";
-import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
-import { LLMChain } from "langchain/chains";
-import { CallbackManager, Callbacks } from "langchain/callbacks";
-import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
-import { ReActAgentActionOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
-import { BaseLanguageModel } from "langchain/base_language";
-import { ActionEvaluator } from "@/lib/intelligence/react/ActionEvaluator";
-import { MemoryCondenser } from "@/lib/intelligence/react/MemoryCondenser";
-import { Director } from "@/lib/intelligence/react/Director";
-import { AgentContinue } from "@/lib/intelligence/react/ReActExecutor";
+import {Agent, ChatCreatePromptArgs, OutputParserArgs} from "langchain/agents";
+import {Tool} from "langchain/tools";
+import {PromptTemplate} from "langchain/prompts";
+import {AgentAction, AgentFinish, AgentStep, ChainValues} from "langchain/schema";
+import {LLMChain} from "langchain/chains";
+import {CallbackManager} from "langchain/callbacks";
+import {ReActAgentActionOutputParser} from "@/lib/intelligence/react/ReActAgentOutputParser";
+import {BaseLanguageModel} from "langchain/base_language";
+import {ActionEvaluator} from "@/lib/intelligence/react/ActionEvaluator";
+import {MemoryCondenser} from "@/lib/intelligence/react/MemoryCondenser";
+import {Director} from "@/lib/intelligence/react/Director";
+import {AgentContinue} from "@/lib/intelligence/react/ReActExecutor";
+import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
 
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
@@ -47,7 +47,7 @@ export class ReActAgent extends Agent {
     private readonly maxTokens: number;
     private readonly tools: Tool[];
 
-    constructor({ creativeChain, llmChain, memory, tools, maxIterations }: ReActAgentInput) {
+    constructor({creativeChain, llmChain, memory, tools, maxIterations}: ReActAgentInput) {
         const outputParser = ReActAgent.getDefaultOutputParser();
         super({
             llmChain,
@@ -67,23 +67,23 @@ export class ReActAgent extends Agent {
     }
 
     finalPrefix() {
-        return `${ FINAL_RESPONSE }:`;
+        return `${FINAL_RESPONSE}:`;
     }
 
     llmPrefix() {
-        return `${ THOUGHT }:`;
+        return `${THOUGHT}:`;
     }
 
     memoryPrefix() {
-        return `${ MEMORY }:`;
+        return `${MEMORY}:`;
     }
 
     observationPrefix() {
-        return `${ OBSERVATION }:`;
+        return `${OBSERVATION}:`;
     }
 
     _stop(): string[] {
-        return [ `${ OBSERVATION }:`, `${ FINAL_RESPONSE }:` ];
+        return [`${OBSERVATION}:`, `${FINAL_RESPONSE}:`];
     }
 
     private async constructMemories(steps: AgentStep[], inputs: ChainValues) {
@@ -95,36 +95,36 @@ export class ReActAgent extends Agent {
         // If memories were found, then retrieve the page content of the first one (which is the highest scoring).
         const recent = memories && memories.length > 0 ? memories.pop() : undefined;
         const content = recent ? recent.pageContent + " " + JSON.stringify(recent.metadata) : "";
-        return `${ this.memoryPrefix() } \"\"\"${ content ? content : "No relevant memories recalled." }\"\"\"`
+        return `${this.memoryPrefix()} \"\"\"${content ? content : "No relevant memories recalled."}\"\"\"`
     }
 
     async constructScratchPad(steps: AgentStep[]): Promise<string> {
-        return steps.reduce((thoughts, { action, observation }) => {
+        return steps.reduce((thoughts, {action, observation}) => {
             return (
                 thoughts +
                 [
                     this.llmPrefix(),
                     action.log,
                     this.observationPrefix(),
-                    `\"\"\"${ observation }\"\"\"`
+                    `\"\"\"${observation}\"\"\"`
                 ].join("\n")
             );
         }, "");
     }
 
     static createPrompt(tools: Tool[], args?: ReActChatArgs) {
-        const { prefix = SYSTEM, suffix = GUIDANCE } = args ?? {};
+        const {prefix = SYSTEM, suffix = GUIDANCE} = args ?? {};
 
         const system = [
             prefix,
             TOOLING,
-            `Allowed tools:\n{${ TOOLING_INPUT }}`,
+            `Allowed tools:\n{${TOOLING_INPUT}}`,
             FORMAT_INSTRUCTIONS,
             suffix
         ].join("\n");
         const human = [
-            `${ OBJECTIVE }: {${ OBJECTIVE_INPUT }}`,
-            `{${ SCRATCHPAD_INPUT }}`
+            `${OBJECTIVE}: {${OBJECTIVE_INPUT}}`,
+            `{${SCRATCHPAD_INPUT}}`
         ].join("\n");
 
         return new PromptTemplate({
@@ -141,20 +141,20 @@ export class ReActAgent extends Agent {
         if (steps.length === 0) {
             const memory = await this.constructMemories(steps, inputs);
 
-            const direction = Director.makeChain({ model: this.creativeChain.llm, callbacks: callbackManager });
+            const direction = Director.makeChain({model: this.creativeChain.llm, callbacks: callbackManager});
             const completion = await direction.evaluate({
                 context: inputs[CONTEXT_INPUT],
                 objective: inputs[OBJECTIVE_INPUT],
                 memory: memory,
             });
-            if (completion.includes(`${ this.finalPrefix() }`)) {
+            if (completion.includes(`${this.finalPrefix()}`)) {
                 return await this.outputParser.parse(completion);
             } else {
-                return { log: completion } as AgentContinue;
+                return {log: completion} as AgentContinue;
             }
         }
 
-        return { log: "Skipped as steps present."} as AgentContinue;
+        return {log: "Skipped as steps present."} as AgentContinue;
     }
 
     async evaluateOutputs(
@@ -163,7 +163,7 @@ export class ReActAgent extends Agent {
         inputs: ChainValues,
         callbackManager?: CallbackManager
     ): Promise<AgentAction | AgentFinish> {
-        const critic = ActionEvaluator.makeChain({ model: this.creativeChain.llm, callbacks: callbackManager });
+        const critic = ActionEvaluator.makeChain({model: this.creativeChain.llm, callbacks: callbackManager});
         const scratchpad = await this.constructScratchPad(steps);
         const evaluation = await critic.evaluate({
             objective: inputs[OBJECTIVE_INPUT],
@@ -192,20 +192,23 @@ export class ReActAgent extends Agent {
                          creative,
                          memory,
                          tools,
-                         callbacks,
                          maxIterations = undefined
-                     }: { model: BaseLanguageModel, creative: BaseLanguageModel, memory: MemoryStore, tools: Tool[], callbacks: Callbacks, maxIterations?: number }): ReActAgent {
+                     }: {
+        model: BaseLanguageModel,
+        creative: BaseLanguageModel,
+        memory: MemoryStore,
+        tools: Tool[]
+        maxIterations?: number
+    }): ReActAgent {
         ReActAgent.validateTools(tools);
 
         const llmChain = new LLMChain({
             prompt: ReActAgent.createPrompt(tools),
-            llm: model,
-            callbacks
+            llm: model
         });
         const creativeChain = new LLMChain({
             prompt: ReActAgent.createPrompt(tools),
-            llm: creative,
-            callbacks
+            llm: creative
         });
 
         return new ReActAgent({
@@ -243,7 +246,7 @@ export class ReActAgent extends Agent {
                 return action;
             } else {
                 // Ensure we include the output the previous execution for this final response.
-                inputs[SCRATCHPAD_INPUT] = [ inputs[SCRATCHPAD_INPUT], output ].join("\n");
+                inputs[SCRATCHPAD_INPUT] = [inputs[SCRATCHPAD_INPUT], output].join("\n");
                 // Only stop on Observations in case this is a fall through from the base chain.
                 inputs.stop = this._stop().slice(0, 1);
                 // Here we use the creative chain to generate a final response.
@@ -260,13 +263,13 @@ export class ReActAgent extends Agent {
         // If there are no steps, then this is a simple greeting or similar.
         // Or, the response was derived from a previous memory, and we should not store again.
         if (_steps && _steps.length > 0) {
-            const condenser = MemoryCondenser.makeChain({ model: this.llmChain.llm });
+            const condenser = MemoryCondenser.makeChain({model: this.llmChain.llm});
             const scratchpad = await this.constructScratchPad(_steps);
             const memory = await condenser.evaluate({
                 response: _returnValues.output,
                 scratchpad,
             });
-            await this.memory.storeTexts([ memory ]);
+            await this.memory.storeTexts([memory]);
         }
 
         return []; // No additional return values, this is just to store the above memory.
@@ -285,7 +288,7 @@ export class ReActAgent extends Agent {
         };
 
         // Provide the tools and descriptions
-        newInputs[TOOLING_INPUT] = this.tools.map((tool) => `${ tool.name }: ${ tool.description }`).join("\n");
+        newInputs[TOOLING_INPUT] = this.tools.map((tool) => `${tool.name}: ${tool.description}`).join("\n");
 
         // Construct the scratchpad and add it to the inputs
         const thoughts = await this.constructScratchPad(steps);
@@ -315,7 +318,7 @@ export class ReActAgent extends Agent {
     static validateTools(tools: Tool[]) {
         const invalidTool = tools.find((tool) => !tool.description);
         if (invalidTool) {
-            const msg = `Got a tool ${ invalidTool.name } without a description.` +
+            const msg = `Got a tool ${invalidTool.name} without a description.` +
                 "This agent requires descriptions for all tools.";
             throw new Error(msg);
         }

@@ -15,9 +15,11 @@ Here is the history of past actions and experiences to achieve an objective: {${
 Based on these past actions and experiences, the AI responded with: {${ RESPONSE_INPUT }}
 
 Using the above directions and information, respond with the following format:
+\"\"\"
 Objective: the derived objective phrased as a question or directive for later recall
-Actions: a succint summary of the actions taken to meet the objective
-Final Response: a brief summary of the AI response suitable for later recall
+Actions: a summary of the actions taken to meet the objective
+Final Response: a summary of the AI response suitable with enough detail to support future recall
+\"\"\"
 `;
 
 interface CondenserInput {
