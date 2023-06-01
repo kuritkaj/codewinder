@@ -35,6 +35,7 @@ Alternatively, does the ${ OBJECTIVE }:
 * a request to execute code in a secure environment
 * request or require searching or browsing the internet, web, or a database, etc.
 * require access to one or more tools to accomplish the task
+* the memory is helpful, but does not fully address the ${ OBJECTIVE }
 If so, then respond with \`${ CONTINUE_RESPONSE }\` without further explanation.
 
 All other cases should be responded to with \`${ CONTINUE_RESPONSE }\` without further explanation.

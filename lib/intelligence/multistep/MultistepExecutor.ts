@@ -93,7 +93,7 @@ export class MultistepExecutor extends Tool {
             await callbackManager?.handleText("Starting: " + step);
 
             let inputs = {};
-            inputs[OBJECTIVE_INPUT] = `${step}`
+            inputs[OBJECTIVE_INPUT] = `${objective}: ${step}`
             if (results.length > 0) inputs[CONTEXT_INPUT] = results[results.length - 1]
 
             const completion = await executor.call(inputs);

@@ -67,7 +67,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     const creative = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         temperature: 0.7,
-        modelName: "gpt-4",
+        modelName: "gpt-3.5-turbo",
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2

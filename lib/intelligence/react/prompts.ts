@@ -32,6 +32,7 @@ ${ACTION}:
   "action_input": "tool input"
 }}]
 \`\`\`
+   (prefer a single action over multiple actions)
 ${OBSERVATION}: the result of the action (this is never shared, pretend it's a secret)
    (${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
 ${THOUGHT}: critical evaluation and self-reflection (this is never shared, pretend it's a secret)

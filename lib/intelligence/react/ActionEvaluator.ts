@@ -25,7 +25,7 @@ Evaluate the response based on the following criteria:
 * Is the response starting to go on a tangent or starting to drift from the original objective?
 * Does the response duplicate past actions? (Avoid trying the same thing more than once)
 * Does the response only select one or more tools from the allowed tools list?
-* Are too many steps required to achieve the objective?
+* Are too many actions required to achieve the objective?
 
 Based on this evaluation, score the response on a scale of 1 to 5 with 1 being low and 5 is high.
 This score should represent your confidence level of whether or note the responses will meet the objective.
@@ -34,7 +34,7 @@ Use this format to respond:
 ${EVALUATION}: evaluation of the response
 ${SCORE}: confidence score of the response from 1 to 5 (low to high)
 
-If the score is low, then provide a new set of actions to take using this format:
+If the score is low, then provide a new action to take using this format:
 Action:
 \`\`\`
 [{{
