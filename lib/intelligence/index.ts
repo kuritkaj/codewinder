@@ -47,7 +47,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         openAIApiKey: openAiApiKey,
         modelName: "gpt-3.5-turbo",
         temperature: 0,
-        topP: 0.1,
+        topP: 0,
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2
@@ -56,7 +56,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     // This should represent intelligence that is great at writing code.
     const powerful = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: "gpt-3.5-turbo",
+        modelName: "gpt-4",
         temperature: 0.5,
         streaming: Boolean(callbacks),
         callbacks,
@@ -67,7 +67,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     const creative = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         temperature: 0.7,
-        modelName: "gpt-3.5-turbo",
+        modelName: "gpt-4",
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2
