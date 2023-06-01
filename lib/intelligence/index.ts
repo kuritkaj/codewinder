@@ -67,7 +67,7 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     const creative = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         temperature: 0.7,
-        modelName: "gpt-3.5-turbo",
+        modelName: "gpt-4",
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2
@@ -81,17 +81,12 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
     const tools: Tool[] = [
         new WebBrowser({ model: predictable, memory: knowledge, embeddings, callbacks }),
         new JavascriptEvaluator({ model: powerful, memory: code, callbacks }),
-        // new MemoryRecall({ model: predictable, memory }),
-        // new MemoryStorage({ model: predictable, memory, embeddings })
-        // new LocalBrowser({ model: capable }),
-        // new CreativeWriter({ model: creative, callbacks }),
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new WebSearch({ apiKey: bingApiKey, embeddings, callbacks }));
     }
 
     const agent = ReActAgent.makeAgent({
-        callbacks,
         creative,
         maxIterations: MAX_ITERATIONS,
         memory,

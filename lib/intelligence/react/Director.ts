@@ -27,7 +27,6 @@ Is the ${ OBJECTIVE }:
 * a casual greeting or conversation
 * a request to write, edit, debug, or to explain code, software, a function, or a program
 * something that requires a creative response such as a joke or a poem
-* answered by the previous conversation or provided memory
 If so, then respond with \`${ FINAL_RESPONSE }:\` followed by your response.
 
 Alternatively, does the ${ OBJECTIVE }:
