@@ -1,3 +1,5 @@
+// Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/agents/chat/outputParser.ts
+
 import { OutputParserArgs } from "langchain/agents";
 import { ACTION, FINAL_RESPONSE, FORMAT_INSTRUCTIONS } from "@/lib/intelligence/react/prompts";
 import { AgentAction, AgentFinish } from "langchain/schema";

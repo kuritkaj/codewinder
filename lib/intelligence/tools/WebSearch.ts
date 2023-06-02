@@ -1,3 +1,5 @@
+// Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/tools/bingserpapi.ts
+
 import { Tool, ToolParams } from "langchain/tools";
 import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
@@ -70,11 +72,12 @@ export class WebSearch extends Tool {
             return "No useful results found.";
         }
 
-        for (const result of results) {
-            if (this.memory) await this.memory.storeTexts([result.snippet], [ { name: result.name }, { url: result.url } ]);
-        }
-
         const links = results.map(result => `[${ result.name }](${ result.url }) - ${ result.snippet }`);
+
+        const memories = await this.memory.retrieve(input, 4);
+        memories.forEach((memory) => {
+            links.push(`[${ memory.metadata.url }](${ memory.metadata.url }) - ${ memory.pageContent }`);
+        });
 
         // this is short-term memory for searching on the page:
         const vectorStore = await MemoryVectorStore.fromTexts(

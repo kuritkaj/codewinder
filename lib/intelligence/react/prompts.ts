@@ -1,3 +1,5 @@
+// Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/agents/chat/prompt.ts
+
 export const ACTION = "Action";
 export const FINAL_RESPONSE = "Final Response";
 export const MEMORY = "Memory";

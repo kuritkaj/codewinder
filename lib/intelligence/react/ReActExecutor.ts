@@ -1,3 +1,5 @@
+// Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/agents/executor.ts
+
 import {BaseChain, SerializedLLMChain} from "langchain/chains";
 import {Tool} from "langchain/tools";
 import {StoppingMethod} from "langchain/agents";

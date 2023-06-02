@@ -1,5 +1,4 @@
-// Copied from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/vectorstores/supabase.ts
-// In order to change to upsert of new docs in addVectors().
+// Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/vectorstores/supabase.ts
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { VectorStore } from "langchain/vectorstores/base";

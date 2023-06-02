@@ -1,3 +1,5 @@
+// Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/agents/chat/index.ts
+
 import {
     FINAL_RESPONSE,
     FORMAT_INSTRUCTIONS,
@@ -98,7 +100,7 @@ export class ReActAgent extends Agent {
         return `${this.memoryPrefix()} \"\"\"${content ? content : "No relevant memories recalled."}\"\"\"`
     }
 
-    async constructScratchPad(steps: AgentStep[]): Promise<string> {
+    public async constructScratchPad(steps: AgentStep[]): Promise<string> {
         return steps.reduce((thoughts, {action, observation}) => {
             return (
                 thoughts +
@@ -112,7 +114,7 @@ export class ReActAgent extends Agent {
         }, "");
     }
 
-    static createPrompt(tools: Tool[], args?: ReActChatArgs) {
+    public static createPrompt(tools: Tool[], args?: ReActChatArgs) {
         const {prefix = SYSTEM, suffix = GUIDANCE} = args ?? {};
 
         const system = [
@@ -133,7 +135,7 @@ export class ReActAgent extends Agent {
         });
     }
 
-    async evaluateInputs(
+    public async evaluateInputs(
         inputs: ChainValues,
         steps: AgentStep[],
         callbackManager?: CallbackManager
@@ -157,7 +159,7 @@ export class ReActAgent extends Agent {
         return {log: "Skipped as steps present."} as AgentContinue;
     }
 
-    async evaluateOutputs(
+    public async evaluateOutputs(
         action: AgentAction,
         steps: AgentStep[],
         inputs: ChainValues,
@@ -180,14 +182,14 @@ export class ReActAgent extends Agent {
         }
     }
 
-    static getDefaultOutputParser(_fields?: OutputParserArgs) {
+    public static getDefaultOutputParser(_fields?: OutputParserArgs) {
         return new ReActAgentActionOutputParser(_fields);
     }
 
     /**
      * Create a new agent based on the provided parameters.
      */
-    static makeAgent({
+    public static makeAgent({
                          model,
                          creative,
                          memory,
@@ -229,7 +231,7 @@ export class ReActAgent extends Agent {
      *
      *  @returns Action specifying what tool to use of if the plan is complete.
      */
-    async plan(
+    public async plan(
         steps: AgentStep[],
         inputs: ChainValues,
         callbackManager?: CallbackManager
@@ -259,7 +261,7 @@ export class ReActAgent extends Agent {
         }
     }
 
-    async prepareForOutput(_returnValues: AgentFinish["returnValues"], _steps: AgentStep[]): Promise<AgentFinish["returnValues"]> {
+    public async prepareForOutput(_returnValues: AgentFinish["returnValues"], _steps: AgentStep[]): Promise<AgentFinish["returnValues"]> {
         // If there are no steps, then this is a simple greeting or similar.
         // Or, the response was derived from a previous memory, and we should not store again.
         if (_steps && _steps.length > 0) {
@@ -281,7 +283,7 @@ export class ReActAgent extends Agent {
      *  @param steps - Steps the LLM has taken so far, along with observations from each.
      *  @param inputs - User inputs.
      */
-    async prepareInputs(inputs: ChainValues, steps: AgentStep[]): Promise<ChainValues> {
+    public async prepareInputs(inputs: ChainValues, steps: AgentStep[]): Promise<ChainValues> {
         // Define the new inputs, as we'll update/replace some values
         const newInputs: ChainValues = {
             ...inputs
@@ -315,7 +317,7 @@ export class ReActAgent extends Agent {
         }
     }
 
-    static validateTools(tools: Tool[]) {
+    public static validateTools(tools: Tool[]) {
         const invalidTool = tools.find((tool) => !tool.description);
         if (invalidTool) {
             const msg = `Got a tool ${invalidTool.name} without a description.` +

@@ -1,3 +1,5 @@
+// Based on: https://github.com/sullivan-sean/chat-langchainjs/blob/main/pages/api/chat-stream.ts
+
 import { makeChain } from "@/lib/intelligence";
 import { CallbackManager } from "langchain/callbacks";
 import { NextApiHandler } from "next";

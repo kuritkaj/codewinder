@@ -1,3 +1,5 @@
+// Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/tools/webbrowser.ts
+
 import cheerio from "cheerio";
 import PDFParse from "pdf-parse";
 import { BaseLanguageModel } from "langchain/base_language";
