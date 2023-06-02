@@ -89,7 +89,7 @@ export class JavascriptEvaluator extends Tool {
     /** @ignore */
     async _call(specification: string): Promise<string> {
         // Retrieve a similar example from memory.
-        const memory = await this.memory.retrieveSnippet(specification, 0.80);
+        const memory = await this.memory.retrieveSnippets(specification, 0.80);
         const example = memory && memory.length > 0 ? memory[0].pageContent : "";
 
         // Generate JavaScript code from the natural language description.

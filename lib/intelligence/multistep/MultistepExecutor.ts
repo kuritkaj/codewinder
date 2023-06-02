@@ -81,7 +81,7 @@ export class MultistepExecutor extends Tool {
             tools
         });
 
-        const planner = Planner.makeChain({model: creative});
+        const planner = Planner.makeChain({model: creative, callbacks: callbackManager?.getChild()});
         const interim = await planner.evaluate({
             input
         });
@@ -100,7 +100,7 @@ export class MultistepExecutor extends Tool {
             results.push(completion.output);
         }
 
-        const editor = Editor.makeChain({model: creative});
+        const editor = Editor.makeChain({model: creative, callbacks: callbackManager?.getChild()});
         return await editor.evaluate({
             context: results.join("\n\n"),
             objective

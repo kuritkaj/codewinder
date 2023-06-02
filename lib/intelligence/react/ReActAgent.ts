@@ -90,7 +90,7 @@ export class ReActAgent extends Agent {
 
     private async constructMemories(steps: AgentStep[], inputs: ChainValues) {
         const lastStep = steps.length > 0 ? steps[steps.length - 1] : undefined;
-        const memories = await this.memory.retrieveSnippet(
+        const memories = await this.memory.retrieveSnippets(
             lastStep?.action.toolInput ? lastStep?.action.toolInput : inputs[OBJECTIVE_INPUT],
             0.75
         );

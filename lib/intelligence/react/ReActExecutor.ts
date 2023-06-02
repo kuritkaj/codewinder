@@ -54,7 +54,7 @@ export class ReActExecutor extends BaseChain {
                     returnIntermediateSteps,
                     tools
                 }: ReActExecutorInput) {
-        super();
+        super({verbose: true});
         const multistep = new MultistepExecutor({
             creative,
             maxIterations,

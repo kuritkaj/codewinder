@@ -74,10 +74,13 @@ export class WebSearch extends Tool {
 
         const links = results.map(result => `[${ result.name }](${ result.url }) - ${ result.snippet }`);
 
-        const memories = await this.memory.retrieve(input, 4);
-        memories.forEach((memory) => {
-            links.push(`[${ memory.metadata.url }](${ memory.metadata.url }) - ${ memory.pageContent }`);
-        });
+        if (this.memory) {
+            const memories = await this.memory.retrieveSnippets(input, 0.75, 4);
+            for (const memory in memories) {
+                const memory = memories[0];
+                links.push(`[${memory.metadata.name}](${memory.metadata.url}) - ${memory.pageContent}`);
+            }
+        }
 
         // this is short-term memory for searching on the page:
         const vectorStore = await MemoryVectorStore.fromTexts(

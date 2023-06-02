@@ -27,7 +27,7 @@ export class MemoryRecall extends Tool {
 
     /** @ignore */
     async _call(input: string, runManager?: CallbackManagerForToolRun): Promise<string> {
-        const snippet = await this.memory.retrieveSnippet(input, 0.5);
+        const snippet = await this.memory.retrieveSnippets(input, 0.5);
         if (snippet.length === 0) {
             return "No memory found.";
         } else {

@@ -31,11 +31,11 @@ If so, then respond with \`${ FINAL_RESPONSE }:\` followed by your response.
 
 Alternatively, does the ${ OBJECTIVE }:
 * require more than one step or is comprised of multiple parts or directions
-* made up of a complex series of calculations
-* a request to execute code in a secure environment
+* make use of one or more complex calculations
+* require executing code in a secure environment
 * request or require searching or browsing the internet, web, or a database, etc.
 * require access to one or more tools to accomplish the task
-* the memory is helpful, but does not fully address the ${ OBJECTIVE }
+* make use of a memory that is helpful, but that does not fully address the ${ OBJECTIVE }
 If so, then respond with \`${ CONTINUE_RESPONSE }\` without further explanation.
 
 All other cases should be responded to with \`${ CONTINUE_RESPONSE }\` without further explanation.

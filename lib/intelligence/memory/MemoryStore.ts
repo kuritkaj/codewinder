@@ -78,7 +78,7 @@ export class MemoryStore {
         return await this.memory.similaritySearch(query, k, filter);
     }
 
-    async retrieveSnippet(query: string, threshold): Promise<Document[]> {
+    async retrieveSnippets(query: string, threshold, k: number = 1): Promise<Document[]> {
         if (!query) throw new Error("A query is required.");
 
         // search the memory for the top 1 document that matches the query
@@ -109,7 +109,7 @@ export class MemoryStore {
         );
 
         // search the vector store for the best single match
-        return await vectorStore.similaritySearch(query, 1);
+        return await vectorStore.similaritySearch(query, k);
     }
 
     private async save() {
