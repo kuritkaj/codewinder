@@ -8,6 +8,7 @@ import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
 import {OpenAIEmbeddings} from "langchain/embeddings/openai";
 import {ChatOpenAI} from "langchain/chat_models/openai";
 import {ReActExecutor} from "@/lib/intelligence/react/ReActExecutor";
+import {MemoryRecall} from "@/lib/intelligence/tools/MemoryRecall";
 
 const MAX_ITERATIONS = 10;
 
@@ -81,6 +82,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     const tools: Tool[] = [
         new WebBrowser({callbacks, embeddings, memory: knowledge, model: predictable}),
         new JavascriptEvaluator({callbacks, memory: code, model: powerful}),
+        new MemoryRecall({callbacks, memory: knowledge})
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, memory: knowledge}));

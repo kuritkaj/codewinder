@@ -30,7 +30,7 @@ Evaluate the response based on the following criteria:
 Based on this evaluation, score the response on a scale of 1 to 5 with 1 being low and 5 is high.
 This score should represent your confidence level of whether or note the responses will meet the objective.
 
-Reminder: actions are expensive, so try to use as few as possible to meet the objective.
+Reminder: actions are expensive, its strongly encouraged to use as few actions as possible to meet the objective.
 
 Use this format to respond:
 ${EVALUATION}: evaluation of the response

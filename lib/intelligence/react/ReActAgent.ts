@@ -309,9 +309,19 @@ export class ReActAgent extends Agent {
         }
 
         const tokenCount = await this.llmChain.llm.getNumTokens([thoughts, memory, suggestion].join("\n"));
-        if (tokenCount > this.maxTokens && steps.length > 0) {
-            // Remove the first step and try again, recursive call to keep context length below threshold.
-            return this.prepareInputs(inputs, steps.slice(1));
+        if (tokenCount > this.maxTokens) {
+            if (steps.length > 0) {
+                // Remove the first step and try again, recursive call to keep context length below threshold.
+                return this.prepareInputs(inputs, steps.slice(1));
+            } else {
+                // Drop memory
+                newInputs[SCRATCHPAD_INPUT] = [
+                    thoughts,
+                    suggestion
+                ].join("\n");
+
+                return newInputs;
+            }
         } else {
             return newInputs;
         }

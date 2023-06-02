@@ -33,7 +33,7 @@ export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction |
             return await responder(output);
         }
 
-        if (text.includes(`${ this.actionPrefix() }`) || text.startsWith('{')) {
+        if (text.includes(`${ this.actionPrefix() }`) || text.includes("\`\`\`")) {
             const parts = text.split(`${ this.actionPrefix() }`);
             const output = parts[parts.length - 1].trim();
 

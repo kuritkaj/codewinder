@@ -34,7 +34,6 @@ ${ACTION}:
   "action_input": "tool input"
 }}]
 \`\`\`
-   (prefer a single action over multiple actions)
 ${OBSERVATION}: the result of the action (this is never shared, pretend it's a secret)
    (${THOUGHT}/${ACTION}/${OBSERVATION} can repeat multiple times)
 ${THOUGHT}: critical evaluation and self-reflection (this is never shared, pretend it's a secret)
@@ -46,4 +45,5 @@ export const GUIDANCE = `
 Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended. Never ask for clarification.
 Note: If the ${OBJECTIVE} needs information that you don't have, use a tool to learn more.
 Note: If the ${OBJECTIVE} is to make a table or document, then use markdown formatting to create it.
+Note: For the ${FINAL_RESPONSE}, avoid telling the user how to do something, but instead do it for them.
 `;
