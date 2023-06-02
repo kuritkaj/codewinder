@@ -1,17 +1,17 @@
-import { Tool } from "langchain/tools";
-import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
-import { JavascriptEvaluator } from "@/lib/intelligence/tools/JavascriptEvaluator";
-import { WebSearch } from "@/lib/intelligence/tools/WebSearch";
-import { Callbacks } from "langchain/callbacks";
-import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
-import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
+import {Tool} from "langchain/tools";
+import {ReActAgent} from "@/lib/intelligence/react/ReActAgent";
+import {JavascriptEvaluator} from "@/lib/intelligence/tools/JavascriptEvaluator";
+import {WebSearch} from "@/lib/intelligence/tools/WebSearch";
+import {Callbacks} from "langchain/callbacks";
+import {WebBrowser} from "@/lib/intelligence/tools/WebBrowser";
+import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
+import {OpenAIEmbeddings} from "langchain/embeddings/openai";
+import {ChatOpenAI} from "langchain/chat_models/openai";
+import {ReActExecutor} from "@/lib/intelligence/react/ReActExecutor";
 
 const MAX_ITERATIONS = 10;
 
-export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promise<ReActExecutor> => {
+export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<ReActExecutor> => {
     const openAiApiKey = process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
         throw new Error('OpenAI api key not found.');
@@ -73,17 +73,17 @@ export const makeChain = async ({ callbacks }: { callbacks: Callbacks }): Promis
         maxRetries: 2
     });
 
-    const embeddings = new OpenAIEmbeddings({ openAIApiKey: openAiApiKey });
+    const embeddings = new OpenAIEmbeddings({openAIApiKey: openAiApiKey});
     const memory = await MemoryStore.makeDurableStore("memories", embeddings);
     const knowledge = await MemoryStore.makeDurableStore("knowledge", embeddings);
     const code = await MemoryStore.makeDurableStore("code", embeddings);
 
     const tools: Tool[] = [
-        new WebBrowser({ model: predictable, memory: knowledge, embeddings, callbacks }),
-        new JavascriptEvaluator({ model: powerful, memory: code, callbacks }),
+        new WebBrowser({callbacks, embeddings, memory: knowledge, model: predictable}),
+        new JavascriptEvaluator({callbacks, memory: code, model: powerful}),
     ];
     if (Boolean(bingApiKey)) {
-        tools.push(new WebSearch({ apiKey: bingApiKey, embeddings, callbacks }));
+        tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, memory: knowledge}));
     }
 
     const agent = ReActAgent.makeAgent({

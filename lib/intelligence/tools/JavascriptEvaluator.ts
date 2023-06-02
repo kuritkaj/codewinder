@@ -8,7 +8,7 @@ import * as vm from "node:vm";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
 export const NAME = "javascript-evaluator";
-export const DESCRIPTION = `an AI-powered JavaScript evaluator. 
+export const DESCRIPTION = `an AI-powered JavaScript evaluator. Should not be used for search or web browsing. 
 Write a specification for a function that will return the desired output as a string.
 Include complete details from any prior actions since those are not shared with this tool.
 Input format:
@@ -109,9 +109,9 @@ export class JavascriptEvaluator extends Tool {
             const result = output ? await output : "No result returned.";
 
             // store this program for future reference
-            await this.memory.storeTexts([match], [ {
+            await this.memory.storeTexts([match],  {
                 specification: specification
-            } ])
+            })
 
             return result;
         } catch (error) {

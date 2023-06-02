@@ -2,14 +2,14 @@
 
 import cheerio from "cheerio";
 import PDFParse from "pdf-parse";
-import { BaseLanguageModel } from "langchain/base_language";
-import { Tool, ToolParams } from "langchain/tools";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { StringPromptValue } from "langchain/prompts";
-import { CallbackManagerForToolRun } from "langchain/callbacks";
-import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import { Embeddings } from "langchain/embeddings";
-import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import {BaseLanguageModel} from "langchain/base_language";
+import {Tool, ToolParams} from "langchain/tools";
+import {RecursiveCharacterTextSplitter} from "langchain/text_splitter";
+import {StringPromptValue} from "langchain/prompts";
+import {CallbackManagerForToolRun} from "langchain/callbacks";
+import {MemoryVectorStore} from "langchain/vectorstores/memory";
+import {Embeddings} from "langchain/embeddings";
+import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
 
 const getContent = async (
     baseUrl: string,
@@ -17,7 +17,7 @@ const getContent = async (
 ): Promise<string | Blob> => {
     const domain = new URL(baseUrl).hostname;
 
-    const headers = { ...h };
+    const headers = {...h};
     // these appear to be positional, which means they have to exist in the headers passed in
     headers["Host"] = domain;
     headers["Alt-Used"] = domain;
@@ -30,7 +30,7 @@ const getContent = async (
         });
     } catch (e) {
         if (e.response && e.response.status) {
-            throw new Error(`http response ${ e.response.status }`);
+            throw new Error(`http response ${e.response.status}`);
         }
         throw e;
     }
@@ -85,7 +85,7 @@ export const getText = (
     const rootElement = summary ? "body " : "*";
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    $(`${ rootElement }:not(style):not(script):not(svg)`).each((_i, elem: any) => {
+    $(`${rootElement}:not(style):not(script):not(svg)`).each((_i, elem: any) => {
         // we don't want duplicated content as we drill down so remove children
         let content = $(elem).clone().children().remove().end().text().trim();
         const $el = $(elem);
@@ -104,20 +104,20 @@ export const getText = (
 
             const imgAlt = $el.find("img[alt]").attr("alt")?.trim();
             if (imgAlt) {
-                content += ` ${ imgAlt }`;
+                content += ` ${imgAlt}`;
             }
 
-            text += ` [${ content }](${ href })`;
+            text += ` [${content}](${href})`;
         }
         // otherwise just print the content
         else if (content !== "") {
-            text += ` ${ content }`;
+            text += ` ${content}`;
         }
     });
 
     const cleansed = text.trim().replace(/\n+/g, " ");
     const title = $("title").text().trim();
-    return { text: cleansed, title };
+    return {text: cleansed, title};
 };
 
 const DEFAULT_HEADERS = {
@@ -178,7 +178,7 @@ export class WebBrowser extends Tool {
 
     /** @ignore */
     async _call(inputs: string, runManager?: CallbackManagerForToolRun) {
-        const [ baseUrl, task ] = inputs.split(",").map((input) => {
+        const [baseUrl, task] = inputs.split(",").map((input) => {
             let t = input.trim();
             t = t.startsWith('[') ? t.slice(1) : t;
             t = t.startsWith('"') ? t.slice(1) : t;
@@ -211,7 +211,7 @@ export class WebBrowser extends Tool {
         }
 
         // Store the full text for later retrieval
-        if (this.memory) await this.memory.storeTexts([text], [ { name: title }, { url: baseUrl } ]);
+        if (this.memory) await this.memory.storeTexts([text], {name: title, url: baseUrl});
 
         const textSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: 2000,
@@ -236,12 +236,12 @@ export class WebBrowser extends Tool {
             context = similar.map((res) => res.pageContent).join("\n");
         }
 
-        const prompt = `Text:${ context }\n\nI need ${
+        const prompt = `Text:${context}\n\nI need ${
             doSummary ? "a summary" : task
         } from the provided text. Limit to 100 words.`;
 
         const completion = await this.model.generatePrompt(
-            [ new StringPromptValue(prompt) ],
+            [new StringPromptValue(prompt)],
             undefined,
             runManager?.getChild()
         );

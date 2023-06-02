@@ -8,6 +8,7 @@ import { SupabaseVectorStore } from "@/lib/intelligence/vectorstores/SupabaseVec
 import { HNSWLib } from "langchain/vectorstores/hnswlib";
 import * as path from "path";
 import * as fs from "fs";
+import {Metadata} from "@/lib/types/Document";
 
 export const CACHE_DIR = ".cache";
 
@@ -82,16 +83,8 @@ export class MemoryStore {
         if (!query) throw new Error("A query is required.");
 
         // search the memory for the top 1 document that matches the query
-        const docsWithScores = await this.memory.similaritySearchWithScore(query, 1);
+        const docsWithScores = await this.memory.similaritySearchWithScore(query, k);
         if (docsWithScores.length === 0) return [];
-
-        // convert the response from similaritySearchWithScore to a tuple of [Document, number]
-        const docWithScore: [Document, number] = docsWithScores.pop();
-        const doc = docWithScore[0];
-        const score = docWithScore[1];
-
-        // if doc score is less than threshold, return empty array signifying no match
-        if (score < threshold) return [];
 
         // use the RecursiveCharacterTextSplitter to split the doc into chunks of 1000 characters
         // in theory, this does a good job of breaking on sentences...
@@ -100,16 +93,34 @@ export class MemoryStore {
             chunkOverlap: 100,
         });
 
-        // if doc score is greater than threshold, search the doc for the single snippet that best matches the query
-        const texts = await snippetSplitter.splitText(doc.pageContent);
-        const vectorStore = await MemoryVectorStore.fromTexts(
-            texts,
-            doc.metadata,
-            this.memory.embeddings
-        );
+        let snippets: Document[] = [];
 
-        // search the vector store for the best single match
-        return await vectorStore.similaritySearch(query, k);
+        for (const docWithScore of docsWithScores) {
+            // convert the response from similaritySearchWithScore to a tuple of [Document, number]
+            const doc = docWithScore[0];
+            const score = docWithScore[1];
+
+            // if doc score is less than threshold, return empty array signifying no match
+            if (score < threshold) break;
+
+            // if doc score is greater than threshold, search the doc for the single snippet that best matches the query
+            const texts = await snippetSplitter.splitText(doc.pageContent);
+            const vectorStore = await MemoryVectorStore.fromTexts(
+                texts,
+                doc.metadata,
+                this.memory.embeddings
+            );
+
+            // search the vector store for the best single match
+            const snippet = await vectorStore.similaritySearch(query, 1);
+
+            // We shouldn't have to do this, but not all of the url is preserved from the MemoryVectorStore.
+            if (snippet.length > 0) snippets.push(
+                {pageContent: snippet[0].pageContent, metadata: doc.metadata}
+            );
+        }
+
+        return snippets;
     }
 
     private async save() {
@@ -120,23 +131,27 @@ export class MemoryStore {
         }
     }
 
-    async storeDocuments(documents: Document[], metadata: Record<string, any>[] = []) {
+    async storeDocuments(documents: Document[], metadata: Metadata = {}) {
+        metadata.created_at = new Date(); // Patch in the current date/time for future reference
+
         if (!documents || documents.length === 0) throw new Error("Documents are required.");
         // Add created date to metadata for all documents
         for (const document of documents) {
-            document.metadata = [...metadata, { created: new Date()}]
+            document.metadata = metadata;
         }
         await this.memory.addDocuments(documents);
         await this.save();
     }
 
-    async storeTexts(texts: string[], metadata: Record<string, any>[] = []) {
+    async storeTexts(texts: string[], metadata: Metadata = {}) {
+        metadata.created_at = new Date(); // Patch in the current date/time for future reference
+
         if (!texts || texts.length === 0) throw new Error("Texts are required.");
         const documents = await this.textSplitter.createDocuments(
             texts
         );
         for (const document of documents) {
-            document.metadata = [...metadata, { created: new Date()}]
+            document.metadata = metadata;
         }
         await this.memory.addDocuments(documents);
         await this.save();
