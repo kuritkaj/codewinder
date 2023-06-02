@@ -1,3 +1,5 @@
+// Modified from: https://github.com/mayt/BrowserGPT/blob/master/index.js
+
 import cheerio from "cheerio";
 import { Tool, ToolParams } from "langchain/tools";
 import { BaseLanguageModel } from "langchain/base_language";

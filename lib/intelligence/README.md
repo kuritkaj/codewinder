@@ -14,4 +14,4 @@ One way to think about this, is that objectives are accomplished along two axes:
 1. Horizontal - the "looping" action of the ReAct agent can be considered a horizontal axis or breadth-based approach.
 2. Vertical - invoking the Multistep agent can be considered a vertical axis or depth-based approach.
 
-This approach to combining both a breadth and depth approach produces superior results to either approach alone.
+This approach to combining both breadth- and depth-based agents produces superior results to either approach alone.
