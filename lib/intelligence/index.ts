@@ -10,8 +10,6 @@ import {ChatOpenAI} from "langchain/chat_models/openai";
 import {ReActExecutor} from "@/lib/intelligence/react/ReActExecutor";
 import {MemoryRecall} from "@/lib/intelligence/tools/MemoryRecall";
 
-const MAX_ITERATIONS = 10;
-
 export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<ReActExecutor> => {
     const openAiApiKey = process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
@@ -90,7 +88,6 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
 
     const agent = ReActAgent.makeAgent({
         creative,
-        maxIterations: MAX_ITERATIONS,
         memory,
         model: predictable,
         tools
@@ -101,8 +98,6 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     return ReActExecutor.fromAgentAndTools({
         agent,
         creative,
-        depth: 0,
-        maxIterations: MAX_ITERATIONS,
         memory,
         model: predictable,
         tools

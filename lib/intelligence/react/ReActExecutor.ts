@@ -18,7 +18,7 @@ export type AgentContinue = {
 
 export interface ReActExecutorInput {
     agent: ReActAgent;
-    depth: number;
+    depth?: number;
     creative: BaseLanguageModel;
     earlyStoppingMethod?: StoppingMethod;
     maxIterations?: number;
@@ -34,7 +34,7 @@ export interface ReActExecutorInput {
  */
 export class ReActExecutor extends BaseChain {
     private readonly agent: ReActAgent;
-    private readonly depth: number;
+    private readonly depth: number = 0;
     private readonly earlyStoppingMethod: StoppingMethod = "force";
     private readonly maxIterations?: number = 15;
     private readonly multistep: MultistepExecutor;
