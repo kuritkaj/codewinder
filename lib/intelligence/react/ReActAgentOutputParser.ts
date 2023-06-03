@@ -3,10 +3,24 @@
 import { OutputParserArgs } from "langchain/agents";
 import { ACTION, FINAL_RESPONSE, FORMAT_INSTRUCTIONS } from "@/lib/intelligence/react/prompts";
 import { AgentAction, AgentFinish } from "langchain/schema";
-import { NAME as MultistepName } from "@/lib/intelligence/multistep/MultistepExecutor";
 import { BaseOutputParser } from "langchain/schema/output_parser";
 
-export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction | AgentFinish> {
+/*
+Expected format from ReActAgent.prompts.ts:
+
+```
+[{{
+  "action": "tool name",
+  "action_input": "tool input"
+}}]
+```
+*/
+type Action = {
+    action: string;
+    action_input: string | Record<string, any>;
+}
+
+export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction[] | AgentFinish> {
     private readonly finishToolName: string;
 
     constructor(fields?: OutputParserArgs) {
@@ -22,22 +36,33 @@ export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction |
         return `${ FINAL_RESPONSE }:`;
     }
 
-    async parse(text: string): Promise<AgentAction | AgentFinish> {
-        const responder = async (response: string) => {
+    async parse(text: string): Promise<AgentAction[] | AgentFinish> {
+        const actionResponder = async (actions: Action[]): Promise<AgentAction[]> => {
+            let tools = [];
+            actions.forEach(action => {
+                tools.push({
+                    tool: action.action,
+                    toolInput: typeof action.action_input !== "string" ? JSON.stringify(action.action_input) : action.action_input,
+                    log: text,
+                });
+            });
+            return tools;
+        }
+        const finalResponder = async (response: string): Promise<AgentFinish> => {
             return { returnValues: { output: `${ response }` }, log: response };
         }
 
         if (text.includes(`${ this.finalPrefix() }`)) {
             const parts = text.split(`${ this.finalPrefix() }`);
             const output = parts[parts.length - 1].trim();
-            return await responder(output);
+            return await finalResponder(output);
         }
 
         if (text.includes(`${ this.actionPrefix() }`) || text.includes("\`\`\`")) {
             const parts = text.split(`${ this.actionPrefix() }`);
             const output = parts[parts.length - 1].trim();
 
-            // Check to see if this is surrounded by markdown code blocks
+            // Check to see if this is surrounded by Markdown code blocks
             const regex = /(?<=```)[\s\S]*?(?=\n```)/;
             const matches = output.match(regex);
 
@@ -45,27 +70,17 @@ export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction |
                 const json = (matches && matches.length > 0) ? matches.pop() : output;
                 const actions = JSON.parse(json);
 
-                if (Array.isArray(actions) && actions.length > 1) {
-                    const toolInput = `{ "steps": [${actions.map(action => { return `"${action.action_input}"`; }).join(",\n") }] }`;
-                    return {
-                        tool: MultistepName,
-                        toolInput,
-                        log: text,
-                    };
+                if (Array.isArray(actions)) {
+                    return await actionResponder(actions);
                 } else {
-                    let action = Array.isArray(actions) ? actions.pop() : actions;
-                    return {
-                        tool: action.action,
-                        toolInput: typeof action.action_input === 'string' ? action.action_input : JSON.stringify(action.action_input),
-                        log: text,
-                    };
+                    return await actionResponder([actions]);
                 }
             } catch {
-                return await responder(text);
+                return await finalResponder(text);
             }
         }
 
-        return await responder(text);
+        return await finalResponder(text);
     }
 
     getFormatInstructions(): string {

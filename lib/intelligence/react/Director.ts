@@ -38,6 +38,9 @@ Alternatively, does the ${ OBJECTIVE }:
 * make use of a memory that is helpful, but that does not fully address the ${ OBJECTIVE }
 If so, then respond with \`${ CONTINUE_RESPONSE }\` without further explanation.
 
+Note: if making use of a memory, pay attention to the created_at timestamp. 
+If the objective requires time-sensitive information, then the memory may be out of date.
+
 All other cases should be responded to with \`${ CONTINUE_RESPONSE }\` without further explanation.
 `;
 

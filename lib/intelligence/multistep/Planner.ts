@@ -1,16 +1,19 @@
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain, LLMChainInput } from "langchain/chains";
 import { Callbacks } from "langchain/callbacks";
-import { BaseLanguageModel } from "langchain/dist/base_language";
+import { BaseLanguageModel } from "langchain/base_language";
 
 export const GUIDANCE = `
-This is provided input for the planner: 
-{input}
+This is provided objective for the planner: 
+\"\"\"{objective}\"\"\"
+
+And tehse are the steps provided to the planner for evaluation:
+\"\"\"{steps}\"\"\"
 
 Rewrite the provided input: you may add, remove, or change the steps as you see fit.
 Note: steps are expensive; combine and remove steps that are redundant or unnecessary.
 
-When responding, ALWAYS use JSON and include the original objective and the updated tasks.
+When responding, ALWAYS use JSON and include the original objective and the updated steps.
 
 ALWAYS respond using this format:
 \`\`\`
@@ -47,9 +50,10 @@ export class Planner extends LLMChain {
         });
     }
 
-    async evaluate({input}: { input: string }) {
+    async evaluate({objective, steps}: { objective: string, steps: string }): Promise<string> {
         const completion = await this.call({
-            input
+            objective,
+            steps
         });
         return completion.text;
     }

@@ -10,12 +10,15 @@ import {BaseLanguageModel} from "langchain/base_language";
 import {MultistepExecutor} from "@/lib/intelligence/multistep/MultistepExecutor";
 import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
 
+const MAX_DEPTH = 1;
+
 export type AgentContinue = {
     log: string;
 };
 
 export interface ReActExecutorInput {
     agent: ReActAgent;
+    depth: number;
     creative: BaseLanguageModel;
     earlyStoppingMethod?: StoppingMethod;
     maxIterations?: number;
@@ -31,8 +34,10 @@ export interface ReActExecutorInput {
  */
 export class ReActExecutor extends BaseChain {
     private readonly agent: ReActAgent;
+    private readonly depth: number;
     private readonly earlyStoppingMethod: StoppingMethod = "force";
     private readonly maxIterations?: number = 15;
+    private readonly multistep: MultistepExecutor;
     private readonly returnIntermediateSteps: boolean = false;
     private readonly tools: Tool[];
 
@@ -47,6 +52,7 @@ export class ReActExecutor extends BaseChain {
     constructor({
                     agent,
                     creative,
+                    depth,
                     earlyStoppingMethod,
                     maxIterations,
                     memory,
@@ -55,29 +61,32 @@ export class ReActExecutor extends BaseChain {
                     tools
                 }: ReActExecutorInput) {
         super({verbose: true});
-        const multistep = new MultistepExecutor({
-            creative,
-            maxIterations,
-            model,
-            memory,
-            tools
-        });
-        const toolset = [...tools, multistep];
 
         this.agent = agent;
-        this.tools = toolset;
+        this.depth = depth;
+        this.tools = tools;
 
         this.returnIntermediateSteps =
             returnIntermediateSteps ?? this.returnIntermediateSteps;
         this.maxIterations = maxIterations ?? this.maxIterations;
         this.earlyStoppingMethod =
             earlyStoppingMethod ?? this.earlyStoppingMethod;
+
+        this.multistep = new MultistepExecutor({
+            creative,
+            depth,
+            maxIterations,
+            model,
+            memory,
+            tools
+        });
     }
 
     /** Create from agent and a list of tools. */
     static fromAgentAndTools({
                                  agent,
                                  creative,
+                                 depth,
                                  earlyStoppingMethod,
                                  maxIterations,
                                  memory,
@@ -88,6 +97,7 @@ export class ReActExecutor extends BaseChain {
         return new ReActExecutor({
             agent,
             creative,
+            depth,
             earlyStoppingMethod,
             maxIterations,
             memory,
@@ -111,7 +121,18 @@ export class ReActExecutor extends BaseChain {
         let steps: AgentStep[] = [];
         let iterations = 0;
 
-        const getOutput = async (finishStep: AgentFinish) => {
+        const evaluateAction = async (action: AgentAction): Promise<AgentStep> => {
+            await runManager?.handleAgentAction(action);
+
+            const tool = toolsByName[action.tool?.toLowerCase()];
+            const observation = tool
+                ? await tool.call(action.toolInput, runManager?.getChild())
+                : `${action.tool} is not a valid tool, try another one.`;
+
+            return {action, observation};
+        }
+
+        const getOutput = async (finishStep: AgentFinish): Promise<ChainValues> => {
             const {returnValues} = finishStep;
             const additional = await this.agent.prepareForOutput(returnValues, steps);
 
@@ -131,61 +152,72 @@ export class ReActExecutor extends BaseChain {
             const evaluation = await this.agent.evaluateInputs(newInputs, steps, runManager?.getChild());
 
             // Check if the agent has finished
-            if ("returnValues" in evaluation) {
-                return getOutput(evaluation);
-            }
+            if ("returnValues" in evaluation) return getOutput(evaluation);
 
             // Execute the plan with the new inputs
-            const output = await this.agent.plan(
+            const plan = await this.agent.plan(
                 steps,
                 newInputs,
                 runManager?.getChild()
             );
 
             // Check if the agent has finished
-            if ("returnValues" in output) {
-                return getOutput(output);
-            }
+            if ("returnValues" in plan) return getOutput(plan);
 
             // If not, then double-check the work to ensure the plan is sound.
-            const newOutput = await this.agent.evaluateOutputs(output, steps, newInputs, runManager?.getChild());
+            const revised = await this.agent.evaluateOutputs(plan, steps, newInputs, runManager?.getChild());
 
             // Check if the agent has finished
-            if ("returnValues" in newOutput) {
-                return getOutput(newOutput);
-            }
+            if ("returnValues" in revised) return getOutput(revised);
 
             // If the output is an array, then we have multiple actions to execute.
-            let newActions: AgentAction[];
-            if (Array.isArray(newOutput)) {
-                newActions = newOutput as AgentAction[];
+            const newActions: AgentAction[] = Array.isArray(revised) ? revised : [revised];
+
+            // If there is more than one step, use the multistep executor.
+            let newSteps: AgentStep[];
+
+            if (newActions.length > 1) {
+                // Only use the multistep executor if we're not at the maximum depth.
+                if (this.depth < MAX_DEPTH) {
+                    const multiOutput = await this.multistep.call({
+                        ...newInputs,
+                        actions: newActions.map(action => action.toolInput).join(",\n"),
+                    }, runManager?.getChild());
+                    newSteps = [{
+                        action: {
+                            tool: "multistep",
+                            toolInput: "",
+                            log: ""
+                        },
+                        observation: multiOutput.output
+                    }];
+                } else {
+                    newSteps = await Promise.all(
+                        newActions.map(async (action) => {
+                            await runManager?.handleAgentAction(action);
+
+                            const tool = toolsByName[action.tool?.toLowerCase()];
+                            const observation = tool
+                                ? await tool.call(action.toolInput, runManager?.getChild())
+                                : `${action.tool} is not a valid tool, try another one.`;
+
+                            return {action, observation};
+                        })
+                    );
+                }
             } else {
-                newActions = [newOutput as AgentAction];
+                // Here, we execute the actions and gather the observations.
+                newSteps =[(await evaluateAction(newActions[0]))];
             }
-
-            // Here, we execute the actions and gather the observations.
-            const newSteps = await Promise.all(
-                newActions.map(async (action) => {
-                    await runManager?.handleAgentAction(action);
-
-                    const tool = toolsByName[action.tool?.toLowerCase()];
-                    const observation = tool
-                        ? await tool.call(action.toolInput, runManager?.getChild())
-                        : `${action.tool} is not a valid tool, try another one.`;
-
-                    return {action, observation};
-                })
-            );
 
             // This prior action observations are added to the previous steps.
             steps.push(...newSteps);
 
             const lastStep = steps[steps.length - 1];
-            const lastTool = toolsByName[lastStep.action.tool?.toLowerCase()];
+            const tool = toolsByName[lastStep.action.tool?.toLowerCase()];
 
-            // If the last tool returns directly, we return that observation.
-            // Given this is positional, that would mean any multi-action observations are ignored.
-            if (lastTool?.returnDirect) {
+            // If the tool returns directly, we return that observation.
+            if (tool?.returnDirect) {
                 return getOutput({
                     returnValues: {[this.agent.returnValues[0]]: lastStep.observation},
                     log: "",

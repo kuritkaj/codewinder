@@ -11,7 +11,7 @@ import {
     THOUGHT,
     TOOLING
 } from "@/lib/intelligence/react/prompts";
-import {Agent, ChatCreatePromptArgs, OutputParserArgs} from "langchain/agents";
+import {ChatCreatePromptArgs} from "langchain/agents";
 import {Tool} from "langchain/tools";
 import {PromptTemplate} from "langchain/prompts";
 import {AgentAction, AgentFinish, AgentStep, ChainValues} from "langchain/schema";
@@ -24,6 +24,8 @@ import {MemoryCondenser} from "@/lib/intelligence/react/MemoryCondenser";
 import {Director} from "@/lib/intelligence/react/Director";
 import {AgentContinue} from "@/lib/intelligence/react/ReActExecutor";
 import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
+import {BaseMultiActionAgent} from "@/lib/intelligence/react/BaseMultiActionAgent";
+import {BaseOutputParser} from "langchain/schema/output_parser";
 
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
@@ -42,50 +44,53 @@ interface ReActAgentInput {
     tools: Tool[];
 }
 
-export class ReActAgent extends Agent {
+export class ReActAgent extends BaseMultiActionAgent {
     private readonly creativeChain: LLMChain;
+    private readonly llmChain: LLMChain;
     private readonly maxIterations: number;
     private readonly memory: MemoryStore;
     private readonly maxTokens: number;
+    private readonly outputParser: BaseOutputParser<AgentAction[] | AgentFinish>;
     private readonly tools: Tool[];
 
-    constructor({creativeChain, llmChain, memory, tools, maxIterations}: ReActAgentInput) {
-        const outputParser = ReActAgent.getDefaultOutputParser();
-        super({
-            llmChain,
-            outputParser,
-            allowedTools: tools.map((t) => t.name)
-        });
+    get inputKeys() {
+        return [CONTEXT_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT, TOOLING_INPUT];
+    };
 
-        this.creativeChain = creativeChain;
-        this.maxIterations = maxIterations;
-        this.maxTokens = 4096 - 1000; // Rough estimate for GPT-3 with room for prompt - https://platform.openai.com/tokenizer
-        this.memory = memory;
-        this.tools = tools;
-    }
-
-    _agentType() {
-        return "react-agent-description" as const;
-    }
-
-    finalPrefix() {
+    get finalPrefix() {
         return `${FINAL_RESPONSE}:`;
     }
 
-    llmPrefix() {
+    get llmPrefix() {
         return `${THOUGHT}:`;
     }
 
-    memoryPrefix() {
+    get memoryPrefix() {
         return `${MEMORY}:`;
     }
 
-    observationPrefix() {
+    get observationPrefix() {
         return `${OBSERVATION}:`;
     }
 
-    _stop(): string[] {
+    get stopPrefixes(): string[] {
         return [`${OBSERVATION}:`, `${FINAL_RESPONSE}:`];
+    }
+
+    get returnValues() {
+        return [CONTEXT_INPUT, OBJECTIVE_INPUT, SCRATCHPAD_INPUT, TOOLING_INPUT];
+    }
+
+    constructor({creativeChain, llmChain, memory, tools, maxIterations}: ReActAgentInput) {
+        super();
+
+        this.creativeChain = creativeChain;
+        this.llmChain = llmChain;
+        this.maxIterations = maxIterations;
+        this.maxTokens = 4096 - 1000; // Rough estimate for GPT-3 with room for prompt - https://platform.openai.com/tokenizer
+        this.memory = memory;
+        this.outputParser = new ReActAgentActionOutputParser();
+        this.tools = tools;
     }
 
     private async constructMemories(steps: AgentStep[], inputs: ChainValues) {
@@ -97,7 +102,7 @@ export class ReActAgent extends Agent {
         // If memories were found, then retrieve the page content of the first one (which is the highest scoring).
         const recent = memories && memories.length > 0 ? memories.pop() : undefined;
         const content = recent ? recent.pageContent + " " + JSON.stringify(recent.metadata) : "";
-        return `${this.memoryPrefix()} \"\"\"${content ? content : "No relevant memories recalled."}\"\"\"`
+        return `${this.memoryPrefix} \"\"\"${content || "No relevant memories recalled."}\"\"\"`
     }
 
     public async constructScratchPad(steps: AgentStep[]): Promise<string> {
@@ -105,9 +110,9 @@ export class ReActAgent extends Agent {
             return (
                 thoughts +
                 [
-                    this.llmPrefix(),
+                    this.llmPrefix,
                     action.log,
-                    this.observationPrefix(),
+                    this.observationPrefix,
                     `\"\"\"${observation}\"\"\"`
                 ].join("\n")
             );
@@ -139,7 +144,7 @@ export class ReActAgent extends Agent {
         inputs: ChainValues,
         steps: AgentStep[],
         callbackManager?: CallbackManager
-    ): Promise<AgentContinue | AgentAction | AgentFinish> {
+    ): Promise<AgentContinue | AgentAction[] | AgentFinish> {
         if (steps.length === 0) {
             const memory = await this.constructMemories(steps, inputs);
 
@@ -149,7 +154,7 @@ export class ReActAgent extends Agent {
                 objective: inputs[OBJECTIVE_INPUT],
                 memory: memory,
             });
-            if (completion.includes(`${this.finalPrefix()}`)) {
+            if (completion.includes(`${this.finalPrefix}`)) {
                 return await this.outputParser.parse(completion);
             } else {
                 return {log: completion} as AgentContinue;
@@ -160,42 +165,39 @@ export class ReActAgent extends Agent {
     }
 
     public async evaluateOutputs(
-        action: AgentAction,
+        actions: AgentAction[],
         steps: AgentStep[],
         inputs: ChainValues,
         callbackManager?: CallbackManager
-    ): Promise<AgentAction | AgentFinish> {
+    ): Promise<AgentAction[] | AgentFinish> {
         const critic = ActionEvaluator.makeChain({model: this.creativeChain.llm, callbacks: callbackManager});
         const scratchpad = await this.constructScratchPad(steps);
         const evaluation = await critic.evaluate({
             objective: inputs[OBJECTIVE_INPUT],
-            response: action.log,
+            response: JSON.stringify(actions),
             scratchpad,
             tools: inputs[TOOLING_INPUT],
         });
-        const parsed = await this.outputParser.parse(evaluation);
+        const newActions = await this.outputParser.parse(evaluation);
         // If a new action is provided, then return that. Otherwise, return the original.
-        if ("tool" in parsed) {
-            return parsed;
+        if ("returnValues" in newActions) {
+            // No new actions, so continue without using this response.
+            return actions;
         } else {
-            return action;
+            return newActions;
         }
-    }
-
-    public static getDefaultOutputParser(_fields?: OutputParserArgs) {
-        return new ReActAgentActionOutputParser(_fields);
     }
 
     /**
      * Create a new agent based on the provided parameters.
      */
     public static makeAgent({
-                         model,
-                         creative,
-                         memory,
-                         tools,
-                         maxIterations = undefined
-                     }: {
+                                model,
+                                creative,
+                                memory,
+                                tools,
+                                maxIterations = undefined
+                            }: {
         model: BaseLanguageModel,
         creative: BaseLanguageModel,
         memory: MemoryStore,
@@ -235,25 +237,23 @@ export class ReActAgent extends Agent {
         steps: AgentStep[],
         inputs: ChainValues,
         callbackManager?: CallbackManager
-    ): Promise<AgentAction | AgentFinish> {
+    ): Promise<AgentAction[] | AgentFinish> {
         try {
             // Use the base chain for evaluating the right tool to use.
             const output = await this.llmChain.predict(inputs, callbackManager);
-            const action = await this.outputParser.parse(output);
+            const actions = await this.outputParser.parse(output);
 
-            // If we're calling to use a tool, then parse the output normally.
-            // Otherwise, switch from the baseChain to the creativeChain for the final output.
-            if ("tool" in action) {
-                // This is an action
-                return action;
-            } else {
+            // If this is a final response, then respond with the creative chain.
+            if ("returnValues" in actions) {
                 // Ensure we include the output the previous execution for this final response.
                 inputs[SCRATCHPAD_INPUT] = [inputs[SCRATCHPAD_INPUT], output].join("\n");
                 // Only stop on Observations in case this is a fall through from the base chain.
-                inputs.stop = this._stop().slice(0, 1);
+                inputs.stop = this.stopPrefixes.slice(0, 1);
                 // Here we use the creative chain to generate a final response.
                 const finalOutput = await this.creativeChain.predict(inputs, callbackManager);
                 return this.outputParser.parse(finalOutput);
+            } else {
+                return actions;
             }
         } catch (e) {
             console.error("Error in LLMChain.predict:", e);
@@ -295,7 +295,7 @@ export class ReActAgent extends Agent {
         // Construct the scratchpad and add it to the inputs
         const thoughts = await this.constructScratchPad(steps);
         const memory = await this.constructMemories(steps, inputs);
-        const suggestion = (steps.length <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix() : this.finalPrefix())
+        const suggestion = (steps.length <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix : this.finalPrefix)
 
         newInputs[SCRATCHPAD_INPUT] = [
             thoughts,
@@ -304,8 +304,8 @@ export class ReActAgent extends Agent {
         ].join("\n");
 
         // Add the appropriate stop phrases for the llm
-        if (this._stop().length !== 0) {
-            newInputs.stop = this._stop();
+        if (this.stopPrefixes.length !== 0) {
+            newInputs.stop = this.stopPrefixes;
         }
 
         const tokenCount = await this.llmChain.llm.getNumTokens([thoughts, memory, suggestion].join("\n"));

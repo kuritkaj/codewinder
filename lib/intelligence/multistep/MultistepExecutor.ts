@@ -1,96 +1,107 @@
 import {Tool, ToolParams} from "langchain/tools";
-import {CallbackManagerForToolRun} from "langchain/dist/callbacks/manager";
 import {Editor} from "@/lib/intelligence/multistep/Editor";
 import {CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent} from "@/lib/intelligence/react/ReActAgent";
 import {Planner} from "@/lib/intelligence/multistep/Planner";
 import {BaseLanguageModel} from "langchain/base_language";
 import {ReActExecutor} from "@/lib/intelligence/react/ReActExecutor";
 import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
+import {BaseChain, SerializedLLMChain} from "langchain/chains";
+import {ChainValues} from "langchain/schema";
+import {CallbackManagerForChainRun} from "langchain/callbacks";
 
-export const NAME = "multi-step";
-export const DESCRIPTION = `for complex objectives that require multiple steps or tasks to complete.
-Input format:
-{{
-  "action": "${NAME}",
-  "action_input": {{
-        "objective": "the objective with specifics from previous actions",
-        "steps": [
-            "step 1",
-            "step 2"
-        ]
-    }}
-}}`;
+export const ACTIONS_INPUT = "actions";
+export const OUTPUT_KEY = "output";
 
-interface MultistepParams extends ToolParams {
+interface MultistepExecutorInput extends ToolParams {
     creative: BaseLanguageModel;
-    model: BaseLanguageModel;
-    tools: Tool[];
+    depth: number;
     maxIterations?: number;
     memory: MemoryStore;
+    model: BaseLanguageModel;
+    tools: Tool[];
 }
 
-export class MultistepExecutor extends Tool {
-    public readonly name = NAME;
-    public readonly description = DESCRIPTION;
+export class MultistepExecutor extends BaseChain {
 
     private readonly creative: BaseLanguageModel;
+    private readonly depth: number;
     private readonly maxIterations?: number;
-    private readonly memory: MemoryStore;
     private readonly model: BaseLanguageModel;
+    private readonly store: MemoryStore;
     private readonly tools: Tool[];
 
-    constructor({model, creative, memory, tools, maxIterations, verbose, callbacks}: MultistepParams) {
-        super(verbose, callbacks);
+    get inputKeys() {
+        return [OBJECTIVE_INPUT, ACTIONS_INPUT];
+    }
+
+    get outputKeys() {
+        return [OUTPUT_KEY];
+    }
+
+    constructor({creative, depth, maxIterations, memory, model, tools}: MultistepExecutorInput) {
+        super({verbose: true});
 
         this.creative = creative;
+        this.depth = depth;
         this.maxIterations = maxIterations;
-        this.memory = memory;
+        this.store = memory;
         this.model = model;
-        this.returnDirect = true;
         this.tools = tools;
     }
 
-    async _call(input: string, callbackManager?: CallbackManagerForToolRun): Promise<string> {
-        return await MultistepExecutor.runAgent({
-            callbackManager: callbackManager,
+    async _call(
+        inputs: ChainValues,
+        runManager?: CallbackManagerForChainRun
+    ): Promise<ChainValues> {
+        const output = await MultistepExecutor.runAgent({
             creative: this.creative,
-            input: input,
+            depth: this.depth,
+            inputs: inputs,
             maxIterations: this.maxIterations,
-            memory: this.memory,
+            memory: this.store,
             model: this.model,
+            runManager: runManager,
             tools: this.tools
         });
+        return {
+            output: output
+        }
     }
 
-    static async runAgent({callbackManager, creative, input, model, maxIterations, memory, tools}: {
-        callbackManager?: CallbackManagerForToolRun,
+    static async runAgent({runManager, creative, depth, inputs, model, maxIterations, memory, tools}: {
         creative: BaseLanguageModel,
-        input: string,
+        depth: number,
+        inputs: ChainValues,
         model: BaseLanguageModel,
         maxIterations: number,
         memory: MemoryStore,
+        runManager?: CallbackManagerForChainRun,
         tools: Tool[],
     }): Promise<string> {
         const agent = ReActAgent.makeAgent({creative, maxIterations, memory, model, tools});
+
+        // Create a new executor and increment the depth.
         const executor = ReActExecutor.fromAgentAndTools({
             agent,
             creative,
+            depth: ++depth,
             maxIterations,
             memory,
             model,
             tools
         });
 
-        const planner = Planner.makeChain({model: creative, callbacks: callbackManager?.getChild()});
+        const planner = Planner.makeChain({model: creative, callbacks: runManager?.getChild()});
         const interim = await planner.evaluate({
-            input
+            objective: inputs[OBJECTIVE_INPUT],
+            steps: inputs[ACTIONS_INPUT]
         });
         const plan = JSON.parse(interim);
         const objective = plan.objective;
 
         let results = [];
         for (const step of plan.steps) {
-            await callbackManager?.handleText("Starting: " + step);
+            await runManager?.handleText("Starting: " + step);
 
             let inputs = {};
             inputs[OBJECTIVE_INPUT] = `${objective}: ${step}`
@@ -100,10 +111,18 @@ export class MultistepExecutor extends Tool {
             results.push(completion.output);
         }
 
-        const editor = Editor.makeChain({model: creative, callbacks: callbackManager?.getChild()});
+        const editor = Editor.makeChain({model: creative, callbacks: runManager?.getChild()});
         return await editor.evaluate({
             context: results.join("\n\n"),
             objective
         });
+    }
+
+    _chainType() {
+        return "multistep_executor" as const;
+    }
+
+    serialize(): SerializedLLMChain {
+        throw new Error("Cannot serialize an MultistepExecutor");
     }
 }

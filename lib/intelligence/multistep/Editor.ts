@@ -35,7 +35,7 @@ export class Editor extends LLMChain {
         });
     }
 
-    async evaluate({context, objective}: { context: string; objective: string }) {
+    async evaluate({context, objective}: { context: string; objective: string }): Promise<string> {
         const completion = await this.call({
             context,
             objective

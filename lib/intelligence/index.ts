@@ -101,6 +101,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     return ReActExecutor.fromAgentAndTools({
         agent,
         creative,
+        depth: 0,
         maxIterations: MAX_ITERATIONS,
         memory,
         model: predictable,
