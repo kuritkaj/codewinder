@@ -20,9 +20,6 @@ This is the prior conversation:
 Here is the stated ${ OBJECTIVE }:
 \"\"\"{${ OBJECTIVE_INPUT }}\"\"\"
 
-Which sparked this ${ MEMORY }:
-\"\"\"{${ MEMORY_INPUT }}\"\"\" 
-
 Is the ${ OBJECTIVE }:
 * a casual greeting or conversation
 * a request to write, edit, debug, or to explain code, software, a function, or a program
@@ -35,11 +32,7 @@ Alternatively, does the ${ OBJECTIVE }:
 * require executing code in a secure environment
 * request or require searching or browsing the internet, web, or a database, etc.
 * require access to one or more tools to accomplish the task
-* make use of a memory that is helpful, but that does not fully address the ${ OBJECTIVE }
 If so, then respond with \`${ CONTINUE_RESPONSE }\` without further explanation.
-
-Note: if making use of a memory, pay attention to the created_at timestamp. 
-If the objective requires time-sensitive information, then the memory may be out of date.
 
 All other cases should be responded to with \`${ CONTINUE_RESPONSE }\` without further explanation.
 `;
