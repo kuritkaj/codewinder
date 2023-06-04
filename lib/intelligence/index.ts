@@ -1,4 +1,3 @@
-import {ReActAgent} from "@/lib/intelligence/react/ReActAgent";
 import {JavascriptEvaluator} from "@/lib/intelligence/tools/JavascriptEvaluator";
 import {WebSearch} from "@/lib/intelligence/tools/WebSearch";
 import {Callbacks} from "langchain/callbacks";
@@ -84,17 +83,9 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
         tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, memory: knowledge}));
     }
 
-    const agent = ReActAgent.makeAgent({
-        creative,
-        memory,
-        model: predictable,
-        tools
-    });
-
     // The Executor gets all tools including the multistep, since that's a tool that could be returned by the ReActAgent
     // (see ReActAgentOutputParser). However, the ReActAgent itself does not get the multistep, so that it's not selected directly.
-    return ReActExecutor.fromAgentAndTools({
-        agent,
+    return ReActExecutor.makeExecutor({
         creative,
         memory,
         model: predictable,

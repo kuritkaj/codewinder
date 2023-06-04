@@ -12,21 +12,24 @@ export const SCORE = "Score";
 export const TOOL_INPUT = "tools";
 
 export const GUIDANCE = `
-An AI assistant is helping a user achieve this specific objective: {${OBJECTIVE_INPUT}}
+An AI assistant is helping a user achieve this specific objective: 
+{${OBJECTIVE_INPUT}}
+
 The AI assistant was asked to use one or more tools to achieve this objective.
+These are the allowed tools: 
+{${TOOL_INPUT}}
 
-Here is the history of past actions and experiences: {${SCRATCHPAD_INPUT}}
+Here is the history of past actions and experiences: 
+\"\"\"{${SCRATCHPAD_INPUT}}\"\"\"
 
-Based on these past actions and experiences, the AI has now responded with: {${RESPONSE_INPUT}}
-
-And these are the allowed tools: {${TOOL_INPUT}}
+Based on these past actions and experiences, the AI has now responded with: 
+\"\"\"{${RESPONSE_INPUT}}\"\"\"
 
 Evaluate the response based on the following criteria:
 * Does the response meet the stated objective based on the past actions and experiences?
 * Is the response starting to go on a tangent or starting to drift from the original objective?
 * Does the response duplicate past actions? (Avoid trying the same thing more than once)
 * Does the response only select one or more tools from the allowed tools list?
-* Are too many actions required to achieve the objective? (Limit to 3 or fewer)
 * Are any of the actions dependent on each other? (Remove actions with dependencies)
 
 Based on this evaluation, score the response on a scale of 1 to 5 with 1 being low and 5 is high.

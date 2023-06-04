@@ -5,22 +5,22 @@ import { BaseLanguageModel } from "langchain/base_language";
 import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 
 export const RESPONSE_INPUT = "response";
-export const SCRATCHPAD_INPUT = "scratchpad";
+export const ACTIONS_INPUT = "actions";
 
 export const GUIDANCE = `
 You are an AI assistant responsible for documenting the sequence of actions taken towards a particular objective.
 
-Here is the history of past actions and experiences to achieve an objective: {${SCRATCHPAD_INPUT}}
+Here is the history of past actions and experiences to achieve an objective:
+\"\"\"{${ACTIONS_INPUT}}\"\"\"
 
-Based on these past actions and experiences, the AI responded with: {${RESPONSE_INPUT}}
+Based on these past actions and experiences, the AI responded with: 
+\"\"\"{${RESPONSE_INPUT}}\"\"\"
 
 Using the above directions and information, respond with the following format:
-\"\"\"
 Objective: the derived objective phrased as a question or directive for later recall
 Actions: a summary of the actions taken to meet the objective
 Final Response: a summary of the AI response suitable with enough detail to support future recall
 ...(include significant individuals, locations, and concepts; preserve entities and acronyms including proper nouns.)
-\"\"\"
 `;
 
 interface CondenserInput {
@@ -44,10 +44,10 @@ export class MemoryCondenser extends GuardChain {
         });
     }
 
-    async evaluate({response, scratchpad}: { response: string; scratchpad: string; }): Promise<string> {
+    async evaluate({actions, response}: { actions: string; response: string; }): Promise<string> {
         const completion = await this.call({
-            response,
-            scratchpad
+            actions,
+            response
         });
         return completion.text;
     }

@@ -10,6 +10,7 @@ import { BaseLanguageModel } from "langchain/base_language";
 import { MultistepExecutor } from "@/lib/intelligence/multistep/MultistepExecutor";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
+const MAX_ITERATIONS = 6; // Minimum should be two, once to try an action, and the second to assert a final response.
 const MAX_DEPTH = 1;
 
 export type AgentContinue = {
@@ -36,7 +37,7 @@ export class ReActExecutor extends BaseChain {
     private readonly agent: ReActAgent;
     private readonly depth: number = 0;
     private readonly earlyStoppingMethod: StoppingMethod = "force";
-    private readonly maxIterations?: number = 15;
+    private readonly maxIterations?: number = MAX_ITERATIONS;
     private readonly multistep: MultistepExecutor;
     private readonly returnIntermediateSteps: boolean = false;
     private readonly tools: Tool[];
@@ -78,31 +79,6 @@ export class ReActExecutor extends BaseChain {
 
     get outputKeys() {
         return this.agent.returnValues;
-    }
-
-    /** Create from agent and a list of tools. */
-    static fromAgentAndTools({
-        agent,
-        creative,
-        depth,
-        earlyStoppingMethod,
-        maxIterations,
-        memory,
-        model,
-        returnIntermediateSteps,
-        tools
-    }: ReActExecutorInput): ReActExecutor {
-        return new ReActExecutor({
-            agent,
-            creative,
-            depth,
-            earlyStoppingMethod,
-            maxIterations,
-            memory,
-            model,
-            returnIntermediateSteps,
-            tools
-        });
     }
 
     async _call(
@@ -231,6 +207,39 @@ export class ReActExecutor extends BaseChain {
 
     _chainType() {
         return "agent_executor" as const;
+    }
+
+
+    /** Create from agent and a list of tools. */
+    static makeExecutor({
+        creative,
+        depth,
+        earlyStoppingMethod,
+        maxIterations,
+        memory,
+        model,
+        returnIntermediateSteps,
+        tools
+    }: ReActExecutorInput | Omit<ReActExecutorInput, "agent">): ReActExecutor {
+        const agent = ReActAgent.makeAgent({
+            creative,
+            maxIterations: maxIterations ?? MAX_ITERATIONS,
+            memory,
+            model,
+            tools
+        });
+
+        return new ReActExecutor({
+            agent,
+            creative,
+            depth,
+            earlyStoppingMethod,
+            maxIterations,
+            memory,
+            model,
+            returnIntermediateSteps,
+            tools
+        });
     }
 
     serialize(): SerializedLLMChain {

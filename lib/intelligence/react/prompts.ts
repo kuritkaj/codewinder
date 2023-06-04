@@ -26,7 +26,7 @@ export const FORMAT_INSTRUCTIONS = `
 Use this format to reason about the best course of action:
 ${OBJECTIVE}: the objective
 ${MEMORY}: a thought or memory that might be useful
-${THOUGHT}: think about this step-by-step or respond with \`${FINAL_RESPONSE}:\` based on the memory
+${THOUGHT}: think about this step-by-step
 ${ACTION}:
 \`\`\`
 [{{
@@ -46,5 +46,4 @@ Note: If the ${OBJECTIVE} is unclear, make an educated guess on what is intended
 Note: If the ${OBJECTIVE} needs information that you don't have, use a tool to learn more.
 Note: If the ${OBJECTIVE} is to make a table or document, then use markdown formatting to create it.
 Note: For the ${FINAL_RESPONSE}, avoid telling the user how to do something, but instead do it for them.
-Note: For the ${FINAL_RESPONSE}, ignore memories where the \`created_at\` timestamp doesn't match the desired time period.
 `;

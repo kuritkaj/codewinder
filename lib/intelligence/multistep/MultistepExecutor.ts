@@ -1,6 +1,6 @@
 import { Tool, ToolParams } from "langchain/tools";
 import { Editor } from "@/lib/intelligence/multistep/Editor";
-import { CONTEXT_INPUT, OBJECTIVE_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
+import { CONTEXT_INPUT, OBJECTIVE_INPUT } from "@/lib/intelligence/react/ReActAgent";
 import { Planner } from "@/lib/intelligence/multistep/Planner";
 import { BaseLanguageModel } from "langchain/base_language";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
@@ -54,16 +54,13 @@ export class MultistepExecutor extends BaseChain {
         depth: number,
         inputs: ChainValues,
         model: BaseLanguageModel,
-        maxIterations: number,
+        maxIterations?: number,
         memory: MemoryStore,
         runManager?: CallbackManagerForChainRun,
         tools: Tool[],
     }): Promise<string> {
-        const agent = ReActAgent.makeAgent({creative, maxIterations, memory, model, tools});
-
         // Create a new executor and increment the depth.
-        const executor = ReActExecutor.fromAgentAndTools({
-            agent,
+        const executor = ReActExecutor.makeExecutor({
             creative,
             depth: ++depth,
             maxIterations,

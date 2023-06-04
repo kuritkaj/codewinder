@@ -269,10 +269,14 @@ export class ReActAgent extends BaseMultiActionAgent {
         // Or, the response was derived from a previous memory, and we should not store again.
         if (_steps && _steps.length > 0) {
             const condenser = MemoryCondenser.makeChain({model: this.llmChain.llm});
-            const scratchpad = await this.constructScratchPad(_steps);
+
+            const actions = _steps.map(step => {
+                return `${step.action.tool} - ${step.action.toolInput}`
+            }).join("\n");
+
             const memory = await condenser.evaluate({
                 response: _returnValues.output,
-                scratchpad,
+                actions: JSON.stringify(actions),
             });
             await this.memory.storeTexts([memory]);
         }
@@ -298,7 +302,7 @@ export class ReActAgent extends BaseMultiActionAgent {
         // Construct the scratchpad and add it to the inputs
         const thoughts = await this.constructScratchPad(steps);
         const memory = await this.constructMemories(steps);
-        const nudge = (steps.length <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix : this.finalPrefix)
+        const nudge = (steps.length + 1 < (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix : this.finalPrefix)
 
         newInputs[SCRATCHPAD_INPUT] = [
             memory,

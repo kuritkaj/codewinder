@@ -4,11 +4,15 @@ import { Callbacks } from "langchain/callbacks";
 import { BaseLanguageModel } from "langchain/base_language";
 import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 
+export const CONTEXT_INPUT = "context";
+export const OBJECTIVE_INPUT = "objective";
+
 export const GUIDANCE = `
 Provided the following text:
-{context}
+\"\"\"{${CONTEXT_INPUT}}\"\"\"
 
-And using this as your guide: {objective}
+And using this as your guide: 
+\"\"\"{${OBJECTIVE_INPUT}}\"\"\"
 
 Rewrite the provided text: you may add, remove, or change the sections and headings as you see fit.
 Use Github Flavored Markdown (GFM) to format your response. Never use HTML.
