@@ -1,4 +1,3 @@
-import {Tool} from "langchain/tools";
 import {ReActAgent} from "@/lib/intelligence/react/ReActAgent";
 import {JavascriptEvaluator} from "@/lib/intelligence/tools/JavascriptEvaluator";
 import {WebSearch} from "@/lib/intelligence/tools/WebSearch";
@@ -8,7 +7,7 @@ import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
 import {OpenAIEmbeddings} from "langchain/embeddings/openai";
 import {ChatOpenAI} from "langchain/chat_models/openai";
 import {ReActExecutor} from "@/lib/intelligence/react/ReActExecutor";
-import {MemoryRecall} from "@/lib/intelligence/tools/MemoryRecall";
+import {Tool} from "langchain/tools";
 
 export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<ReActExecutor> => {
     const openAiApiKey = process.env.OPENAI_API_KEY;
@@ -79,8 +78,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
 
     const tools: Tool[] = [
         new WebBrowser({callbacks, embeddings, memory: knowledge, model: predictable}),
-        new JavascriptEvaluator({callbacks, memory: code, model: powerful}),
-        new MemoryRecall({callbacks, memory: knowledge})
+        new JavascriptEvaluator({callbacks, memory: code, model: powerful})
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, memory: knowledge}));

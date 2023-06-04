@@ -8,9 +8,9 @@ import * as vm from "node:vm";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
 export const NAME = "javascript-evaluator";
-export const DESCRIPTION = `an AI-powered JavaScript evaluator. Should not be used for search or web browsing. 
-Write a specification for a function that will return the desired output as a string.
-Include complete details from any prior actions since those are not shared with this tool.
+export const DESCRIPTION = `an AI-powered JavaScript evaluator.
+Always inlude complete, relevant details in the specification from previous observations and actions.
+Input is a specification for a function that will return the desired output as a string.
 Input format:
 {{
   "action": "${ NAME }",

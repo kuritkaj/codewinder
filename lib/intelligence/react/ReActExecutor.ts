@@ -63,19 +63,17 @@ export class ReActExecutor extends BaseChain {
         super({verbose: true});
 
         this.agent = agent;
-        this.depth = depth;
         this.tools = tools;
 
-        this.returnIntermediateSteps =
-            returnIntermediateSteps ?? this.returnIntermediateSteps;
+        this.depth = depth ?? this.depth;
+        this.returnIntermediateSteps = returnIntermediateSteps ?? this.returnIntermediateSteps;
         this.maxIterations = maxIterations ?? this.maxIterations;
-        this.earlyStoppingMethod =
-            earlyStoppingMethod ?? this.earlyStoppingMethod;
+        this.earlyStoppingMethod = earlyStoppingMethod ?? this.earlyStoppingMethod;
 
         this.multistep = new MultistepExecutor({
             creative,
-            depth,
-            maxIterations,
+            depth: this.depth,
+            maxIterations: this.maxIterations,
             model,
             memory,
             tools
