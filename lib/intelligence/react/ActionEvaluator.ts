@@ -62,7 +62,7 @@ export class ActionEvaluator extends LLMChain {
         return new ActionEvaluator({
             llm: model,
             callbacks: callbacks,
-            prompt
+            prompt: prompt
         });
     }
 

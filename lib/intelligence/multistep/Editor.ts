@@ -1,7 +1,7 @@
-import { PromptTemplate } from "langchain/prompts";
-import { LLMChain, LLMChainInput } from "langchain/chains";
-import { Callbacks } from "langchain/callbacks";
-import { BaseLanguageModel } from "langchain/base_language";
+import {PromptTemplate} from "langchain/prompts";
+import {LLMChain, LLMChainInput} from "langchain/chains";
+import {Callbacks} from "langchain/callbacks";
+import {BaseLanguageModel} from "langchain/base_language";
 
 export const GUIDANCE = `
 Provided the following text:
@@ -25,13 +25,13 @@ export class Editor extends LLMChain {
         super(inputs);
     }
 
-    static makeChain({ model, callbacks }: EditorInput): Editor {
+    static makeChain({model, callbacks}: EditorInput): Editor {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new Editor({
             llm: model,
             callbacks: callbacks,
-            prompt
+            prompt: prompt
         });
     }
 

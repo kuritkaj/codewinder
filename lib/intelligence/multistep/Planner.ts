@@ -46,7 +46,7 @@ export class Planner extends LLMChain {
         return new Planner({
             llm: model,
             callbacks: callbacks,
-            prompt
+            prompt: prompt
         });
     }
 
