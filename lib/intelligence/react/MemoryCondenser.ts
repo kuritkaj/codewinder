@@ -1,7 +1,8 @@
-import {PromptTemplate} from "langchain/prompts";
-import {LLMChain, LLMChainInput} from "langchain/chains";
-import {Callbacks} from "langchain/callbacks";
-import {BaseLanguageModel} from "langchain/base_language";
+import { PromptTemplate } from "langchain/prompts";
+import { LLMChainInput } from "langchain/chains";
+import { Callbacks } from "langchain/callbacks";
+import { BaseLanguageModel } from "langchain/base_language";
+import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 
 export const RESPONSE_INPUT = "response";
 export const SCRATCHPAD_INPUT = "scratchpad";
@@ -27,7 +28,7 @@ interface CondenserInput {
     callbacks?: Callbacks;
 }
 
-export class MemoryCondenser extends LLMChain {
+export class MemoryCondenser extends GuardChain {
 
     constructor(inputs: LLMChainInput) {
         super(inputs);

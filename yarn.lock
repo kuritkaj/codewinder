@@ -1550,6 +1550,7 @@ __metadata:
     dotenv: ^16.0.3
     eslint: 8.34.0
     eslint-config-next: 13.4.4
+    eslint-config-prettier: ^8.8.0
     hnswlib-node: ^1.4.2
     langchain: ^0.0.84
     next: 13.4.4
@@ -2211,6 +2212,17 @@ __metadata:
     typescript:
       optional: true
   checksum: 8f35474e3222d7c83966a716ed9bc5973643677da790596939c9c5a36216d01aae55027d0c14a6a4ba88e632f0e48129a9f05370540c6b9e07d4737a49b02d8c
+  languageName: node
+  linkType: hard
+
+"eslint-config-prettier@npm:^8.8.0":
+  version: 8.8.0
+  resolution: "eslint-config-prettier@npm:8.8.0"
+  peerDependencies:
+    eslint: ">=7.0.0"
+  bin:
+    eslint-config-prettier: bin/cli.js
+  checksum: 1e94c3882c4d5e41e1dcfa2c368dbccbfe3134f6ac7d40101644d3bfbe3eb2f2ffac757f3145910b5eacf20c0e85e02b91293d3126d770cbf3dc390b3564681c
   languageName: node
   linkType: hard
 

@@ -1,7 +1,8 @@
-import {PromptTemplate} from "langchain/prompts";
-import {LLMChain, LLMChainInput} from "langchain/chains";
-import {Callbacks} from "langchain/callbacks";
-import {BaseLanguageModel} from "langchain/base_language";
+import { PromptTemplate } from "langchain/prompts";
+import { LLMChainInput } from "langchain/chains";
+import { Callbacks } from "langchain/callbacks";
+import { BaseLanguageModel } from "langchain/base_language";
+import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 
 export const GUIDANCE = `
 Provided the following text:
@@ -19,7 +20,7 @@ interface EditorInput {
     callbacks?: Callbacks;
 }
 
-export class Editor extends LLMChain {
+export class Editor extends GuardChain {
 
     constructor(inputs: LLMChainInput) {
         super(inputs);

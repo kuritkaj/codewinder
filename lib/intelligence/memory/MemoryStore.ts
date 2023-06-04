@@ -114,7 +114,7 @@ export class MemoryStore {
             // search the vector store for the best single match
             const snippet = await vectorStore.similaritySearch(query, 1);
 
-            // We shouldn't have to do this, but not all of the url is preserved from the MemoryVectorStore.
+            // We shouldn't have to do this, but the whole url is not preserved from the MemoryVectorStore.
             if (snippet.length > 0) snippets.push(
                 {pageContent: snippet[0].pageContent, metadata: doc.metadata}
             );

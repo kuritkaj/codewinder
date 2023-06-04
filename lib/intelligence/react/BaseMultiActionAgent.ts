@@ -1,8 +1,8 @@
 // Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/agents/agent.ts
 
-import {AgentAction, AgentFinish, AgentStep, ChainValues} from "langchain/schema";
-import {CallbackManager} from "langchain/callbacks";
-import {BaseAgent} from "@/lib/intelligence/react/BaseAgent";
+import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
+import { CallbackManager } from "langchain/callbacks";
+import { BaseAgent } from "@/lib/intelligence/react/BaseAgent";
 
 export abstract class BaseMultiActionAgent extends BaseAgent {
 

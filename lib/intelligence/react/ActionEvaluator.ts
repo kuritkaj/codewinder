@@ -1,7 +1,8 @@
 import { PromptTemplate } from "langchain/prompts";
-import { LLMChain, LLMChainInput } from "langchain/chains";
+import { LLMChainInput } from "langchain/chains";
 import { Callbacks } from "langchain/callbacks";
 import { BaseLanguageModel } from "langchain/base_language";
+import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 
 export const EVALUATION = "Evaluation";
 export const OBJECTIVE_INPUT = "objective";
@@ -11,14 +12,14 @@ export const SCORE = "Score";
 export const TOOL_INPUT = "tools";
 
 export const GUIDANCE = `
-An AI assistant is helping a user achieve this specific objective: {${ OBJECTIVE_INPUT }}
+An AI assistant is helping a user achieve this specific objective: {${OBJECTIVE_INPUT}}
 The AI assistant was asked to use one or more tools to achieve this objective.
 
-Here is the history of past actions and experiences: {${ SCRATCHPAD_INPUT }}
+Here is the history of past actions and experiences: {${SCRATCHPAD_INPUT}}
 
-Based on these past actions and experiences, the AI has now responded with: {${ RESPONSE_INPUT }}
+Based on these past actions and experiences, the AI has now responded with: {${RESPONSE_INPUT}}
 
-And these are the allowed tools: {${ TOOL_INPUT }}
+And these are the allowed tools: {${TOOL_INPUT}}
 
 Evaluate the response based on the following criteria:
 * Does the response meet the stated objective based on the past actions and experiences?
@@ -50,13 +51,13 @@ interface EvaluatorInput {
     callbacks?: Callbacks;
 }
 
-export class ActionEvaluator extends LLMChain {
+export class ActionEvaluator extends GuardChain {
 
     constructor(inputs: LLMChainInput) {
         super(inputs);
     }
 
-    static makeChain({ model, callbacks }: EvaluatorInput): ActionEvaluator {
+    static makeChain({model, callbacks}: EvaluatorInput): ActionEvaluator {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new ActionEvaluator({
@@ -66,7 +67,7 @@ export class ActionEvaluator extends LLMChain {
         });
     }
 
-    async evaluate({ objective, response, scratchpad, tools }: {
+    async evaluate({objective, response, scratchpad, tools}: {
         objective: string; response: string; scratchpad: string; tools: string
     }): Promise<string> {
         const completion = await this.call({

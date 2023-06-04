@@ -1,8 +1,8 @@
 // Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/agents/agent.ts
 
-import {AgentFinish, AgentStep, ChainValues} from "langchain/schema";
-import {CallbackManager} from "langchain/callbacks";
-import {StoppingMethod} from "langchain/agents";
+import { AgentFinish, AgentStep, ChainValues } from "langchain/schema";
+import { CallbackManager } from "langchain/callbacks";
+import { StoppingMethod } from "langchain/agents";
 
 export abstract class BaseAgent {
 
@@ -23,7 +23,7 @@ export abstract class BaseAgent {
     ): Promise<AgentFinish> {
         if (earlyStoppingMethod === "force") {
             return Promise.resolve({
-                returnValues: { output: "Agent stopped due to max iterations." },
+                returnValues: {output: "Agent stopped due to max iterations."},
                 log: "",
             });
         }

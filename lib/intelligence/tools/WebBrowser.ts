@@ -2,14 +2,14 @@
 
 import cheerio from "cheerio";
 import PDFParse from "pdf-parse";
-import {BaseLanguageModel} from "langchain/base_language";
-import {Tool, ToolParams} from "langchain/tools";
-import {RecursiveCharacterTextSplitter} from "langchain/text_splitter";
-import {StringPromptValue} from "langchain/prompts";
-import {CallbackManagerForToolRun} from "langchain/callbacks";
-import {MemoryVectorStore} from "langchain/vectorstores/memory";
-import {Embeddings} from "langchain/embeddings";
-import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
+import { BaseLanguageModel } from "langchain/base_language";
+import { Tool, ToolParams } from "langchain/tools";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { StringPromptValue } from "langchain/prompts";
+import { CallbackManagerForToolRun } from "langchain/callbacks";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { Embeddings } from "langchain/embeddings";
+import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
 const getContent = async (
     baseUrl: string,
@@ -84,7 +84,6 @@ export const getText = (
     // let's only get the body if it's a summary, don't need to summarize header or footer etc
     const rootElement = summary ? "body " : "*";
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     $(`${rootElement}:not(style):not(script):not(svg)`).each((_i, elem: any) => {
         // we don't want duplicated content as we drill down so remove children
         let content = $(elem).clone().children().remove().end().text().trim();
@@ -161,13 +160,13 @@ export class WebBrowser extends Tool {
     private readonly model: BaseLanguageModel;
 
     constructor({
-                    model,
-                    memory,
-                    embeddings,
-                    headers,
-                    verbose,
-                    callbacks,
-                }: WebBrowserParams) {
+        model,
+        memory,
+        embeddings,
+        headers,
+        verbose,
+        callbacks,
+    }: WebBrowserParams) {
         super(verbose, callbacks);
 
         this.embeddings = embeddings;

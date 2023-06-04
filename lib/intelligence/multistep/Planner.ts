@@ -1,7 +1,8 @@
 import { PromptTemplate } from "langchain/prompts";
-import { LLMChain, LLMChainInput } from "langchain/chains";
+import { LLMChainInput } from "langchain/chains";
 import { Callbacks } from "langchain/callbacks";
 import { BaseLanguageModel } from "langchain/base_language";
+import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 
 export const GUIDANCE = `
 This is provided objective for the planner: 
@@ -34,13 +35,13 @@ interface PlannerInput {
     callbacks?: Callbacks;
 }
 
-export class Planner extends LLMChain {
+export class Planner extends GuardChain {
 
     constructor(inputs: LLMChainInput) {
         super(inputs);
     }
 
-    static makeChain({ model, callbacks }: PlannerInput): Planner {
+    static makeChain({model, callbacks}: PlannerInput): Planner {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new Planner({

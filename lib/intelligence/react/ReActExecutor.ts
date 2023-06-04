@@ -1,14 +1,14 @@
 // Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/agents/executor.ts
 
-import {BaseChain, SerializedLLMChain} from "langchain/chains";
-import {Tool} from "langchain/tools";
-import {StoppingMethod} from "langchain/agents";
-import {AgentAction, AgentFinish, AgentStep, ChainValues} from "langchain/schema";
-import {CallbackManagerForChainRun} from "langchain/callbacks";
-import {ReActAgent} from "@/lib/intelligence/react/ReActAgent";
-import {BaseLanguageModel} from "langchain/base_language";
-import {MultistepExecutor} from "@/lib/intelligence/multistep/MultistepExecutor";
-import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
+import { BaseChain, SerializedLLMChain } from "langchain/chains";
+import { Tool } from "langchain/tools";
+import { StoppingMethod } from "langchain/agents";
+import { AgentAction, AgentFinish, AgentStep, ChainValues } from "langchain/schema";
+import { CallbackManagerForChainRun } from "langchain/callbacks";
+import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
+import { BaseLanguageModel } from "langchain/base_language";
+import { MultistepExecutor } from "@/lib/intelligence/multistep/MultistepExecutor";
+import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 
 const MAX_DEPTH = 1;
 
@@ -41,25 +41,17 @@ export class ReActExecutor extends BaseChain {
     private readonly returnIntermediateSteps: boolean = false;
     private readonly tools: Tool[];
 
-    get inputKeys() {
-        return this.agent.inputKeys;
-    }
-
-    get outputKeys() {
-        return this.agent.returnValues;
-    }
-
     constructor({
-                    agent,
-                    creative,
-                    depth,
-                    earlyStoppingMethod,
-                    maxIterations,
-                    memory,
-                    model,
-                    returnIntermediateSteps,
-                    tools
-                }: ReActExecutorInput) {
+        agent,
+        creative,
+        depth,
+        earlyStoppingMethod,
+        maxIterations,
+        memory,
+        model,
+        returnIntermediateSteps,
+        tools
+    }: ReActExecutorInput) {
         super({verbose: true});
 
         this.agent = agent;
@@ -80,18 +72,26 @@ export class ReActExecutor extends BaseChain {
         });
     }
 
+    get inputKeys() {
+        return this.agent.inputKeys;
+    }
+
+    get outputKeys() {
+        return this.agent.returnValues;
+    }
+
     /** Create from agent and a list of tools. */
     static fromAgentAndTools({
-                                 agent,
-                                 creative,
-                                 depth,
-                                 earlyStoppingMethod,
-                                 maxIterations,
-                                 memory,
-                                 model,
-                                 returnIntermediateSteps,
-                                 tools
-                             }: ReActExecutorInput): ReActExecutor {
+        agent,
+        creative,
+        depth,
+        earlyStoppingMethod,
+        maxIterations,
+        memory,
+        model,
+        returnIntermediateSteps,
+        tools
+    }: ReActExecutorInput): ReActExecutor {
         return new ReActExecutor({
             agent,
             creative,
@@ -103,10 +103,6 @@ export class ReActExecutor extends BaseChain {
             returnIntermediateSteps,
             tools
         });
-    }
-
-    private shouldContinue(iterations: number): boolean {
-        return this.maxIterations === undefined || iterations < this.maxIterations;
     }
 
     async _call(
@@ -181,14 +177,12 @@ export class ReActExecutor extends BaseChain {
                         ...newInputs,
                         actions: newActions.map(action => action.toolInput).join(",\n"),
                     }, runManager?.getChild());
-                    newSteps = [{
-                        action: {
-                            tool: "multistep",
-                            toolInput: "",
-                            log: ""
-                        },
-                        observation: multiOutput.output
-                    }];
+
+                    // Direct return multistep output
+                    return getOutput({
+                        returnValues: {[this.agent.returnValues[0]]: multiOutput},
+                        log: "",
+                    });
                 } else {
                     newSteps = await Promise.all(
                         newActions.map(async (action) => {
@@ -205,7 +199,8 @@ export class ReActExecutor extends BaseChain {
                 }
             } else {
                 // Here, we execute the actions and gather the observations.
-                newSteps =[(await evaluateAction(newActions[0]))];
+                const newStep = await evaluateAction(newActions[0]);
+                newSteps = [newStep];
             }
 
             // This prior action observations are added to the previous steps.
@@ -240,5 +235,9 @@ export class ReActExecutor extends BaseChain {
 
     serialize(): SerializedLLMChain {
         throw new Error("Cannot serialize an AgentExecutor");
+    }
+
+    private shouldContinue(iterations: number): boolean {
+        return this.maxIterations === undefined || iterations < this.maxIterations;
     }
 }
