@@ -93,15 +93,18 @@ export class ReActAgent extends BaseMultiActionAgent {
         this.tools = tools;
     }
 
-    private async constructMemories(steps: AgentStep[], inputs: ChainValues) {
+    private async constructMemories(steps: AgentStep[]) {
         const lastStep = steps.length > 0 ? steps[steps.length - 1] : undefined;
-        const memories = await this.memory.retrieveSnippets(
-            lastStep?.action.toolInput ? lastStep?.action.toolInput : inputs[OBJECTIVE_INPUT],
-            0.75
-        );
-        // If memories were found, then retrieve the page content of the first one (which is the highest scoring).
-        const recent = memories && memories.length > 0 ? memories.pop() : undefined;
-        const content = recent ? recent.pageContent + " " + JSON.stringify(recent.metadata) : "";
+        let content = undefined;
+        if (lastStep) {
+            const memories = await this.memory.retrieveSnippets(
+                lastStep.action.toolInput,
+                0.75
+            );
+            // If memories were found, then retrieve the page content of the first one (which is the highest scoring).
+            const recent = memories && memories.length > 0 ? memories.pop() : undefined;
+            content = recent ? recent.pageContent + " " + JSON.stringify(recent.metadata) : "";
+        }
         return `${this.memoryPrefix} \"\"\"${content || "No relevant memories recalled."}\"\"\"`
     }
 
@@ -146,7 +149,7 @@ export class ReActAgent extends BaseMultiActionAgent {
         callbackManager?: CallbackManager
     ): Promise<AgentContinue | AgentAction[] | AgentFinish> {
         if (steps.length === 0) {
-            const memory = await this.constructMemories(steps, inputs);
+            const memory = await this.constructMemories(steps);
 
             const direction = Director.makeChain({model: this.creativeChain.llm, callbacks: callbackManager});
             const completion = await direction.evaluate({
@@ -294,13 +297,13 @@ export class ReActAgent extends BaseMultiActionAgent {
 
         // Construct the scratchpad and add it to the inputs
         const thoughts = await this.constructScratchPad(steps);
-        const memory = await this.constructMemories(steps, inputs);
-        const suggestion = (steps.length <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix : this.finalPrefix)
+        const memory = await this.constructMemories(steps);
+        const nudge = (steps.length <= (this.maxIterations || Number.MAX_SAFE_INTEGER) ? this.llmPrefix : this.finalPrefix)
 
         newInputs[SCRATCHPAD_INPUT] = [
-            thoughts,
             memory,
-            suggestion
+            thoughts,
+            nudge
         ].join("\n");
 
         // Add the appropriate stop phrases for the llm
@@ -308,16 +311,16 @@ export class ReActAgent extends BaseMultiActionAgent {
             newInputs.stop = this.stopPrefixes;
         }
 
-        const tokenCount = await this.llmChain.llm.getNumTokens([thoughts, memory, suggestion].join("\n"));
+        const tokenCount = await this.llmChain.llm.getNumTokens([thoughts, memory, nudge].join("\n"));
         if (tokenCount > this.maxTokens) {
             if (steps.length > 0) {
                 // Remove the first step and try again, recursive call to keep context length below threshold.
                 return this.prepareInputs(inputs, steps.slice(1));
             } else {
-                // Drop memory
+                // Drop memory if no steps to remove.
                 newInputs[SCRATCHPAD_INPUT] = [
                     thoughts,
-                    suggestion
+                    nudge
                 ].join("\n");
 
                 return newInputs;

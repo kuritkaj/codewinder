@@ -25,8 +25,8 @@ Evaluate the response based on the following criteria:
 * Is the response starting to go on a tangent or starting to drift from the original objective?
 * Does the response duplicate past actions? (Avoid trying the same thing more than once)
 * Does the response only select one or more tools from the allowed tools list?
-* Are too many actions required to achieve the objective?
-* Are any of the actions dependent on each other?
+* Are too many actions required to achieve the objective? (Limit to 3 or fewer)
+* Are any of the actions dependent on each other? (Remove actions with dependencies)
 
 Based on this evaluation, score the response on a scale of 1 to 5 with 1 being low and 5 is high.
 This score should represent your confidence level of whether or note the responses will meet the objective.
