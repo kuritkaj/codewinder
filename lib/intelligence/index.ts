@@ -1,12 +1,12 @@
-import {JavascriptEvaluator} from "@/lib/intelligence/tools/JavascriptEvaluator";
-import {WebSearch} from "@/lib/intelligence/tools/WebSearch";
-import {Callbacks} from "langchain/callbacks";
-import {WebBrowser} from "@/lib/intelligence/tools/WebBrowser";
-import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
-import {OpenAIEmbeddings} from "langchain/embeddings/openai";
-import {ChatOpenAI} from "langchain/chat_models/openai";
-import {ReActExecutor} from "@/lib/intelligence/react/ReActExecutor";
-import {Tool} from "langchain/tools";
+import { JavascriptEvaluator } from "@/lib/intelligence/tools/JavascriptEvaluator";
+import { WebSearch } from "@/lib/intelligence/tools/WebSearch";
+import { Callbacks } from "langchain/callbacks";
+import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
+import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { ChatOpenAI } from "langchain/chat_models/openai";
+import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
+import { Tool } from "langchain/tools";
 
 export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<ReActExecutor> => {
     const openAiApiKey = process.env.OPENAI_API_KEY;
