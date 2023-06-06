@@ -13,7 +13,6 @@ The server requires the following environment variables:
 - OPENAI_API_KEY - which can be found [here](https://platform.openai.com/account/api-keys).
 
 And optionally the following environment variables:
-- GPT4 - set to "true" or "false" depending on whether you want to use GPT-4 or GPT-3.5-turbo.
 - BING_API_KEY - which can be found [here](https://azure.microsoft.com/en-us/services/cognitive-services/bing-web-search-api/).
 - SUPABASE_URL - which can be found [here](https://app.supabase.io/).
 - SUPABASE_API_KEY - which can be found [here](https://app.supabase.io/).

@@ -23,7 +23,7 @@ export const FORMAT_INSTRUCTIONS = `
 Use this format to reason about the best course of action:
 ${OBJECTIVE}: the objective
 ${MEMORY}: a thought or memory that might be useful
-${THOUGHT}: think about this step-by-step
+${THOUGHT}: let's think about this step-by-step
 ${ACTION}:
 \`\`\`
 [{{
