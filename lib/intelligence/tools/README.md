@@ -3,9 +3,9 @@
 Tools are used by the ReAct Agent to accomplish one or more tasks.
 Currently, tools are added to the context window of the LLM via the prompt, see ReActAgent#createPrompt.
 
-## Javascript Evaluator
+## Code Evaluator
 
-JavascriptEvaluator creates and executes an anonymous function based on a provided specification.
+CodeEvaluator creates and executes an anonymous function based on a provided specification.
 This works best with GPT4; GPT3.5 Turbo is great at writing code, but can't consistently get the format correct.
 
 The key to this functionality is the prompt:

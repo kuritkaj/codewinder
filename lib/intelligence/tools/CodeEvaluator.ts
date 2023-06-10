@@ -8,14 +8,14 @@ import * as vm from "node:vm";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 
-export const NAME = "javascript-evaluator";
-export const DESCRIPTION = `an AI-powered JavaScript evaluator.
-Always inlude complete, relevant details in the specification from previous observations and actions.
-Input is a specification for a function that will return the desired output as a string.
+export const NAME = "code-evaluator";
+export const DESCRIPTION = `an AI-powered code evaluator.
+Always include complete, relevant details in the specification from previous observations and actions.
+Input is a code comments or a program specification for a function that will return the desired output as a string.
 Input format:
 {{
   "action": "${ NAME }",
-  "action_input": "code specification in natural language"
+  "action_input": "specification in natural language"
 }}`;
 
 export const GUIDANCE = `
@@ -61,19 +61,19 @@ Code:
 \`\`\`
 `;
 
-export interface JavascriptEvaluatorParams extends ToolParams {
+export interface CodeEvaluatorParams extends ToolParams {
     model: BaseLanguageModel;
     memory: MemoryStore;
 }
 
-export class JavascriptEvaluator extends Tool {
+export class CodeEvaluator extends Tool {
     public readonly name = NAME;
     public readonly description = DESCRIPTION;
 
     private readonly llmChain: LLMChain;
     private readonly memory: MemoryStore;
 
-    constructor({ model, memory, verbose, callbacks }: JavascriptEvaluatorParams) {
+    constructor({ model, memory, verbose, callbacks }: CodeEvaluatorParams) {
         super(verbose, callbacks);
 
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);

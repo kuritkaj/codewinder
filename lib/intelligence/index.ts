@@ -1,4 +1,4 @@
-import { JavascriptEvaluator } from "@/lib/intelligence/tools/JavascriptEvaluator";
+import { CodeEvaluator } from "@/lib/intelligence/tools/CodeEvaluator";
 import { WebSearch } from "@/lib/intelligence/tools/WebSearch";
 import { Callbacks } from "langchain/callbacks";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
@@ -78,7 +78,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
 
     const tools: Tool[] = [
         new WebBrowser({callbacks, embeddings, memory: knowledge, model: predictable}),
-        new JavascriptEvaluator({callbacks, memory: code, model: powerful}),
+        new CodeEvaluator({callbacks, memory: code, model: powerful}),
         new CreativeWriter({callbacks, model: creative})
     ];
     if (Boolean(bingApiKey)) {
