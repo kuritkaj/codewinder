@@ -134,7 +134,7 @@ const DEFAULT_HEADERS = {
 type Headers = Record<string, any>;
 
 export const NAME = "web-browser";
-export const DESCRIPTION = `finding or summarizing webpage content from a provided url.
+export const DESCRIPTION = `finding or summarizing webpage or PDF content from a provided url.
 Never make up a link, only use a valid url returned as a result of a previous web search.
 Input should be "ONE valid http URL including protocol","what to find on the page".
 Input format:
@@ -231,13 +231,13 @@ export class WebBrowser extends Tool {
                 [],
                 this.embeddings
             );
-            const similar = await vectorStore.similaritySearch(task, 4);
+            const similar = await vectorStore.similaritySearch(task, 8);
             context = similar.map((res) => res.pageContent).join("\n");
         }
 
         const prompt = `Text:${context}\n\nI need ${
             doSummary ? "a summary" : task
-        } from the provided text. Limit to 100 words.`;
+        } from the provided text. Limit to 150 words.`;
 
         const completion = await this.model.generatePrompt(
             [new StringPromptValue(prompt)],
