@@ -147,7 +147,7 @@ export class ReActAgent extends BaseMultiActionAgent {
         if (steps.length === 0) {
             const memory = await this.constructMemories(steps);
 
-            const direction = Director.makeChain({model: this.creativeChain.llm, callbacks: callbackManager});
+            const direction = Director.makeChain({model: this.llmChain.llm, callbacks: callbackManager});
             const completion = await direction.predict({
                 context: inputs[CONTEXT_INPUT],
                 objective: inputs[OBJECTIVE_INPUT],

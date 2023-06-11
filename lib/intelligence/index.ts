@@ -1,4 +1,4 @@
-import { CodeEvaluator } from "@/lib/intelligence/tools/CodeEvaluator";
+import { CodeExecutor } from "@/lib/intelligence/tools/CodeExecutor";
 import { WebSearch } from "@/lib/intelligence/tools/WebSearch";
 import { Callbacks } from "langchain/callbacks";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
@@ -43,7 +43,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     // This should represent intelligence that is great at determiing the best tool to use.
     const predictable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: "gpt-3.5-turbo",
+        modelName: "gpt-4",
         temperature: 0,
         topP: 0,
         streaming: Boolean(callbacks),
@@ -78,7 +78,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
 
     const tools: Tool[] = [
         new WebBrowser({callbacks, embeddings, memory: knowledge, model: predictable}),
-        new CodeEvaluator({callbacks, memory: code, model: powerful}),
+        new CodeExecutor({callbacks, memory: code, model: powerful}),
         new CreativeWriter({callbacks, model: creative})
     ];
     if (Boolean(bingApiKey)) {

@@ -8,47 +8,52 @@ import * as vm from "node:vm";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 
-export const NAME = "code-evaluator";
-export const DESCRIPTION = `an AI-powered javascript evaluator.
-Always include complete, relevant details in the specification from previous observations and actions.
-The specification should never try to request inputs or placeholders; all details must be specified in the specification.
-This does not create a generic function, but instead should be special purpose to meet the provided specification.
+export const NAME = "code-executor";
+export const DESCRIPTION = `a Javascript environment designed to create and execute code based on a detailed, specific description.
+Use this tool to call external APIs and to make network calls. The aim is to return a concrete result, not to generate a reusable, generic function.
+
+The specification should always include the original objective and any relevant details from prior observations and actions.
+Specifications must not contain requests for inputs or placeholders; instead, every necessary detail should be fully detailed within the specification.
+
+The generated Javascript code will then be executed to yield a specific result, as per the provided specification.
+
 Input format:
 {{
   "action": "${ NAME }",
-  "action_input": "specification in natural language for javascript"
-}}`;
+  "action_input": "original objective and detailed specification"
+}}
+`;
 
 const SPECIFICATION_INPUT = "specification";
 const ENVIRONMENT_INPUT = "environment";
 const EXAMPLE_INPUT = "example";
 
 export const GUIDANCE = `
-You are an AI assistant that is being provided a code specification.
-Your responsibility is to write the appropriate function to be run in a secure code environment, returning the result to the requestor.
+You are an AI assistant receiving a detailed code specification. Your task is to translate this specification into executable JavaScript code, which should then be run in a secure code environment to produce a result.
 
 This is the code specification:
 {${SPECIFICATION_INPUT}}
 
+Please consider the following when developing the code:
+* The environment is an isolated Node.js setup with fetch() available for network requests.
+   ...(Example using fetch: const response = await fetch('https://api.example.com/data');)
+* You cannot require or import any new libraries and the code must not rely on environment variables.
+* Aim to keep the code as simple and straightforward as possible, adhering to the specification.
+* Your output should be executable code that returns a result as a string immediately upon execution.
+* Always throw errors, never return them as strings.
+
 You have access to these environment variables:
 {${ENVIRONMENT_INPUT}}
-Access these environment variables like this: process.env['ENVIRONMENT_VARIABLE_NAME'].
+To access these environment variables, use: \`process.env['ENVIRONMENT_VARIABLE_NAME']\`.
 
-The code you write should take into account these considerations:
-* The environment the code will run in is an isolated Node.js environment with fetch() available.
-   ...(here's an example using fetch: const response = await fetch('https://api.example.com/data');)
-* You cannot require or import any new libraries and should never write code that relies upon environment variables.
-* Code should be as simple as possible to meet the specification.
-* All output should be software that is expected to immediately be interpreted and executed so as to return a string.
-
-Here's a function you wrote similar to this in the past:
+Here's an example of similar function you've developed in the past:
 \`\`\`javascript
 {${EXAMPLE_INPUT}}
 \`\`\`
 
-Now, translate the natural language description into JavaScript code for immediate evaluation and return.
+Now, based on the natural language description, your task is to generate JavaScript code for immediate evaluation and return.
 
-Always use this format:
+Here's the required format for your response:
 Explain: ...
 Plan:
 1) ...
@@ -68,6 +73,7 @@ Code:
     return await yourMainFunctionName();
 }})();
 \`\`\`
+
 `;
 
 export interface CodeEvaluatorParams extends ToolParams {
@@ -75,7 +81,7 @@ export interface CodeEvaluatorParams extends ToolParams {
     memory: MemoryStore;
 }
 
-export class CodeEvaluator extends Tool {
+export class CodeExecutor extends Tool {
     public readonly name = NAME;
     public readonly description = DESCRIPTION;
 
@@ -123,26 +129,31 @@ export class CodeEvaluator extends Tool {
 
         const regex = /(?<=```javascript)[\s\S]*?(?=\n```)/;
         const matches = completion.match(regex);
-        const match = matches.pop();
+        const code = matches.pop();
 
         try {
             // Evaluate the generated JavaScript code.
-            const output = vm.runInNewContext(match, {
+            const output = vm.runInNewContext(code, {
                 console,
                 fetch,
                 process: {
                     env: vmEnvironmentVariables
                 }
             }, { timeout: 3000 });
-            const result = output ? await output : "No result returned.";
+            const result = await output;
 
             // store this program for future reference
-            await this.memory.storeTexts([match],  {
+            await this.memory.storeTexts([code],  {
                 specification: specification
             })
 
-            return result;
+            return result || "No results returned.";
         } catch (error) {
+            // store this program for future reference
+            await this.memory.storeTexts([`${code}\n\nThe prior code errored with this message: ${error.message}`],  {
+                specification: specification
+            })
+
             return JSON.stringify({ error: error.message });
         }
     }

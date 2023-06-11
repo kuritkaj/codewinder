@@ -3,9 +3,9 @@
 Tools are used by the ReAct Agent to accomplish one or more tasks.
 Currently, tools are added to the context window of the LLM via the prompt, see ReActAgent#createPrompt.
 
-## Code Evaluator
+## CodeExecutor
 
-CodeEvaluator creates and executes an anonymous function based on a provided specification.
+CodeExecutor creates and executes an anonymous function based on a provided specification.
 This works best with GPT4; GPT3.5 Turbo is great at writing code, but can't consistently get the format correct.
 
 The key to this functionality is the prompt:
@@ -34,7 +34,7 @@ Code:
 Which was inspired by this project and research paper:
 https://github.com/MineDojo/Voyager/blob/main/voyager/prompts/action_response_format.txt
 
-## Web Browser
+## WebBrowser
 
 Provides indexing and searching an HTML page or PDF.
 
@@ -47,7 +47,7 @@ Additionally, the original was modified to parse PDFs for processing same as HTM
 This tool is modified from the original version found here:
 https://github.com/hwchase17/langchainjs/blob/main/langchain/src/tools/webbrowser.ts
 
-## Web Search
+## WebSearch
 
 Searches the web using Bing Search API.
 

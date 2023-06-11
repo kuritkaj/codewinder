@@ -28,8 +28,7 @@ Based on these past actions and experiences, the AI has now responded with:
 Evaluate the response based on the following criteria:
 * Does the response meet the stated objective based on the past actions and experiences?
 * Is the response starting to go on a tangent or starting to drift from the original objective?
-* Does the response duplicate past actions? (Avoid trying the same thing more than once)
-* Does the response only select one or more tools from the allowed tools list?
+* Tools cannot see past actions and experiences, does the tool input need to be updated?
 * Are any of the actions dependent on each other? (Remove actions with dependencies)
 
 Based on this evaluation, score the response on a scale of 1 to 5 with 1 being low and 5 is high.
