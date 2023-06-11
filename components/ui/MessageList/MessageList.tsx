@@ -12,13 +12,30 @@ interface MessageListProps {
 
 const MessageList = ({ chatMessages, loading }: MessageListProps) => {
     const messageListRef = useRef<HTMLDivElement>(null);
+    const hasUserScrolledUp = useRef(false); // New useRef to track if user scrolled up.
 
     useEffect(() => {
         const messageList = messageListRef.current;
         if (messageList) {
-            messageList.scrollTop = messageList.scrollHeight;
+            const handleScroll = () => {
+                const atBottom = messageList.scrollTop + messageList.offsetHeight >= messageList.scrollHeight;
+                hasUserScrolledUp.current = !atBottom;
+            };
+            messageList.addEventListener('scroll', handleScroll);
+            return () => {
+                messageList.removeEventListener('scroll', handleScroll);
+            };
         }
-    }, [ chatMessages, loading ]);
+    }, []);
+
+    useEffect(() => {
+        if (!hasUserScrolledUp.current) {
+            const messageList = messageListRef.current;
+            if (messageList) {
+                messageList.scrollTop = messageList.scrollHeight;
+            }
+        }
+    }, [chatMessages, loading]);
 
     return (
         <div ref={ messageListRef } className={ styles.messagelist }>
