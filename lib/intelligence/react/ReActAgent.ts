@@ -26,6 +26,7 @@ import {AgentContinue} from "@/lib/intelligence/react/ReActExecutor";
 import {MemoryStore} from "@/lib/intelligence/memory/MemoryStore";
 import {BaseMultiActionAgent} from "@/lib/intelligence/react/BaseMultiActionAgent";
 import {BaseOutputParser} from "langchain/schema/output_parser";
+import { calculateRemainingTokens } from "@/lib/util/tokens";
 
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
@@ -49,7 +50,6 @@ export class ReActAgent extends BaseMultiActionAgent {
     private readonly llmChain: LLMChain;
     private readonly maxIterations: number;
     private readonly memory: MemoryStore;
-    private readonly maxTokens: number;
     private readonly outputParser: BaseOutputParser<AgentAction[] | AgentFinish>;
     private readonly tools: Tool[];
 
@@ -83,7 +83,6 @@ export class ReActAgent extends BaseMultiActionAgent {
         this.creativeChain = creativeChain;
         this.llmChain = llmChain;
         this.maxIterations = maxIterations;
-        this.maxTokens = 4096 - 1000; // Rough estimate for GPT-3 with room for prompt - https://platform.openai.com/tokenizer
         this.memory = memory;
         this.outputParser = new ReActAgentActionOutputParser();
         this.tools = tools;
@@ -311,8 +310,13 @@ export class ReActAgent extends BaseMultiActionAgent {
             newInputs.stop = this.stopPrefixes;
         }
 
-        const tokenCount = await this.llmChain.llm.getNumTokens([thoughts, memory, nudge].join("\n"));
-        if (tokenCount > this.maxTokens) {
+        const prompt = await this.llmChain.prompt.format(newInputs);
+        const remainingTokens = await calculateRemainingTokens({
+            prompt,
+            model: this.llmChain.llm
+        });
+
+        if (remainingTokens < 0) {
             if (steps.length > 0) {
                 // Remove the first step and try again, recursive call to keep context length below threshold.
                 return this.prepareInputs(inputs, steps.slice(1));
