@@ -231,7 +231,7 @@ export class WebBrowser extends Tool {
                 [],
                 this.embeddings
             );
-            const similar = await vectorStore.similaritySearch(task, 8);
+            const similar = await vectorStore.similaritySearch(task, 6);
             context = similar.map((res) => res.pageContent).join("\n");
         }
 
