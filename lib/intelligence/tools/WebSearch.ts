@@ -76,7 +76,7 @@ export class WebSearch extends Tool {
 
         if (this.memory) {
             const memories = await this.memory.retrieveSnippets(input, 0.75, 4);
-            for (const memory in memories) {
+            if (memories && memories.length > 0) {  // Check if memories is not null and has at least one element
                 const memory = memories[0];
                 links.push(`[${memory.metadata.name}](${memory.metadata.url}) - ${memory.pageContent}`);
             }
