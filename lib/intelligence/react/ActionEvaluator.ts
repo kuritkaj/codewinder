@@ -9,16 +9,16 @@ export const OBJECTIVE_INPUT = "objective";
 export const ACTIONS_INPUT = "actions";
 export const STEPS_INPUT = "steps";
 export const SCORE = "Score";
-export const TOOL_INPUT = "tools";
+export const TOOLING_INPUT = "tooling";
 
 export const GUIDANCE = `
 An AI assistant is helping a user achieve this specific objective: 
 {${OBJECTIVE_INPUT}}
 
 The AI assistant was asked to use one or more tools to achieve this objective.
-These are the allowed tools: 
+Allowed tools:
 \"\"\"
-{${TOOL_INPUT}}
+{${TOOLING_INPUT}}
 \"\"\"
 
 Here is the history of past actions: 
@@ -75,14 +75,14 @@ export class ActionEvaluator extends GuardChain {
         });
     }
 
-    async predict({objective, actions, steps, tools}: {
-        objective: string; actions: string; steps: string; tools: string
+    async predict({objective, actions, steps, tooling}: {
+        objective: string; actions: string; steps: string; tooling: string
     }): Promise<string> {
         return await super.predict({
             objective,
             actions,
             steps,
-            tools
+            tooling
         });
     }
 }

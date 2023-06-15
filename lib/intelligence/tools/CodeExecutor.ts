@@ -9,14 +9,8 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 
 export const NAME = "code-executor";
-export const DESCRIPTION = `a Javascript environment designed to create and execute code based on a detailed, specific description.
-Use this tool to call external APIs and to make network calls. The aim is to return a concrete result, not to generate a reusable, generic function.
-
-The specification should always include the original objective and any relevant details from prior observations and actions.
-Specifications must not contain requests for inputs or placeholders; instead, every necessary detail should be fully detailed within the specification.
-
-The generated Javascript code will then be executed to yield a specific result, as per the provided specification.
-
+export const DESCRIPTION = `an isolated Node.js environment with fetch() to evaluate and run code. Programs must always return a string.
+Input should include all useful context from previous actions and observations.
 Input format:
 {{
   "action": "${ NAME }",
@@ -89,7 +83,7 @@ export class CodeExecutor extends Tool {
     private readonly memory: MemoryStore;
 
     constructor({ model, memory, verbose, callbacks }: CodeEvaluatorParams) {
-        super(verbose, callbacks);
+        super({verbose, callbacks});
 
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 

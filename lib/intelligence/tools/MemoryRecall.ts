@@ -16,7 +16,7 @@ export class MemoryRecall extends Tool {
     private readonly memory: MemoryStore;
 
     constructor({ memory, verbose, callbacks }: MemoryRecallParams) {
-        super(verbose, callbacks);
+        super({verbose, callbacks});
 
         this.memory = memory;
     }

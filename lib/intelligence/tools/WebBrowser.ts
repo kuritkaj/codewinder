@@ -167,7 +167,7 @@ export class WebBrowser extends Tool {
         verbose,
         callbacks,
     }: WebBrowserParams) {
-        super(verbose, callbacks);
+        super({verbose, callbacks});
 
         this.embeddings = embeddings;
         this.headers = headers || DEFAULT_HEADERS;
@@ -218,12 +218,13 @@ export class WebBrowser extends Tool {
         });
         const texts = await textSplitter.splitText(text);
 
+        const limit = 6;
         let context;
-        // if we want a summary grab first 4
+        // if we want a summary grab first 6
         if (doSummary) {
-            context = texts.slice(0, 4).join("\n");
+            context = texts.slice(0, limit).join("\n");
         }
-        // search term well embed and grab top 4
+        // search term well embed and grab top 6
         else {
             // this is short-term memory for searching on the page:
             const vectorStore = await MemoryVectorStore.fromTexts(
@@ -231,7 +232,7 @@ export class WebBrowser extends Tool {
                 [],
                 this.embeddings
             );
-            const similar = await vectorStore.similaritySearch(task, 6);
+            const similar = await vectorStore.similaritySearch(task, limit);
             context = similar.map((res) => res.pageContent).join("\n");
         }
 

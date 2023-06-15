@@ -23,6 +23,8 @@ type Action = {
 export class ReActAgentActionOutputParser extends BaseOutputParser<AgentAction[] | AgentFinish> {
     private readonly finishToolName: string;
 
+    lc_namespace: string[];
+
     constructor(fields?: OutputParserArgs) {
         super();
         this.finishToolName = fields?.finishToolName || FINAL_RESPONSE;

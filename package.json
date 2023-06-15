@@ -27,6 +27,7 @@
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.5",
     "hnswlib-node": "^1.4.2",
+    "js-tiktoken": "^1.0.6",
     "langchain": "^0.0.95",
     "next": "13.4.4",
     "openai": "^3.1.0",
@@ -38,7 +39,6 @@
     "react-textarea-autosize": "^8.4.1",
     "remark-gfm": "^3.0.1",
     "replicate": "^0.12.1",
-    "tiktoken": "^1.0.7",
     "ws": "^8.12.1"
   },
   "devDependencies": {

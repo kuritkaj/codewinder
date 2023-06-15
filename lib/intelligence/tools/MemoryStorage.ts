@@ -38,7 +38,7 @@ export class MemoryStorage extends Tool {
     private readonly model: BaseLanguageModel;
 
     constructor({ model, memory, embeddings, verbose, callbacks }: MemoryStorageParams) {
-        super(verbose, callbacks);
+        super({verbose, callbacks});
 
         this.memory = memory;
         this.model = model;

@@ -5,7 +5,6 @@ export const FINAL_RESPONSE = "Final Response";
 export const MEMORY = "Memory";
 export const OBJECTIVE = "Objective";
 export const OBSERVATION = "Observation";
-export const TOOLING_INPUT = "tools";
 export const THOUGHT = "Thought";
 
 export const SYSTEM = `
@@ -18,10 +17,6 @@ export const TOOLING = `
 Guidance on tool use:
 * Tools can't access ${OBSERVATION}s, so the tool input must include all necessary details.
 * If a search tool is available, prefer that over searching with the browser tool.
-Allowed tools:
-\"\"\"
-{${TOOLING_INPUT}}
-\"\"\"
 `;
 
 export const FORMAT_INSTRUCTIONS = `

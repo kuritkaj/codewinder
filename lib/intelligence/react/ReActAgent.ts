@@ -9,8 +9,7 @@ import {
     OBSERVATION,
     SYSTEM,
     THOUGHT,
-    TOOLING,
-    TOOLING_INPUT
+    TOOLING
 } from "@/lib/intelligence/react/prompts";
 import {ChatCreatePromptArgs} from "langchain/agents";
 import {Tool} from "langchain/tools";
@@ -32,6 +31,7 @@ import { calculateRemainingTokens } from "@/lib/util/tokens";
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
 export const SCRATCHPAD_INPUT = "scratchpad";
+export const TOOLING_INPUT = "tooling";
 
 interface ReActChatArgs extends ChatCreatePromptArgs {
     chat: boolean;
@@ -123,6 +123,7 @@ export class ReActAgent extends BaseMultiActionAgent {
         const system = [
             prefix,
             TOOLING,
+            `Allowed tools:\n\"\"\"\n{${TOOLING_INPUT}}\n\"\"\"`,
             FORMAT_INSTRUCTIONS,
             suffix
         ].join("\n");
@@ -131,10 +132,7 @@ export class ReActAgent extends BaseMultiActionAgent {
             `{${SCRATCHPAD_INPUT}}`
         ].join("\n");
 
-        return new PromptTemplate({
-            template: [system, human].join("\n"),
-            inputVariables: [OBJECTIVE_INPUT, SCRATCHPAD_INPUT, TOOLING_INPUT]
-        });
+        return PromptTemplate.fromTemplate([system, human].join("\n"));
     }
 
     public async evaluateInputs(
@@ -175,7 +173,7 @@ export class ReActAgent extends BaseMultiActionAgent {
             objective: inputs[OBJECTIVE_INPUT],
             actions: `[${formattedActions}]`,
             steps: `[${formattedSteps}]`,
-            tools: inputs[TOOLING_INPUT],
+            tooling: inputs[TOOLING_INPUT],
         });
         const newActions = await this.outputParser.parse(evaluation);
         // If a new action is provided, then return that. Otherwise, return the original.

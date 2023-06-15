@@ -5,7 +5,7 @@ import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 
-export const NAME = "creative-writer";
+export const NAME = "github";
 export const DESCRIPTION = `used to provide an edited, creative response. 
 Input should include all useful context from previous actions and observations.`;
 export const CONTEXT_INPUT = "context";
@@ -23,7 +23,7 @@ interface FinalResponseParams extends ToolParams {
     model: BaseLanguageModel;
 }
 
-export class CreativeWriter extends Tool {
+export class Github extends Tool {
     public readonly name = NAME;
     public readonly description = DESCRIPTION;
 

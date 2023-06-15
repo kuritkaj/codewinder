@@ -31,7 +31,7 @@ export class WebSearch extends Tool {
     private readonly params: Record<string, string>;
 
     constructor({ apiKey, params, memory, embeddings, verbose, callbacks }: WebSearchParams) {
-        super(verbose, callbacks);
+        super({verbose, callbacks});
 
         if (!apiKey) {
             throw new Error(

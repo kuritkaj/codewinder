@@ -145,7 +145,7 @@ export class ReActExecutor extends BaseChain {
             const newActions: AgentAction[] = Array.isArray(revised) ? revised : [revised];
 
             // If there is more than one step, use the multistep executor.
-            let newSteps: AgentStep[];
+            let newSteps: AgentStep[] = [];
 
             if (newActions.length > 1) {
                 // Only use the multistep executor if we're not at the maximum depth.
@@ -161,23 +161,21 @@ export class ReActExecutor extends BaseChain {
                         log: "",
                     });
                 } else {
-                    newSteps = await Promise.all(
-                        newActions.map(async (action) => {
-                            await runManager?.handleAgentAction(action);
+                    for (let action of newActions) {
+                        await runManager?.handleAgentAction(action);
 
-                            const tool = toolsByName[action.tool?.toLowerCase()];
-                            const observation = tool
-                                ? await tool.call(action.toolInput, runManager?.getChild())
-                                : `${action.tool} is not a valid tool, try another one.`;
+                        const tool = toolsByName[action.tool?.toLowerCase()];
+                        const observation = tool
+                            ? await tool.call(action.toolInput, runManager?.getChild())
+                            : `${action.tool} is not a valid tool, try another one.`;
 
-                            return {action, observation};
-                        })
-                    );
+                        newSteps.push({action, observation});
+                    }
                 }
             } else {
                 // Here, we execute the actions and gather the observations.
                 const newStep = await evaluateAction(newActions[0]);
-                newSteps = [newStep];
+                newSteps.push(newStep);
             }
 
             // This prior action observations are added to the previous steps.

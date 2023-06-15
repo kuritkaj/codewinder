@@ -43,7 +43,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     // This should represent intelligence that is great at determiing the best tool to use.
     const predictable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: "gpt-3.5-turbo",
+        modelName: "gpt-3.5-turbo-0613",
         temperature: 0,
         topP: 0,
         streaming: Boolean(callbacks),
@@ -54,7 +54,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     // This should represent intelligence that is great at writing code.
     const powerful = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: "gpt-4",
+        modelName: "gpt-4-0613",
         temperature: 0.5,
         streaming: Boolean(callbacks),
         callbacks,
@@ -65,7 +65,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     const creative = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         temperature: 0.7,
-        modelName: "gpt-4",
+        modelName: "gpt-4-0613",
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2

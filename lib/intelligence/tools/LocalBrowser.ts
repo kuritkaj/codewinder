@@ -226,7 +226,7 @@ export class LocalBrowser extends Tool {
     private readonly model: BaseLanguageModel;
 
     constructor({ model, verbose, callbacks }: LocalBrowserParams) {
-        super(verbose, callbacks);
+        super({verbose, callbacks});
 
         this.model = model;
     }
