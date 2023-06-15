@@ -6,7 +6,7 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 
-export const NAME = "web-search";
+export const NAME = "search";
 export const DESCRIPTION = `find answers on the internet and knowledge stores. 
 Input format:
 {{
