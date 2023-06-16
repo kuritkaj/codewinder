@@ -16,6 +16,7 @@ The server requires the following environment variables:
   (Note: you must have GPT4 access; GPT3.5 is not sufficient for a reliable agent.)
 
 And optionally the following environment variables:
+- ZAPIER_NLA_API_KEY - which can be found [here](https://nla.zapier.com/docs/).
 - BING_API_KEY - which can be found [here](https://azure.microsoft.com/en-us/services/cognitive-services/bing-web-search-api/).
 - SUPABASE_URL - which can be found [here](https://app.supabase.io/).
 - SUPABASE_API_KEY - which can be found [here](https://app.supabase.io/).
@@ -23,6 +24,7 @@ And optionally the following environment variables:
 Notes: 
 * without the Bing Search key, the search will use the Web Browser tool for searches, which is less efficient.
 * without the Supabase key, HNSWLIB is used to store memories in a local directory named .cache.
+* the Zapier NLA key is amazing! read more here: https://blog.langchain.dev/langchain-zapier-nla/
 
 ### Running the Server
 

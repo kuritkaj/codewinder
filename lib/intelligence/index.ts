@@ -6,8 +6,9 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
-import { Tool } from "langchain/tools";
+import { Tool, ZapierNLAWrapper } from "langchain/tools";
 import { CreativeWriter } from "@/lib/intelligence/tools/CreativeWriter";
+import { ZapierToolKit } from "langchain/agents";
 
 export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<ReActExecutor> => {
     const openAiApiKey = process.env.OPENAI_API_KEY;
@@ -15,6 +16,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
         throw new Error('OpenAI api key not found.');
     }
     const bingApiKey = process.env.BING_API_KEY;
+    const zapierApiKey = process.env.ZAPIER_NLA_API_KEY;
 
     // const replicateApiKey = process.env.REPLICATE_API_KEY;
     //
@@ -79,10 +81,15 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     const tools: Tool[] = [
         new WebBrowser({callbacks, embeddings, memory: knowledge, model: predictable}),
         new CodeExecutor({callbacks, memory: code, model: powerful}),
-        new CreativeWriter({callbacks, model: creative})
+        new CreativeWriter({callbacks, model: creative}),
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, memory: knowledge}));
+    }
+    if (Boolean(zapierApiKey)) {
+        const zapier = new ZapierNLAWrapper({apiKey: zapierApiKey});
+        const toolkit = await ZapierToolKit.fromZapierNLAWrapper(zapier);
+        tools.push(...toolkit.tools);
     }
 
     // The Executor gets all tools including the multistep, since that's a tool that could be returned by the ReActAgent
