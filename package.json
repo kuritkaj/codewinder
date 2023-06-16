@@ -27,7 +27,7 @@
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.5",
     "hnswlib-node": "^1.4.2",
-    "js-tiktoken": "^1.0.6",
+    "js-tiktoken": "^1.0.7",
     "langchain": "^0.0.95",
     "next": "13.4.4",
     "openai": "^3.1.0",

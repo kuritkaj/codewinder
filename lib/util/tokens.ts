@@ -2,7 +2,7 @@ import { TiktokenModel } from "js-tiktoken/lite";
 import { BaseLanguageModel } from "langchain/base_language";
 import { encodingForModel } from "js-tiktoken";
 
-export const getModelNameForTiktoken = (modelName: string): TiktokenModel | "gpt-3.5-turbo-16k" => {
+export const getModelNameForTiktoken = (modelName: string): TiktokenModel => {
     if (modelName.startsWith("gpt-3.5-turbo-16k")) {
         return "gpt-3.5-turbo-16k";
     }
@@ -24,7 +24,7 @@ export const getModelNameForTiktoken = (modelName: string): TiktokenModel | "gpt
 
 interface CalculateMaxTokenProps {
     prompt: string;
-    modelName: TiktokenModel | "gpt-3.5-turbo-16k";
+    modelName: TiktokenModel;
 }
 
 const calculateMaxTokens = async ({
@@ -34,10 +34,8 @@ const calculateMaxTokens = async ({
     // fallback to approximate calculation if tiktoken is not available
     let numTokens = Math.ceil(prompt.length / 4);
 
-    const encodingModel = modelName === "gpt-3.5-turbo-16k" ? "gpt-3.5-turbo" : modelName;
-
     try {
-        numTokens = (await encodingForModel(encodingModel)).encode(prompt).length;
+        numTokens = (await encodingForModel(modelName)).encode(prompt).length;
     } catch (error) {
         console.warn(
             "Failed to calculate number of tokens, falling back to approximate count"
