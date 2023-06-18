@@ -19,58 +19,62 @@
     border-radius: 0.1rem;
 }
 
-.markdownanswer {
+.reactmarkdown {
     line-height: 1.75;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
 }
 
-.markdownanswer :first-child {
+.reactmarkdown :first-child {
     margin-top: 0 !important;
 }
 
-.markdownanswer :last-child {
+.reactmarkdown :last-child {
     margin-bottom: 0 !important;
 }
 
-.markdownanswer a:hover {
+.reactmarkdown a:hover {
     opacity: 0.8;
 }
 
-.markdownanswer a {
+.reactmarkdown a {
     color: #16bed7;
     font-weight: 500;
 }
 
-.markdownanswer code {
+.reactmarkdown code {
     color: #15cb19;
     font-weight: 500;
     white-space: pre-wrap !important;
 }
 
-.markdownanswer h1, .markdownanswer h2, .markdownanswer h3 {
+.reactmarkdown h1, .reactmarkdown h2, .reactmarkdown h3 {
     font-size: inherit;
 }
-.markdownanswer :not(:first-child) h1,
-.markdownanswer :not(:first-child) h2,
-.markdownanswer :not(:first-child) h3 {
+.reactmarkdown :not(:first-child) h1,
+.reactmarkdown :not(:first-child) h2,
+.reactmarkdown :not(:first-child) h3 {
     margin-top: 1rem;
 }
 
-.markdownanswer ol, .markdownanswer ul {
+.reactmarkdown ol, .reactmarkdown ul {
     margin: 1rem;
 }
 
-.markdownanswer p {
+.reactmarkdown p {
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
 
-.markdownanswer table {
+.reactmarkdown table {
     border-collapse:collapse;
     font-size: 0.95rem;
 }
 
-.markdownanswer td,
-.markdownanswer th {
+.reactmarkdown td,
+.reactmarkdown th {
     border: 1px solid white;
     padding: 0.8rem;
     margin-bottom: 1rem;
@@ -78,7 +82,7 @@
 
 .messagelist {
     width: 100%;
-    height: 100%;
+    height: 55vw;
     overflow-y: scroll;
     border-radius: 0.5rem;
 }
@@ -117,7 +121,7 @@
 
 /* Mobile optimization */
 @media (max-width: 600px) {
-    .markdownanswer code {
+    .reactmarkdown code {
         white-space : pre-wrap !important;
     }
 }

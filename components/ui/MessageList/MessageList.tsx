@@ -58,7 +58,7 @@ const MessageList = ({chatMessages, loading}: MessageListProps) => {
                 return (
                     <div key={index} className={className}>
                         {icon}
-                        <div className={styles.markdownanswer}>
+                        <div className={styles.reactmarkdown}>
                             <ReactMarkdown linkTarget="_blank"
                                            remarkPlugins={[remarkGfm]}>{message.message}</ReactMarkdown>
                         </div>
