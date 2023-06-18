@@ -1,11 +1,8 @@
-/*noinspection CssUnknownTarget*/
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
-
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'public-sans', sans-serif;
 }
 
 html,

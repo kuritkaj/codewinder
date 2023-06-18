@@ -1,0 +1,15 @@
+.textinput {
+    position: relative;
+    width: 100%;
+}
+
+.chatmessages {
+    background: #070809;
+    border-radius: 0.5rem;
+    border: 1px solid #30373d;
+    display: flex;
+    flex-grow: 1;
+    overflow-y: auto;
+    width: 100%;
+    margin-bottom: 2rem;
+}

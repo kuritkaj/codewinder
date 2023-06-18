@@ -17,8 +17,9 @@
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.10.6",
-    "@mui/material": "^5.11.10",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/public-sans": "^5.0.3",
+    "@mui/joy": "^5.0.0-alpha.84",
     "@supabase/supabase-js": "^2.24.0",
     "@types/cheerio": "^0.22.31",
     "@types/pdf-parse": "^1.1.1",

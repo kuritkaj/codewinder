@@ -1,37 +1,24 @@
-.main {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2rem;
-}
-
-.textinput {
-  position: relative;
-  width: 100%;
-}
-
-.centerpanel {
+.chatpanel {
   display: flex;
   flex-grow: 1;
   max-width: 750px;
-  justify-content: center;
-  align-items: center;
-  margin: auto;
-  position: relative;
+  margin: 0 auto;
   flex-direction: column;
 }
 
-.chatmessages {
-  background: #070809;
-  border-radius: 0.5rem;
-  border: 1px solid #30373d;
+.fullscreen {
   display: flex;
-  flex-grow: 1;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 2rem;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 130px);
+  justify-content: space-between;
+  padding: 2rem;
 }
 
 .settingspanel {
