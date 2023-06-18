@@ -55,6 +55,15 @@ export const calculateRemainingTokens = async ({prompt, model}: { prompt: string
     });
 }
 
+export const getEmbeddingContextSize = (modelName?: string): number => {
+    switch (modelName) {
+        case "text-embedding-ada-002":
+            return 8191;
+        default:
+            return 2046;
+    }
+};
+
 export const getModelContextSize = (modelName: string): number => {
     switch (getModelNameForTiktoken(modelName)) {
         case "gpt-3.5-turbo-16k":

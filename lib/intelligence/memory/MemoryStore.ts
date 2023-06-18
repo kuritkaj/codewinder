@@ -1,14 +1,15 @@
-import { VectorStore } from "langchain/dist/vectorstores/base";
-import { RecursiveCharacterTextSplitter, TextSplitter, TokenTextSplitter } from "langchain/text_splitter";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { Document } from "langchain/document";
-import { createClient } from "@supabase/supabase-js";
-import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { SupabaseVectorStore } from "@/lib/intelligence/vectorstores/SupabaseVectorStore";
-import { HNSWLib } from "langchain/vectorstores/hnswlib";
-import * as path from "path";
+import { Metadata } from "@/lib/types/Document";
+import { getEmbeddingContextSize } from "@/lib/util/tokens";
+import { createClient } from "@supabase/supabase-js";
 import * as fs from "fs";
-import {Metadata} from "@/lib/types/Document";
+import { VectorStore } from "langchain/dist/vectorstores/base";
+import { Document } from "langchain/document";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { RecursiveCharacterTextSplitter, TextSplitter, TokenTextSplitter } from "langchain/text_splitter";
+import { HNSWLib } from "langchain/vectorstores/hnswlib";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import * as path from "path";
 
 export const CACHE_DIR = ".cache";
 
@@ -21,14 +22,6 @@ export class MemoryStore {
         this.index = index;
         this.memory = memory;
 
-        const getEmbeddingContextSize = (modelName?: string): number => {
-            switch (modelName) {
-                case "text-embedding-ada-002":
-                    return 8191;
-                default:
-                    return 2046;
-            }
-        };
         const chunkSize = getEmbeddingContextSize(
             "modelName" in memory.embeddings
                 ? (memory.embeddings.modelName as string)
@@ -50,7 +43,7 @@ export class MemoryStore {
             const vectorStore = await SupabaseVectorStore.fromExistingIndex(embeddings, {
                 client,
                 tableName: index,
-                queryName: `match_${ index }`,
+                queryName: `match_${index}`,
             });
 
             return new MemoryStore(vectorStore, index);
@@ -123,14 +116,6 @@ export class MemoryStore {
         return snippets;
     }
 
-    private async save() {
-        const directory = path.join(process.cwd(), CACHE_DIR, this.index);
-
-        if (this.memory instanceof HNSWLib) {
-            await this.memory.save(directory);
-        }
-    }
-
     async storeDocuments(documents: Document[], metadata: Metadata = {}) {
         metadata.created_at = new Date(); // Patch in the current date/time for future reference
 
@@ -155,5 +140,13 @@ export class MemoryStore {
         }
         await this.memory.addDocuments(documents);
         await this.save();
+    }
+
+    private async save() {
+        const directory = path.join(process.cwd(), CACHE_DIR, this.index);
+
+        if (this.memory instanceof HNSWLib) {
+            await this.memory.save(directory);
+        }
     }
 }
