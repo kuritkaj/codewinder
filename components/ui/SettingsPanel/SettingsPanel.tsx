@@ -1,4 +1,3 @@
-import { Typography } from "@mui/material";
 import React, { useState } from "react";
 import styles from "./SettingsPanel.module.css";
 
@@ -21,7 +20,7 @@ const SettingsPanel = ({tools, onChange}: SettingsPanelProps) => {
 
     return (
         <div className={styles.panel}>
-            <Typography className={styles.header}>Settings</Typography>
+            <h2 className={styles.header}>Settings</h2>
             <div className={styles.divider}/>
             <div className={styles.toolslist}>
                 {tools.map((tool) => (

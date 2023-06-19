@@ -1,4 +1,3 @@
-import { CircularProgress } from "@mui/joy";
 import React, { useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import styles from "./InputTextArea.module.css";
@@ -43,7 +42,7 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
             >
                 {loading ? (
                     <div className={styles.loadingwheel}>
-                        <CircularProgress size="sm"/>
+                        {/*<CircularProgress size="sm"/>*/}
                     </div>
                 ) : (
                     <svg viewBox='0 0 20 20' className={styles.svgicon} xmlns="http://www3.org/2000/svg">

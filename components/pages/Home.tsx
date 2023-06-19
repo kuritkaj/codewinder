@@ -1,7 +1,6 @@
 import ChatPanel from "@/components/ui/ChatPanel/ChatPanel";
 import Footer from "@/components/ui/Footer/Footer";
 import Header from "@/components/ui/Header/Header";
-import { Container } from "@mui/joy";
 import Head from "next/head";
 import styles from "./Home.module.css";
 
@@ -16,18 +15,16 @@ const Home = () => {
             </Head>
             <div className={styles.fullscreen}>
                 <Header/>
-                <Container maxWidth={false} disableGutters>
-                    <main className={styles.main}>
-                        {/*<Hidden smDown>*/}
-                        {/*    <div className={styles.settingspanel}>*/}
-                        {/*        <SettingsPanel tools={[]} onChange={() => {}}/>*/}
-                        {/*    </div>*/}
-                        {/*</Hidden>*/}
-                        <div className={styles.chatpanel}>
-                            <ChatPanel/>
-                        </div>
-                    </main>
-                </Container>
+                <main className={styles.main}>
+                    {/*<Hidden smDown>*/}
+                    {/*    <div className={styles.settingspanel}>*/}
+                    {/*        <SettingsPanel tools={[]} onChange={() => {}}/>*/}
+                    {/*    </div>*/}
+                    {/*</Hidden>*/}
+                    <div className={styles.chatpanel}>
+                        <ChatPanel/>
+                    </div>
+                </main>
                 <Footer/>
             </div>
         </>
