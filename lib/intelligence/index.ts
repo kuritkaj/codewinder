@@ -53,6 +53,17 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
         maxRetries: 2
     });
 
+    // This should represent intelligence that is great at determiing the best tool to use.
+    const capabable = new ChatOpenAI({
+        openAIApiKey: openAiApiKey,
+        modelName: "gpt-3.5-turbo-16k-0613",
+        temperature: 0,
+        topP: 0,
+        streaming: Boolean(callbacks),
+        callbacks,
+        maxRetries: 2
+    });
+
     // This should represent intelligence that is great at writing code.
     const powerful = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
@@ -66,7 +77,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     // This should represent intelligence that is creative.
     const creative = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        temperature: 0.7,
+        temperature: 0.8,
         modelName: "gpt-4-0613",
         streaming: Boolean(callbacks),
         callbacks,
@@ -79,7 +90,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     const code = await MemoryStore.makeDurableStore("code", embeddings);
 
     const tools: Tool[] = [
-        new WebBrowser({callbacks, embeddings, memory: knowledge, model: predictable}),
+        new WebBrowser({callbacks, embeddings, memory: knowledge, model: capabable}),
         new CodeExecutor({callbacks, memory: code, model: powerful}),
         new CreativeWriter({callbacks, model: creative}),
     ];

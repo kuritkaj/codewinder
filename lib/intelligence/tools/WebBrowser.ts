@@ -218,7 +218,7 @@ export class WebBrowser extends Tool {
         });
         const texts = await textSplitter.splitText(text);
 
-        const limit = 6;
+        const limit = 16;
         let context;
         // if we want a summary grab first 6
         if (doSummary) {
