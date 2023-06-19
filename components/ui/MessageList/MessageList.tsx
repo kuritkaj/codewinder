@@ -2,6 +2,8 @@ import { Message } from "@/lib/types/Message";
 import Image from "next/image";
 import React, { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import styles from "./MessageList.module.css";
 
@@ -60,7 +62,9 @@ const MessageList = ({chatMessages, loading}: MessageListProps) => {
                         {icon}
                         <div className={styles.reactmarkdown}>
                             <ReactMarkdown linkTarget="_blank"
-                                           remarkPlugins={[remarkGfm]}>{message.message}</ReactMarkdown>
+                                           remarkPlugins={[remarkGfm]}
+                                           rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                            >{message.message}</ReactMarkdown>
                         </div>
                     </div>
                 )

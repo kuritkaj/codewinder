@@ -35,6 +35,8 @@
     "react-dom": "18.2.0",
     "react-markdown": "^8.0.5",
     "react-textarea-autosize": "^8.4.1",
+    "rehype-raw": "^6.1.1",
+    "rehype-sanitize": "^5.0.1",
     "remark-gfm": "^3.0.1",
     "replicate": "^0.12.1",
     "ws": "^8.12.1"

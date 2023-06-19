@@ -17,9 +17,9 @@ const Service: NextApiHandler = async (req, res) => {
         Connection: "keep-alive",
     });
 
-    const sendClear = () => {
-        res.write("{clear}");
-    }
+    // const sendClear = () => {
+    //     res.write("{clear}");
+    // }
 
     const sendData = (data: string) => {
         res.write(data);
@@ -34,23 +34,23 @@ const Service: NextApiHandler = async (req, res) => {
     }
 
     const callbacks = CallbackManager.fromHandlers({
-        handleLLMStart: () => {
-            sendLine();
+        handleLLMStart: (llm) => {
+            sendLine(`<details>\n<summary>${llm.id[llm.id.length - 1]}</summary>\n`);
         },
         handleLLMNewToken: async (token) => {
             sendData(token);
         },
         handleLLMEnd: () => {
-            sendLine();
+            sendLine("</details>");
         },
         handleText: (text: string) => {
             sendData(text);
         },
-        handleToolStart: () => {
-            sendLine();
+        handleToolStart: (tool, input) => {
+            sendLine(`<details>\n<summary>Tool: ${input}</summary>\n`);
         },
         handleToolEnd: async () => {
-            sendLine();
+            sendLine("</details>");
         },
         handleLLMError: async (error) => {
             sendError(error);
@@ -65,10 +65,8 @@ const Service: NextApiHandler = async (req, res) => {
         inputs[CONTEXT_INPUT] = JSON.stringify(context);
 
         const completion = await chain.predict(inputs);
-        sendClear();
         sendLine(completion);
     } catch (error) {
-        sendClear();
         sendError(error)
     } finally {
         res.end();

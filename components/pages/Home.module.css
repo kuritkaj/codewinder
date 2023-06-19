@@ -19,7 +19,6 @@
   height: calc(100vh - 130px);
   justify-content: space-between;
   padding: 2rem;
-  font-family: "Open Sans", sans-serif;
 }
 
 .settingspanel {
