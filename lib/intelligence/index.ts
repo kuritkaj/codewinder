@@ -66,16 +66,16 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     });
 
     const embeddings = new OpenAIEmbeddings({openAIApiKey: openAiApiKey});
-    const store = await MemoryStore.makeDurableStore("memories", embeddings);
+    const memories = await MemoryStore.makeDurableStore("memories", embeddings);
     const knowledge = await MemoryStore.makeDurableStore("knowledge", embeddings);
     const code = await MemoryStore.makeDurableStore("code", embeddings);
 
     const tools: StructuredTool[] = [
-        new WebBrowser({callbacks, embeddings, memory: knowledge, model: capable}),
-        new CodeExecutor({callbacks, memory: code, model: powerful}),
+        new WebBrowser({callbacks, embeddings, store: knowledge, model: capable}),
+        new CodeExecutor({callbacks, store: code, model: powerful}),
     ];
     if (Boolean(bingApiKey)) {
-        tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, memory: knowledge}));
+        tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, store: knowledge}));
     }
     // if (Boolean(zapierApiKey)) {
     //     const zapier = new ZapierNLAWrapper({apiKey: zapierApiKey});
@@ -87,7 +87,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
         callbacks,
         creative,
         predictable,
-        store,
+        store: memories,
         tools,
         verbose: true,
     })
@@ -96,7 +96,8 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
 
     const agent = ReActAgent.fromLLMAndTools({
         callbacks,
-        predictable,
+        model: predictable,
+        store: memories,
         tools: toolkit,
         verbose: true,
     });

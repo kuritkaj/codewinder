@@ -13,8 +13,8 @@ export const DESCRIPTION = `a search engine. Useful to answer questions about cu
 export interface WebSearchParams extends ToolParams {
     apiKey: string | undefined;
     embeddings: Embeddings;
-    memory?: MemoryStore;
     params?: Record<string, string>;
+    store?: MemoryStore;
 }
 
 export class WebSearch extends Tool {
@@ -26,10 +26,10 @@ export class WebSearch extends Tool {
 
     private readonly embeddings: Embeddings;
     private readonly key: string;
-    private readonly memory: MemoryStore;
     private readonly params: Record<string, string>;
+    private readonly store: MemoryStore;
 
-    constructor({apiKey, params, memory, embeddings, verbose, callbacks}: WebSearchParams) {
+    constructor({apiKey, params, store, embeddings, verbose, callbacks}: WebSearchParams) {
         super({verbose, callbacks});
 
         if (!apiKey) {
@@ -40,8 +40,8 @@ export class WebSearch extends Tool {
 
         this.embeddings = embeddings;
         this.key = apiKey;
-        this.memory = memory;
         this.params = params;
+        this.store = store;
     }
 
     /** @ignore */
@@ -73,8 +73,8 @@ export class WebSearch extends Tool {
 
         const links = results.map(result => `[${result.name}](${result.url}) - ${result.snippet}`);
 
-        if (this.memory) {
-            const memories = await this.memory.retrieveSnippets(query, 0.75, 1);
+        if (this.store) {
+            const memories = await this.store.retrieveSnippets(query, 0.75, 1);
             if (memories && memories.length > 0) {  // Check if memories is not null and has at least one element
                 const memory = memories[0];
                 links.push(`[${memory.metadata.name}](${memory.metadata.url}) - ${memory.pageContent}`);

@@ -141,8 +141,8 @@ type Headers = Record<string, any>;
 export interface WebBrowserParams extends ToolParams {
     embeddings: Embeddings;
     headers?: Headers;
-    memory?: MemoryStore;
     model: BaseLanguageModel;
+    store?: MemoryStore;
 }
 
 export class WebBrowser extends StructuredTool {
@@ -156,12 +156,12 @@ export class WebBrowser extends StructuredTool {
 
     private readonly embeddings: Embeddings;
     private readonly headers: Headers;
-    private readonly memory: MemoryStore;
     private readonly model: BaseLanguageModel;
+    private readonly store: MemoryStore;
 
     constructor({
         model,
-        memory,
+        store,
         embeddings,
         headers,
         verbose,
@@ -171,8 +171,8 @@ export class WebBrowser extends StructuredTool {
 
         this.embeddings = embeddings;
         this.headers = headers || DEFAULT_HEADERS;
-        this.memory = memory;
         this.model = model;
+        this.store = store;
     }
 
     call(
@@ -211,7 +211,7 @@ export class WebBrowser extends StructuredTool {
         }
 
         // Store the full text for later retrieval
-        if (this.memory) await this.memory.storeTexts([text], {name: title, url: baseUrl});
+        if (this.store) this.store.storeTexts([text], {name: title, url: baseUrl}).then(); // async
 
         const textSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: 2000,

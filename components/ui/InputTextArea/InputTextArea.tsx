@@ -30,7 +30,7 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                 maxRows={5}
                 id="userInput"
                 name="userInput"
-                placeholder={loading ? "Waiting for response..." : "Type your question..."}
+                placeholder={loading ? "Waiting for response..." : "Send a message..."}
                 value={userInput}
                 onChange={e => setUserInput(e.target.value)}
                 className={styles.textarea}

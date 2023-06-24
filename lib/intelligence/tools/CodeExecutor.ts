@@ -67,7 +67,7 @@ Code:
 
 export interface CodeEvaluatorParams extends ToolParams {
     model: BaseLanguageModel;
-    memory: MemoryStore;
+    store: MemoryStore;
 }
 
 export class CodeExecutor extends StructuredTool {
@@ -79,9 +79,9 @@ export class CodeExecutor extends StructuredTool {
     }).transform((obj) => obj.input);
 
     private readonly llmChain: LLMChain;
-    private readonly memory: MemoryStore;
+    private readonly store: MemoryStore;
 
-    constructor({model, memory, verbose, callbacks}: CodeEvaluatorParams) {
+    constructor({model, store, verbose, callbacks}: CodeEvaluatorParams) {
         super({verbose, callbacks});
 
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
@@ -92,7 +92,7 @@ export class CodeExecutor extends StructuredTool {
             prompt
         });
 
-        this.memory = memory;
+        this.store = store;
     }
 
     /** @ignore */
@@ -108,7 +108,7 @@ export class CodeExecutor extends StructuredTool {
         const vmEnvironmentKeys = Object.keys(vmEnvironmentVariables).join(", ");
 
         // Retrieve a similar example from memory.
-        const memory = await this.memory.retrieve(specification, 1);
+        const memory = await this.store.retrieve(specification, 1);
         const example = memory && memory.length > 0 ? memory[0].pageContent : "No example found.";
 
         // Generate JavaScript code from the natural language description.
@@ -134,14 +134,14 @@ export class CodeExecutor extends StructuredTool {
             const result = await output;
 
             // store this program for future reference
-            await this.memory.storeTexts([code], {
+            this.store.storeTexts([code], {
                 specification: specification
-            })
+            }).then(); // async
 
             return result || "No results returned.";
         } catch (error) {
             // store this program for future reference
-            await this.memory.storeTexts([`${code}\n\nThe prior code errored with this message: ${error.message}`], {
+            await this.store.storeTexts([`${code}\n\nThe prior code errored with this message: ${error.message}`], {
                 specification: specification
             })
 
