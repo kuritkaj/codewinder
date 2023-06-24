@@ -1,131 +1,105 @@
-import { Tool, ToolParams } from "langchain/tools";
-import { Editor } from "@/lib/intelligence/multistep/Editor";
-import { CONTEXT_INPUT, OBJECTIVE_INPUT } from "@/lib/intelligence/react/ReActAgent";
-import { Planner } from "@/lib/intelligence/multistep/Planner";
-import { BaseLanguageModel } from "langchain/base_language";
-import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
-import { BaseChain, SerializedLLMChain } from "langchain/chains";
-import { ChainValues } from "langchain/schema";
+import { Editor } from "@/lib/intelligence/multistep/Editor";
+import { CONTEXT_INPUT, ReActAgent } from "@/lib/intelligence/react/ReActAgent";
+import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 import { CallbackManagerForChainRun } from "langchain/callbacks";
+import { BaseChain, SerializedLLMChain } from "langchain/chains";
+import { ChatOpenAI } from "langchain/chat_models/openai";
 import { Callbacks } from "langchain/dist/callbacks/manager";
+import { ChainValues } from "langchain/schema";
+import { StructuredTool } from "langchain/tools";
 
-export const ACTIONS_INPUT = "actions";
+export const OBJECTIVE_INPUT = "objective";
 export const OUTPUT_KEY = "output";
+export const STEPS_INPUT = "steps";
 
-interface MultistepExecutorInput extends ToolParams {
-    creative: BaseLanguageModel;
-    depth: number;
-    maxIterations?: number;
-    memory: MemoryStore;
-    model: BaseLanguageModel;
-    tools: Tool[];
+interface MultistepExecutorInput {
+    callbacks: Callbacks;
+    creative: ChatOpenAI;
+    predictable: ChatOpenAI;
+    store: MemoryStore;
+    tools: StructuredTool[];
+    verbose: boolean;
 }
 
 export class MultistepExecutor extends BaseChain {
 
-    private readonly creative: BaseLanguageModel;
-    private readonly depth: number;
-    private readonly maxIterations?: number;
-    private readonly model: BaseLanguageModel;
+    private readonly creative: ChatOpenAI;
+    private readonly predictable: ChatOpenAI;
     private readonly store: MemoryStore;
-    private readonly tools: Tool[];
+    private readonly tools: StructuredTool[];
 
-    constructor({creative, depth, maxIterations, memory, model, tools}: MultistepExecutorInput) {
-        super({verbose: true});
+    constructor({callbacks, creative, predictable, store, tools, verbose}: MultistepExecutorInput) {
+        super({callbacks, verbose});
 
         this.creative = creative;
-        this.depth = depth;
-        this.maxIterations = maxIterations;
-        this.store = memory;
-        this.model = model;
+        this.store = store;
+        this.predictable = predictable;
         this.tools = tools;
     }
 
     get inputKeys() {
-        return [OBJECTIVE_INPUT, ACTIONS_INPUT];
+        return [OBJECTIVE_INPUT, STEPS_INPUT];
     }
 
     get outputKeys() {
         return [OUTPUT_KEY];
     }
 
-    async _call(
+    public async _call(
         inputs: ChainValues,
         runManager?: CallbackManagerForChainRun
     ): Promise<ChainValues> {
-        const completion = await MultistepExecutor.runAgent({
-            creative: this.creative,
-            depth: this.depth,
-            inputs: inputs,
-            maxIterations: this.maxIterations,
-            memory: this.store,
-            model: this.model,
-            runManager: runManager,
-            tools: this.tools
+        const agent = ReActAgent.fromLLMAndTools({
+            callbacks: runManager?.getChild(),
+            predictable: this.predictable,
+            tools: this.tools,
+            verbose: true,
         });
+        const executor = ReActExecutor.fromAgentAndTools({
+            agent,
+            callbacks: runManager.getChild(),
+            tools: this.tools,
+            verbose: true,
+        });
+
+        const objective = inputs[OBJECTIVE_INPUT];
+        const steps = inputs[STEPS_INPUT];
+
+        let results = [];
+        for (const step of steps) {
+            await runManager?.handleText("Starting: " + step);
+
+            let stepInputs = {};
+            stepInputs[CONTEXT_INPUT] = results.length > 0 ? results[results.length - 1] : "";
+            stepInputs[OBJECTIVE_INPUT] =
+                `Your task is to \"\"\"${step}\"\"\" which is one step of several to \"\"\"${objective}\"\"\". Only complete your assigned task and no more.`;
+
+            const completion = await executor.predict(stepInputs);
+            if (completion) results.push(completion);
+        }
+
+        const editor = Editor.makeChain({model: this.creative, callbacks: runManager?.getChild()});
+        const completion = await editor.predict({
+            context: results.join("\n\n"),
+            objective
+        });
+
         return {
             [OUTPUT_KEY]: completion
         }
     }
 
-    _chainType() {
+    public _chainType() {
         return "multistep_executor" as const;
     }
 
-    static async runAgent({runManager, creative, depth, inputs, model, maxIterations, memory, tools}: {
-        creative: BaseLanguageModel,
-        depth: number,
-        inputs: ChainValues,
-        model: BaseLanguageModel,
-        maxIterations?: number,
-        memory: MemoryStore,
-        runManager?: CallbackManagerForChainRun,
-        tools: Tool[],
-    }): Promise<string> {
-        // Create a new executor and increment the depth.
-        const executor = ReActExecutor.makeExecutor({
-            creative,
-            depth: ++depth,
-            maxIterations,
-            memory,
-            model,
-            tools
-        });
-
-        const planner = Planner.makeChain({model: creative, callbacks: runManager?.getChild()});
-        const interim = await planner.predict({
-            objective: inputs[OBJECTIVE_INPUT],
-            steps: inputs[ACTIONS_INPUT]
-        });
-        const plan = JSON.parse(interim);
-        const objective = plan.objective;
-
-        let results = [];
-        for (const step of plan.steps) {
-            await runManager?.handleText("Starting: " + step);
-
-            let inputs = {};
-            inputs[OBJECTIVE_INPUT] = `${objective}: ${step}`
-            if (results.length > 0) inputs[CONTEXT_INPUT] = results[results.length - 1]
-
-            const completion = await executor.predict(inputs);
-            results.push(completion);
-        }
-
-        const editor = Editor.makeChain({model: creative, callbacks: runManager?.getChild()});
-        return await editor.predict({
-            context: results.join("\n\n"),
-            objective
-        });
-    }
-
-    async predict(values: ChainValues, callbacks?: Callbacks): Promise<string> {
+    public async predict(values: ChainValues, callbacks?: Callbacks): Promise<string> {
         const completion = await this.call(values, callbacks);
         return completion[OUTPUT_KEY];
     }
 
-    serialize(): SerializedLLMChain {
+    public serialize(): SerializedLLMChain {
         throw new Error("Cannot serialize an MultistepExecutor");
     }
 }

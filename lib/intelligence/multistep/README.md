@@ -1,4 +1,4 @@
-# Multistep
+# PlanAndSolve
 This is an Agent that is designed to take multiple steps to accomplish a task or goal.
 
 Note, this agent is called by a ReAct agent that returns two or more actions during its plan step.
@@ -14,6 +14,6 @@ A couple of notes of import:
 
 * If a durable memory store is provided, then an action from a previous step helps provide guidance.
   This isn't the same as passing the result of a previous step, but is effective all the same.
-* In practice, this could cause an agent to spin out of control, since ReAct Agents can in turn call Multistep agents.
+* In practice, this could cause an agent to spin out of control, since ReAct Agents can in turn call PlanAndSolve agents.
   And this can continue recursively without depth control. In practice, the agents tend to complete their objectives and
   stop.

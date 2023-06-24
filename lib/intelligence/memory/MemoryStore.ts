@@ -34,7 +34,7 @@ export class MemoryStore {
         });
     }
 
-    static async makeDurableStore(index: string, embeddings: OpenAIEmbeddings) {
+    public static async makeDurableStore(index: string, embeddings: OpenAIEmbeddings) {
         const supabaseApiKey = process.env.SUPABASE_API_KEY;
         const supabaseUrl = process.env.SUPABASE_URL;
 
@@ -62,17 +62,17 @@ export class MemoryStore {
         }
     }
 
-    static async makeTransientStore(index: string, embeddings: OpenAIEmbeddings) {
+    public static async makeTransientStore(index: string, embeddings: OpenAIEmbeddings) {
         const memory = await new MemoryVectorStore(embeddings);
         return new MemoryStore(memory, index);
     }
 
-    async retrieve(query: string, k?: number, filter?: VectorStore["FilterType"] | undefined): Promise<Document[]> {
+    public async retrieve(query: string, k?: number, filter?: VectorStore["FilterType"] | undefined): Promise<Document[]> {
         if (!query) throw new Error("A query is required.");
         return await this.memory.similaritySearch(query, k, filter);
     }
 
-    async retrieveSnippets(query: string, threshold, k: number = 1): Promise<Document[]> {
+    public async retrieveSnippets(query: string, threshold, k: number = 1): Promise<Document[]> {
         if (!query) throw new Error("A query is required.");
 
         // search the memory for the top 1 document that matches the query
@@ -108,15 +108,13 @@ export class MemoryStore {
             const snippet = await vectorStore.similaritySearch(query, 1);
 
             // We shouldn't have to do this, but the whole url is not preserved from the MemoryVectorStore.
-            if (snippet.length > 0) snippets.push(
-                {pageContent: snippet[0].pageContent, metadata: doc.metadata}
-            );
+            if (snippet.length > 0) snippets.push(snippet[0]);
         }
 
         return snippets;
     }
 
-    async storeDocuments(documents: Document[], metadata: Metadata = {}) {
+    public async storeDocuments(documents: Document[], metadata: Metadata = {}) {
         metadata.created_at = new Date(); // Patch in the current date/time for future reference
 
         if (!documents || documents.length === 0) throw new Error("Documents are required.");
@@ -128,7 +126,7 @@ export class MemoryStore {
         await this.save();
     }
 
-    async storeTexts(texts: string[], metadata: Metadata = {}) {
+    public async storeTexts(texts: string[], metadata: Metadata = {}) {
         metadata.created_at = new Date(); // Patch in the current date/time for future reference
 
         if (!texts || texts.length === 0) throw new Error("Texts are required.");

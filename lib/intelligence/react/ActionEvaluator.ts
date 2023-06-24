@@ -1,25 +1,16 @@
-import { PromptTemplate } from "langchain/prompts";
-import { LLMChainInput } from "langchain/chains";
+import { FunctionChain, FunctionChainInput } from "@/lib/intelligence/chains/FunctionChain";
 import { Callbacks } from "langchain/callbacks";
-import { BaseLanguageModel } from "langchain/base_language";
-import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
+import { ChatOpenAI } from "langchain/chat_models/openai";
+import { PromptTemplate } from "langchain/prompts";
+import { BaseChatMessage } from "langchain/schema";
+import { StructuredTool } from "langchain/tools";
 
-export const EVALUATION = "Evaluation";
 export const OBJECTIVE_INPUT = "objective";
-export const ACTIONS_INPUT = "actions";
+export const ACTION_INPUT = "action";
 export const STEPS_INPUT = "steps";
-export const SCORE = "Score";
-export const TOOLING_INPUT = "tooling";
 
-export const GUIDANCE = `
-An AI assistant is helping a user achieve this specific objective: 
+export const GUIDANCE = `An AI assistant is helping a user achieve this specific objective: 
 {${OBJECTIVE_INPUT}}
-
-The AI assistant was asked to use one or more tools to achieve this objective.
-Allowed tools:
-\"\"\"
-{${TOOLING_INPUT}}
-\"\"\"
 
 Here is the history of past actions: 
 \`\`\`
@@ -28,61 +19,47 @@ Here is the history of past actions:
 
 Based on these past actions, the AI has now responded with: 
 \`\`\`
-{${ACTIONS_INPUT}}
+{${ACTION_INPUT}}
 \`\`\`
 
 Evaluate the response based on the following criteria:
-* Does the response meet the stated objective based on the past actions and experiences?
-* Is the response starting to go on a tangent or starting to drift from the original objective?
-* Tools cannot see past actions and experiences, does the tool input need to be updated?
-* Are any of the actions dependent on each other? (Remove actions with dependencies)
+* Does the action meet the stated objective based on the past actions?
+* Is the action starting to go on a tangent or starting to drift from the original objective?
+* Is the action repeating a previous past action?
+* Tools cannot see past actions and experiences, does the tool input need to be clarified?
 
-Based on this evaluation, score the response on a scale of 1 to 5 with 1 being low and 5 is high.
-This score should represent your confidence level of whether or note the responses will meet the objective.
+Be very brief in your response, request a new function or update the function input as needed.`;
 
-Use this format to respond:
-${EVALUATION}: evaluation of the response
-${SCORE}: confidence score of the response from 1 to 5 (low to high)
-
-If the score is low, then provide a new action (or actions) to take using the following format (only using allowed tools):
-Action:
-\`\`\`
-[{{
-  "action": "tool name",
-  "action_input": "tool input"
-}}]
-\`\`\`
-`;
-
-interface EvaluatorInput {
-    model: BaseLanguageModel;
+export interface ActionEvaluatorInput {
     callbacks?: Callbacks;
+    llm: ChatOpenAI;
+    tools: StructuredTool[];
 }
 
-export class ActionEvaluator extends GuardChain {
+export class ActionEvaluator extends FunctionChain {
 
-    constructor(inputs: LLMChainInput) {
-        super(inputs);
+    constructor(input: FunctionChainInput) {
+        super(input);
     }
 
-    static makeChain({model, callbacks}: EvaluatorInput): ActionEvaluator {
+    public static makeChain({callbacks, llm, tools}: ActionEvaluatorInput): ActionEvaluator {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new ActionEvaluator({
-            llm: model,
-            callbacks: callbacks,
-            prompt: prompt
+            llm,
+            callbacks,
+            prompt,
+            tools
         });
     }
 
-    async predict({objective, actions, steps, tooling}: {
-        objective: string; actions: string; steps: string; tooling: string
-    }): Promise<string> {
+    public async predict({objective, action, steps}: {
+        objective: string; action: string; steps: string;
+    }): Promise<BaseChatMessage> {
         return await super.predict({
             objective,
-            actions,
-            steps,
-            tooling
+            action,
+            steps
         });
     }
 }

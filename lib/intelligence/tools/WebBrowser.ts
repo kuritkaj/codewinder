@@ -1,15 +1,20 @@
 // Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/tools/webbrowser.ts
 
 import cheerio from "cheerio";
+import { Callbacks } from "langchain/dist/callbacks/manager";
 import PDFParse from "pdf-parse";
 import { BaseLanguageModel } from "langchain/base_language";
-import { Tool, ToolParams } from "langchain/tools";
+import { StructuredTool, ToolParams } from "langchain/tools";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { StringPromptValue } from "langchain/prompts";
 import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import { z } from "zod";
+
+export const NAME = "browser";
+export const DESCRIPTION = `finding or summarizing webpage or PDF content from a provided url.`;
 
 const getContent = async (
     baseUrl: string,
@@ -133,16 +138,6 @@ const DEFAULT_HEADERS = {
 
 type Headers = Record<string, any>;
 
-export const NAME = "browser";
-export const DESCRIPTION = `finding or summarizing webpage or PDF content from a provided url.
-Never make up a link, only use a valid url returned as a result of a previous web search.
-Input should be "ONE valid http URL including protocol","what to find on the page".
-Input format:
-{{
-  "action": "tool name",
-  "action_input": ["https://www.google.com","how to make a cake"]
-}}`;
-
 export interface WebBrowserParams extends ToolParams {
     embeddings: Embeddings;
     headers?: Headers;
@@ -150,9 +145,14 @@ export interface WebBrowserParams extends ToolParams {
     model: BaseLanguageModel;
 }
 
-export class WebBrowser extends Tool {
+export class WebBrowser extends StructuredTool {
     public readonly name = NAME;
     public readonly description = DESCRIPTION;
+    public readonly schema = z
+    .object({
+        baseUrl: z.string().describe("one valid url"),
+        task: z.string().describe("what to find on the page")
+    });
 
     private readonly embeddings: Embeddings;
     private readonly headers: Headers;
@@ -175,18 +175,19 @@ export class WebBrowser extends Tool {
         this.model = model;
     }
 
-    /** @ignore */
-    async _call(inputs: string, runManager?: CallbackManagerForToolRun) {
-        const [baseUrl, task] = inputs.split(",").map((input) => {
-            let t = input.trim();
-            t = t.startsWith('[') ? t.slice(1) : t;
-            t = t.startsWith('"') ? t.slice(1) : t;
-            t = t.endsWith("]") ? t.slice(0, -1) : t;
-            t = t.endsWith('"') ? t.slice(0, -1) : t;
-            // it likes to put / at the end of urls, won't matter for task
-            t = t.endsWith("/") ? t.slice(0, -1) : t;
-            return t.trim();
-        });
+    call(
+        arg: string | undefined | z.input<this["schema"]>,
+        callbacks?: Callbacks
+    ): Promise<string> {
+        return super.call(
+            typeof arg === "string" || !arg ? { baseUrl: arg } : arg,
+            callbacks
+        );
+    }
+
+    async _call(instructions: z.output<this["schema"]>, runManager?: CallbackManagerForToolRun) {
+        let {baseUrl, task} = instructions;
+
         const doSummary = !task;
 
         let text;
@@ -206,7 +207,7 @@ export class WebBrowser extends Tool {
             if (e) {
                 return e.toString();
             }
-            return "There was a problem connecting to the site";
+            return "There was a problem connecting to the site.";
         }
 
         // Store the full text for later retrieval
@@ -218,7 +219,7 @@ export class WebBrowser extends Tool {
         });
         const texts = await textSplitter.splitText(text);
 
-        const limit = 16;
+        const limit = 10;
         let context;
         // if we want a summary grab first 6
         if (doSummary) {

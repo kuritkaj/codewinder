@@ -1,29 +1,26 @@
 // Inspiration: https://github.com/MineDojo/Voyager/blob/main/voyager/prompts/action_response_format.txt
 
-import { Tool, ToolParams } from "langchain/tools";
-import { BaseLanguageModel } from "langchain/base_language";
-import { LLMChain } from "langchain";
-import { PromptTemplate } from "langchain/prompts";
-import * as vm from "node:vm";
-import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
+import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import { LLMChain } from "langchain";
+import { BaseLanguageModel } from "langchain/base_language";
+import { PromptTemplate } from "langchain/prompts";
+import { StructuredTool, ToolParams } from "langchain/tools";
+import * as vm from "node:vm";
+import { z } from "zod";
 
 export const NAME = "code-executor";
-export const DESCRIPTION = `an isolated Node.js environment with fetch() to evaluate and run code. Programs must always return a string.
-Input should include all useful context from previous actions and observations.
-Input format:
-{{
-  "action": "${ NAME }",
-  "action_input": "original objective and detailed specification"
-}}
-`;
+export const DESCRIPTION = `an isolated Node.js environment to evaluate and run code. 
+Programs must always return a string.
+Input should include all useful context from previous actions and observations.`;
 
 const SPECIFICATION_INPUT = "specification";
 const ENVIRONMENT_INPUT = "environment";
 const EXAMPLE_INPUT = "example";
 
-export const GUIDANCE = `
-You are an AI assistant receiving a detailed code specification. Your task is to translate this specification into executable JavaScript code, which should then be run in a secure code environment to produce a result.
+export const GUIDANCE = `You are an AI assistant receiving a detailed code specification. 
+Your task is to translate this specification into executable JavaScript code, 
+which should then be run in a secure code environment to produce a result.
 
 This is the code specification:
 {${SPECIFICATION_INPUT}}
@@ -66,23 +63,25 @@ Code:
 
     return await yourMainFunctionName();
 }})();
-\`\`\`
-
-`;
+\`\`\``;
 
 export interface CodeEvaluatorParams extends ToolParams {
     model: BaseLanguageModel;
     memory: MemoryStore;
 }
 
-export class CodeExecutor extends Tool {
+export class CodeExecutor extends StructuredTool {
     public readonly name = NAME;
     public readonly description = DESCRIPTION;
+    public schema = z.
+    object({
+        input: z.string().describe("code specification")
+    }).transform((obj) => obj.input);
 
     private readonly llmChain: LLMChain;
     private readonly memory: MemoryStore;
 
-    constructor({ model, memory, verbose, callbacks }: CodeEvaluatorParams) {
+    constructor({model, memory, verbose, callbacks}: CodeEvaluatorParams) {
         super({verbose, callbacks});
 
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
@@ -99,9 +98,7 @@ export class CodeExecutor extends Tool {
     /** @ignore */
     async _call(specification: string): Promise<string> {
         // Filter environment variables starting with "VM_"
-        const vmEnvironmentVariables = Object.entries(process.env)
-        .filter(([key]) => key.startsWith("VM_"))
-        .reduce((acc, [key, value]) => {
+        const vmEnvironmentVariables = Object.entries(process.env).filter(([key]) => key.startsWith("VM_")).reduce((acc, [key, value]) => {
             const strippedKey = key.replace("VM_", ""); // Remove the prefix
             acc[strippedKey] = value;
             return acc;
@@ -133,22 +130,22 @@ export class CodeExecutor extends Tool {
                 process: {
                     env: vmEnvironmentVariables
                 }
-            }, { timeout: 3000 });
+            }, {timeout: 3000});
             const result = await output;
 
             // store this program for future reference
-            await this.memory.storeTexts([code],  {
+            await this.memory.storeTexts([code], {
                 specification: specification
             })
 
             return result || "No results returned.";
         } catch (error) {
             // store this program for future reference
-            await this.memory.storeTexts([`${code}\n\nThe prior code errored with this message: ${error.message}`],  {
+            await this.memory.storeTexts([`${code}\n\nThe prior code errored with this message: ${error.message}`], {
                 specification: specification
             })
 
-            return JSON.stringify({ error: error.message });
+            return JSON.stringify({error: error.message});
         }
     }
 }

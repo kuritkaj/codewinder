@@ -1,24 +1,21 @@
 /**
  Guards against prompt inputs that exceed the maximum tokens for the model.
  */
-import { LLMChain, LLMChainInput } from "langchain/chains";
-import { ChainValues } from "langchain/schema";
-import { Callbacks } from "langchain/dist/callbacks/manager";
 import { calculateRemainingTokens } from "@/lib/util/tokens";
+import { LLMChain, LLMChainInput } from "langchain/chains";
+import { Callbacks } from "langchain/dist/callbacks/manager";
+import { ChainValues } from "langchain/schema";
+
+export interface GuardChainInput extends LLMChainInput {
+}
 
 export class GuardChain extends LLMChain {
 
-    public outputKey: string = "output";
-
-    get outputKeys() {
-        return [this.outputKey];
+    constructor(input: GuardChainInput) {
+        super(input);
     }
 
-    constructor(inputs: LLMChainInput) {
-        super(inputs);
-    }
-
-    async call(values: ChainValues & this["llm"]["CallOptions"], callbacks?: Callbacks | undefined): Promise<ChainValues> {
+    public async call(values: ChainValues & this["llm"]["CallOptions"], callbacks?: Callbacks | undefined): Promise<ChainValues> {
         const prompt = await this.prompt.format(values);
 
         const remainingTokens = await calculateRemainingTokens({

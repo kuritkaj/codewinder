@@ -3,7 +3,6 @@
 import { makeChain } from "@/lib/intelligence";
 import { CallbackManager } from "langchain/callbacks";
 import { NextApiHandler } from "next";
-import { CONTEXT_INPUT, OBJECTIVE_INPUT } from "@/lib/intelligence/react/ReActAgent";
 
 const Service: NextApiHandler = async (req, res) => {
     const { context, objective }: { context: [ string, string ][], objective: string } = await req.body;
@@ -17,9 +16,9 @@ const Service: NextApiHandler = async (req, res) => {
         Connection: "keep-alive",
     });
 
-    // const sendClear = () => {
-    //     res.write("{clear}");
-    // }
+    const sendClear = () => {
+        res.write("{clear}");
+    }
 
     const sendData = (data: string) => {
         res.write(data);
@@ -34,23 +33,23 @@ const Service: NextApiHandler = async (req, res) => {
     }
 
     const callbacks = CallbackManager.fromHandlers({
-        handleLLMStart: (llm) => {
-            sendLine(`<details>\n<summary>${llm.id[llm.id.length - 1]}</summary>\n`);
+        handleLLMStart: () => {
+            sendLine();
         },
         handleLLMNewToken: async (token) => {
             sendData(token);
         },
         handleLLMEnd: () => {
-            sendLine("</details>");
+            sendLine();
         },
         handleText: (text: string) => {
             sendData(text);
         },
         handleToolStart: (tool, input) => {
-            sendLine(`<details>\n<summary>Tool: ${input}</summary>\n`);
+            sendLine(`\`\`\`${tool.id[tool.id.length - 1]}: ${input}\`\`\`\n\n`);
         },
         handleToolEnd: async () => {
-            sendLine("</details>");
+            sendLine();
         },
         handleLLMError: async (error) => {
             sendError(error);
@@ -60,11 +59,13 @@ const Service: NextApiHandler = async (req, res) => {
     const chain = await makeChain({ callbacks });
 
     try {
-        let inputs = {};
-        inputs[OBJECTIVE_INPUT] = objective;
-        inputs[CONTEXT_INPUT] = JSON.stringify(context);
-
-        const completion = await chain.predict(inputs);
+        sendLine("<details><summary>Thinking...</summary>");
+        const completion = await chain.predict({
+            objective,
+            context
+        });
+        sendLine("</details>");
+        sendClear();
         sendLine(completion);
     } catch (error) {
         sendError(error)

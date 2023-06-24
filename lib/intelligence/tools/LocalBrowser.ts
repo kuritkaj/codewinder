@@ -149,8 +149,8 @@ async function doAction(model, page, task, options = {}) {
     const website = await page.evaluate(() => document.location.href);
     const parsed = await parseSite(page, options);
 
-    const system = `
-You are a programmer and your job is to write code. You are working on a playwright file. You will write the commands necessary to execute the given input. 
+    const system = `You are a programmer and your job is to write code. You are working on a playwright file. 
+You will write the commands necessary to execute the given input. 
 
 Context:
 Your computer is a mac. Cmd is the meta key, META.
@@ -170,8 +170,7 @@ Assistant:
     await page.getByText(articleByText, {{ exact: true }}).click(articleByText, {{ force: true, hidden: true }});
 \`\`\`
 
-Note: if you are already on the correct page, you do not need to go to it again.
-`;
+Note: if you are already on the correct page, you do not need to go to it again.`;
     let code = '';
     try {
         const messages = [
@@ -208,12 +207,7 @@ Note: if you are already on the correct page, you do not need to go to it again.
 
 export const NAME = "local-browser";
 export const DESCRIPTION = `finding or summarizing webpage content from a provided url.
-Input should be "ONE valid http URL including protocol","action to take on page".
-The tool input should use this format:
-{{
-  "action": "tool name",
-  "action_input": ["https://www.google.com","click on the search button"]
-}}`;
+Input should be "ONE valid http URL including protocol","action to take on page".`;
 
 interface LocalBrowserParams extends ToolParams {
     model: BaseLanguageModel;
@@ -232,8 +226,8 @@ export class LocalBrowser extends Tool {
     }
 
     /** @ignore */
-    async _call(inputs: string): Promise<string> {
-        const [ url, action ] = inputs.split(",").map((input) => {
+    async _call(instructions: string): Promise<string> {
+        const [ baseUrl, action ] = instructions.split(",").map((input) => {
             let t = input.trim();
             t = t.startsWith('[') ? t.slice(1) : t;
             t = t.startsWith('"') ? t.slice(1) : t;
@@ -246,7 +240,7 @@ export class LocalBrowser extends Tool {
         const browser = await chromium.launch({headless: false});
         const browserContext = await browser.newContext();
         const page = await browserContext.newPage();
-        await page.goto(url);
+        await page.goto(baseUrl);
 
         return await doAction(this.model, page, action);
     }

@@ -1,11 +1,9 @@
-import { PromptTemplate } from "langchain/prompts";
-import { LLMChainInput } from "langchain/chains";
-import { Callbacks } from "langchain/callbacks";
+import { GuardChain, GuardChainInput } from "@/lib/intelligence/chains/GuardChain";
 import { BaseLanguageModel } from "langchain/base_language";
-import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
+import { Callbacks } from "langchain/callbacks";
+import { PromptTemplate } from "langchain/prompts";
 
-export const GUIDANCE = `
-This is provided objective for the planner: 
+export const GUIDANCE = `This is provided objective for the planner: 
 \"\"\"{objective}\"\"\"
 
 And tehse are the steps provided to the planner for evaluation:
@@ -27,21 +25,20 @@ ALWAYS respond using this format:
 }}
 \`\`\`
    (each step won't have access to the objective, so the context from the objective should be included in each step)
-   (the response should only contain a SINGLE objective, do NOT return a list of multiple objectives)
-`;
+   (the response should only contain a SINGLE objective, do NOT return a list of multiple objectives)`;
 
 interface PlannerInput {
-    model: BaseLanguageModel;
     callbacks?: Callbacks;
+    model: BaseLanguageModel;
 }
 
 export class Planner extends GuardChain {
 
-    constructor(inputs: LLMChainInput) {
-        super(inputs);
+    constructor(input: GuardChainInput) {
+        super(input);
     }
 
-    static makeChain({model, callbacks}: PlannerInput): Planner {
+    public static makeChain({model, callbacks}: PlannerInput): Planner {
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
 
         return new Planner({
@@ -51,7 +48,7 @@ export class Planner extends GuardChain {
         });
     }
 
-    async predict({objective, steps}: { objective: string, steps: string }): Promise<string> {
+    public async predict({objective, steps}: { objective: string, steps: string }): Promise<string> {
         return await super.predict({
             objective,
             steps
