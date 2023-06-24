@@ -22,7 +22,7 @@ The current date and time is: ${new Date().toLocaleString()}.`;
 export const INSTRUCTIONS = `Instructions:
 * Prefer the plan-and-solve function for complex objectives that require multiple steps to resolve.
 * Always respond to the user starting with \`${FINAL_RESPONSE_PREFIX}:\`.
-* Use CommonMark to format your response including tables using Github Flavored Markdow (GFM) (but never footnotes).
+* Use Github Flavored Markdown (GFM) to format the response (but never footnotes).
 * The response should include sources from the provided text, but you should never make up a url or link.\`;`;
 
 interface ReActAgentInput {
