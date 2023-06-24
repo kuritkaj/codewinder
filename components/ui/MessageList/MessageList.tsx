@@ -46,11 +46,11 @@ const MessageList = ({chatMessages, loading}: MessageListProps) => {
                 let className;
 
                 if (message.type === "apiMessage") {
-                    icon = <Image src="/noun-flowchart-4812505-FFFFFF.png" alt="AI" width="30" height="30" className={styles.boticon}
+                    icon = <Image src="/noun-mark-1574653-FFFFFF.png" alt="AI" width="30" height="30" className={styles.boticon}
                                   priority/>;
                     className = styles.apimessage;
                 } else {
-                    icon = <Image src="/noun-career-4751416-FFFFFF.png" alt="Me" width="30" height="30" className={styles.usericon}
+                    icon = <Image src="/noun-spiral-1786305-FFFFFF.png" alt="Human" width="30" height="30" className={styles.usericon}
                                   priority/>
 
                     className = loading && index === chatMessages.length - 1
