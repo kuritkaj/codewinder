@@ -41,8 +41,8 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                 className={styles.generatebutton}
             >
                 {loading ? (
-                    <div className={styles.loadingwheel}>
-                        {/*<CircularProgress size="sm"/>*/}
+                    <div className={styles.loadingwheel} aria-busy="true" aria-describedby="progress-bar">
+                        <progress id="progress-bar" aria-label="Thinking…"/>
                     </div>
                 ) : (
                     <svg viewBox='0 0 20 20' className={styles.svgicon} xmlns="http://www3.org/2000/svg">

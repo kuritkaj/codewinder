@@ -6,6 +6,8 @@
     padding: 0.3rem;
     border: none;
     display: flex;
+    color: #ececf1;
+    cursor: pointer;
 }
 
 .loadingwheel {
