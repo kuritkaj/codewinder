@@ -19,14 +19,15 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     const bingApiKey = process.env.BING_API_KEY;
     // const zapierApiKey = process.env.ZAPIER_NLA_API_KEY;
 
-    const forceFast = true;
+    const usePower = false;
     const power = "gpt-4-0613";
-    const speed = "gpt-3.5-turbo-16k-0613";
+    const speed = "gpt-3.5-turbo-0613";
+    const long = "gpt-3.5-turbo-16k-0613";
 
     // This should represent intelligence that is great at determiing the best tool to use.
     const predictable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: forceFast ? speed: power,
+        modelName: usePower ? power: speed,
         topP: 0,
         streaming: Boolean(callbacks),
         callbacks,
@@ -36,7 +37,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     // This should represent intelligence that is great at parsing long texts.
     const capable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: speed,
+        modelName: long,
         temperature: 0,
         topP: 0,
         streaming: Boolean(callbacks),
@@ -48,7 +49,7 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     // This should represent intelligence that is great at writing code.
     const powerful = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: forceFast ? speed: power,
+        modelName: usePower ? power: speed,
         temperature: 0.5,
         streaming: Boolean(callbacks),
         callbacks,

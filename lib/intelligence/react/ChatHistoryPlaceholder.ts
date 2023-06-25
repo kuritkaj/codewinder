@@ -3,10 +3,6 @@ import { AIChatMessage, BaseChatMessage, HumanChatMessage, InputValues } from "l
 
 export class ChatHistoryPlaceholder extends MessagesPlaceholder {
 
-    constructor(fields: string) {
-        super(fields);
-    }
-
     public formatMessages(values: InputValues): Promise<BaseChatMessage[]> {
         const messages: BaseChatMessage[] = [];
 

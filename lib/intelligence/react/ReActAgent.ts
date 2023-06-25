@@ -1,5 +1,6 @@
 import { FunctionChain } from "@/lib/intelligence/chains/FunctionChain";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import { CachedPlaceholder } from "@/lib/intelligence/react/CachedPlaceholder";
 import { ChatHistoryPlaceholder } from "@/lib/intelligence/react/ChatHistoryPlaceholder";
 import { MemoryCondenser } from "@/lib/intelligence/react/MemoryCondenser";
 import { ReActAgentOutputParser } from "@/lib/intelligence/react/ReActAgentOutputParser";
@@ -8,12 +9,22 @@ import { CallbackManager } from "langchain/callbacks";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { Callbacks } from "langchain/dist/callbacks/manager";
 import { ChatPromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder, SystemMessagePromptTemplate } from "langchain/prompts";
-import { AgentAction, AgentFinish, AgentStep, AIChatMessage, BaseChatMessage, ChainValues, FunctionChatMessage } from "langchain/schema";
+import {
+    AgentAction,
+    AgentFinish,
+    AgentStep,
+    AIChatMessage,
+    BaseChatMessage,
+    ChainValues,
+    FunctionChatMessage,
+    HumanChatMessage
+} from "langchain/schema";
 import { StructuredTool } from "langchain/tools";
 
-export const AGENT_SCRATCHPAD = "agent_scratchpad";
 export const CONTEXT_INPUT = "context";
+export const MEMORY = "memory";
 export const OBJECTIVE_INPUT = "objective";
+export const SCRATCHPAD = "scratchpad";
 
 export const FINAL_RESPONSE_PREFIX = "Final Response";
 
@@ -22,7 +33,7 @@ export const SYSTEM = `You are a helpful AI Assistant. The current date and time
 export const INSTRUCTIONS = `Instructions:
 * Prefer the plan-and-solve function for complex objectives that require multiple steps to resolve.
 * Always respond to the user starting with \`${FINAL_RESPONSE_PREFIX}:\`.
-* Use Github Flavored Markdown (GFM) to format the response (but never footnotes - only inline links).
+* Use CommonMark to format the response (plus markdown tables).
 * The response should include sources from functions, but you should never make up a url or link.`;
 
 interface ReActAgentInput {
@@ -30,11 +41,6 @@ interface ReActAgentInput {
     llmChain: FunctionChain;
     store: MemoryStore;
     verbose?: boolean;
-}
-
-interface ReActAgentCreatePromptArgs {
-    prefix?: string;
-    suffix?: string;
 }
 
 export class ReActAgent extends BaseSingleActionAgent {
@@ -56,6 +62,48 @@ export class ReActAgent extends BaseSingleActionAgent {
         return [OBJECTIVE_INPUT, CONTEXT_INPUT];
     }
 
+    public static createPrompt(): ChatPromptTemplate {
+        return ChatPromptTemplate.fromPromptMessages([
+            SystemMessagePromptTemplate.fromTemplate(SYSTEM),
+            new ChatHistoryPlaceholder(CONTEXT_INPUT),
+            HumanMessagePromptTemplate.fromTemplate(INSTRUCTIONS),
+            HumanMessagePromptTemplate.fromTemplate(`{${OBJECTIVE_INPUT}}`),
+            new CachedPlaceholder(MEMORY),
+            new MessagesPlaceholder(SCRATCHPAD),
+        ]);
+    }
+
+    public static fromLLMAndTools = ({callbacks, model, store, tools, verbose}: {
+        callbacks?: Callbacks,
+        store: MemoryStore,
+        model: ChatOpenAI,
+        tools: StructuredTool[],
+        verbose?: boolean,
+    }) => {
+        this.validateTools(tools);
+        if (model._modelType() !== "base_chat_model" || model._llmType() !== "openai") {
+            throw new Error("OpenAIAgent requires an OpenAI chat model");
+        }
+
+        const prompt = this.createPrompt();
+        const chain = new FunctionChain({
+            prompt,
+            llm: model,
+            callbacks,
+            tools
+        });
+
+        return new ReActAgent({
+            callbacks,
+            llmChain: chain,
+            store,
+            verbose
+        });
+    }
+
+    public static validateTools(_tools: StructuredTool[]): void {
+    }
+
     public _agentType() {
         return "openai-functions" as const;
     }
@@ -64,17 +112,22 @@ export class ReActAgent extends BaseSingleActionAgent {
         return [];
     }
 
-    public static createPrompt(
-        fields?: ReActAgentCreatePromptArgs
-    ): ChatPromptTemplate {
-        const {prefix = SYSTEM} = fields || {};
-        return ChatPromptTemplate.fromPromptMessages([
-            SystemMessagePromptTemplate.fromTemplate(prefix),
-            new ChatHistoryPlaceholder(CONTEXT_INPUT),
-            HumanMessagePromptTemplate.fromTemplate(INSTRUCTIONS),
-            HumanMessagePromptTemplate.fromTemplate(`{${OBJECTIVE_INPUT}}`),
-            new MessagesPlaceholder(AGENT_SCRATCHPAD),
-        ]);
+    public async constructMemories(
+        inputs: ChainValues,
+        steps: AgentStep[]
+    ): Promise<BaseChatMessage[]> {
+        if (steps && steps.length > 0) return []; // The prompt is cached (see createPrompt); no need to generate new memories
+
+        let memories = await this.store.retrieveSnippets(
+            inputs[OBJECTIVE_INPUT],
+            0.75
+        );
+
+        if (memories && memories.length > 0) {
+            return [new HumanChatMessage(`This reminds you of \"\"\"${memories[0].pageContent}\"\"\" from ${memories[0].metadata?.created_at}`)];
+        } else {
+            return [];
+        }
     }
 
     public async constructScratchPad(
@@ -91,40 +144,13 @@ export class ReActAgent extends BaseSingleActionAgent {
         ]);
     }
 
-    public static fromLLMAndTools = ({args, callbacks, model, store, tools, verbose}: {
-        args?: ReActAgentCreatePromptArgs,
-        callbacks?: Callbacks,
-        store: MemoryStore,
-        model: ChatOpenAI,
-        tools: StructuredTool[],
-        verbose?: boolean,
-    }) => {
-        this.validateTools(tools);
-        if (model._modelType() !== "base_chat_model" || model._llmType() !== "openai") {
-            throw new Error("OpenAIAgent requires an OpenAI chat model");
-        }
-
-        const prompt = this.createPrompt({...args});
-        const chain = new FunctionChain({
-            prompt,
-            llm: model,
-            callbacks,
-            tools
-        });
-
-        return new ReActAgent({
-            callbacks,
-            llmChain: chain,
-            store,
-            verbose
-        });
-    }
-
-    public async plan(steps: Array<AgentStep>, inputs: ChainValues, callbackManager?: CallbackManager): Promise<AgentAction | AgentFinish> {
+    public async plan(steps: AgentStep[], inputs: ChainValues, callbackManager?: CallbackManager): Promise<AgentAction | AgentFinish> {
+        const memories = await this.constructMemories(inputs, steps);
         const thoughts = await this.constructScratchPad(steps);
         const newInputs = {
             ...inputs,
-            [AGENT_SCRATCHPAD]: thoughts,
+            [MEMORY]: memories,
+            [SCRATCHPAD]: thoughts,
         }
 
         if (this._stop().length !== 0) {
@@ -151,8 +177,5 @@ export class ReActAgent extends BaseSingleActionAgent {
         }
 
         return super.prepareForOutput(_returnValues, _steps);
-    }
-
-    public static validateTools(_tools: StructuredTool[]): void {
     }
 }
