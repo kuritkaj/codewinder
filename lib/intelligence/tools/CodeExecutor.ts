@@ -134,9 +134,9 @@ export class CodeExecutor extends StructuredTool {
             const result = await output;
 
             // store this program for future reference
-            this.store.storeTexts([code], {
+            await this.store.storeTexts([code], {
                 specification: specification
-            }).then(); // async
+            }); // async
 
             return result || "No results returned.";
         } catch (error) {

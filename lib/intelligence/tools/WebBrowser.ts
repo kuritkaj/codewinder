@@ -211,7 +211,7 @@ export class WebBrowser extends StructuredTool {
         }
 
         // Store the full text for later retrieval
-        if (this.store) this.store.storeTexts([text], {name: title, url: baseUrl}).then(); // async
+        if (this.store) await this.store.storeTexts([text], {name: title, url: baseUrl}); // async
 
         const textSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: 2000,

@@ -27,6 +27,7 @@ export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, u
     const predictable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         modelName: usePower ? power: speed,
+        temperature: 0,
         topP: 0,
         streaming: Boolean(callbacks),
         callbacks,
@@ -37,12 +38,12 @@ export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, u
     const capable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
         modelName: long,
-        temperature: 0,
+        temperature: 0.1,
         topP: 0,
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2,
-        maxTokens: 200
+        maxTokens: 300
     });
 
     // This should represent intelligence that is great at writing code.

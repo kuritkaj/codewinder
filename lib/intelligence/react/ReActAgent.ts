@@ -28,8 +28,7 @@ export const SCRATCHPAD = "scratchpad";
 
 export const FINAL_RESPONSE_PREFIX = "Final Response";
 
-export const SYSTEM = `You are a helpful AI Assistant. The current date and time is: ${new Date().toLocaleString()}.
-Never choose the same function with the same input more than once.`;
+export const SYSTEM = `You are a helpful AI Assistant. The current date and time is: ${new Date().toLocaleString()}.`;
 
 export const INSTRUCTIONS = `Instructions:
 * Prefer the plan-and-solve function for complex objectives that require multiple steps to resolve.
@@ -159,28 +158,25 @@ export class ReActAgent extends BaseSingleActionAgent {
         }
 
         const message = await this.llmChain.predict(newInputs, callbackManager);
+        let plan = await this.parser.parse(message);
 
-        // if ("tool" in plan) {
-        //     const tool = plan.tool;
-        //     const toolInput = plan.toolInput;
-        //
-        //     steps.forEach(step => {
-        //         if (step.action.tool === tool && JSON.stringify(step.action.toolInput) === JSON.stringify(toolInput)) {
-        //             // This proposed action is a repeat of a previous step
-        //             const newStep: AgentStep = {
-        //                 action: {
-        //                     tool,
-        //                     toolInput,
-        //                     log: "This is a repeat of a previous action."
-        //                 },
-        //                 observation: "This is a repeat of a previous function. You must use a different function or change the input."
-        //             }
-        //             return this.plan([...steps, newStep], inputs, callbackManager);
-        //         }
-        //     })
-        // }
+        if ("tool" in plan) {
+            const tool = plan.tool;
+            const toolInput = plan.toolInput;
 
-        return await this.parser.parse(message);
+            steps.forEach(step => {
+                if (step.action.tool === tool && JSON.stringify(step.action.toolInput) === JSON.stringify(toolInput)) {
+                    plan = {
+                        returnValues: {
+                            output: `The AI is calling a tool with the same input as a previous step. This is likely an infinite loop.`
+                        },
+                        log: JSON.stringify(plan)
+                    };
+                }
+            })
+        }
+
+        return plan;
     }
 
     public async prepareForOutput(_returnValues: AgentFinish["returnValues"], _steps: AgentStep[]): Promise<AgentFinish["returnValues"]> {
@@ -190,7 +186,7 @@ export class ReActAgent extends BaseSingleActionAgent {
 
             const condenser = MemoryCondenser.makeChain({model: this.llmChain.llm});
 
-            condenser.predict({
+            await condenser.predict({
                 actions: formattedSteps,
                 response: formattedPlan
             }).then(async (condensedMemory) => {
