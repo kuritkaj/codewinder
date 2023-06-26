@@ -22,7 +22,7 @@ const SettingsPanel = () => {
             <div className={styles.header}>Settings</div>
             <div className={styles.settingslist}>
                 <div className={styles.toggle}>
-                    <label htmlFor="usePowerToggle">Use Power:</label>
+                    <label htmlFor="usePowerToggle">{usePower ? 'Power:' : 'Speed:'}</label>
                     <input
                         type="checkbox"
                         id="usePowerToggle"
