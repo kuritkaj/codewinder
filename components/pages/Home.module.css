@@ -23,9 +23,10 @@
 
 .settingspanel {
   flex-basis: min(25%, 200px);
-  height: 80vh;
-  margin-right: 2rem;
-  padding-bottom: 3px;
+  height: 100%;
+  padding-bottom: 4px;
+  margin-left: 2rem;
+  display: block;
 }
 
 /* Mobile optimization */
@@ -36,6 +37,6 @@
   }
 
   .settingspanel {
-    margin-right: 1rem;
+    display: none;
   }
 }

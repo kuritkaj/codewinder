@@ -28,13 +28,14 @@ export const SCRATCHPAD = "scratchpad";
 
 export const FINAL_RESPONSE_PREFIX = "Final Response";
 
-export const SYSTEM = `You are a helpful AI Assistant. The current date and time is: ${new Date().toLocaleString()}.`;
+export const SYSTEM = `You are a helpful AI Assistant. The current date and time is: ${new Date().toLocaleString()}.
+Never choose the same function with the same input more than once.`;
 
 export const INSTRUCTIONS = `Instructions:
 * Prefer the plan-and-solve function for complex objectives that require multiple steps to resolve.
 * Always respond to the user starting with \`${FINAL_RESPONSE_PREFIX}:\`.
 * Use CommonMark to format the response (plus markdown tables).
-* The response should include sources from functions, but you should never make up a url or link.`;
+* The response should include inline sources from functions, but you should never make up a url or link.`;
 
 interface ReActAgentInput {
     callbacks?: Callbacks;
@@ -67,8 +68,8 @@ export class ReActAgent extends BaseSingleActionAgent {
             SystemMessagePromptTemplate.fromTemplate(SYSTEM),
             new ChatHistoryPlaceholder(CONTEXT_INPUT),
             HumanMessagePromptTemplate.fromTemplate(INSTRUCTIONS),
-            HumanMessagePromptTemplate.fromTemplate(`{${OBJECTIVE_INPUT}}`),
             new CachedPlaceholder(MEMORY),
+            HumanMessagePromptTemplate.fromTemplate(`{${OBJECTIVE_INPUT}}`),
             new MessagesPlaceholder(SCRATCHPAD),
         ]);
     }
@@ -124,7 +125,7 @@ export class ReActAgent extends BaseSingleActionAgent {
         );
 
         if (memories && memories.length > 0) {
-            return [new HumanChatMessage(`This reminds you of \"\"\"${memories[0].pageContent}\"\"\" from ${memories[0].metadata?.created_at}`)];
+            return [new HumanChatMessage(`The following memory can be used as a guide \"\"\"${memories[0].pageContent}\"\"\" which was formed on ${memories[0].metadata?.created_at}`)];
         } else {
             return [];
         }
@@ -158,6 +159,27 @@ export class ReActAgent extends BaseSingleActionAgent {
         }
 
         const message = await this.llmChain.predict(newInputs, callbackManager);
+
+        // if ("tool" in plan) {
+        //     const tool = plan.tool;
+        //     const toolInput = plan.toolInput;
+        //
+        //     steps.forEach(step => {
+        //         if (step.action.tool === tool && JSON.stringify(step.action.toolInput) === JSON.stringify(toolInput)) {
+        //             // This proposed action is a repeat of a previous step
+        //             const newStep: AgentStep = {
+        //                 action: {
+        //                     tool,
+        //                     toolInput,
+        //                     log: "This is a repeat of a previous action."
+        //                 },
+        //                 observation: "This is a repeat of a previous function. You must use a different function or change the input."
+        //             }
+        //             return this.plan([...steps, newStep], inputs, callbackManager);
+        //         }
+        //     })
+        // }
+
         return await this.parser.parse(message);
     }
 

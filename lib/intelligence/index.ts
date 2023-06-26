@@ -11,7 +11,7 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { StructuredTool } from "langchain/tools";
 
-export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<ReActExecutor> => {
+export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, usePower: boolean }): Promise<ReActExecutor> => {
     const openAiApiKey = process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
         throw new Error('OpenAI api key not found.');
@@ -19,7 +19,6 @@ export const makeChain = async ({callbacks}: { callbacks: Callbacks }): Promise<
     const bingApiKey = process.env.BING_API_KEY;
     // const zapierApiKey = process.env.ZAPIER_NLA_API_KEY;
 
-    const usePower = false;
     const power = "gpt-4-0613";
     const speed = "gpt-3.5-turbo-0613";
     const long = "gpt-3.5-turbo-16k-0613";

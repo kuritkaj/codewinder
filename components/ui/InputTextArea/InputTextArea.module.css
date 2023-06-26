@@ -10,19 +10,6 @@
     cursor: pointer;
 }
 
-.loadingwheel {
-    position: absolute;
-    top: 0.2rem;
-    right: 0.25rem;
-}
-
-.svgicon {
-    transform: rotate(90deg);
-    width: 1.2em;
-    height: 1.2em;
-    fill: currentColor;
-}
-
 .generatebutton:hover {
     border-radius: 0.2rem;
 }
@@ -33,17 +20,31 @@
     background: none;
 }
 
+.loadingwheel {
+    position: absolute;
+    top: 0.2rem;
+    right: 0.25rem;
+}
+
 .textarea {
     position: relative;
     resize: none;
     font-size: 1rem;
     padding: 1rem 2rem 1rem 2rem;
+    margin: 0;
     width: 100%;
     border-radius: 0.5rem;
     border: 1px solid #30373d;
     background: #070809;
     outline: none;
     color: #ececf1;
+}
+
+.svgicon {
+    transform: rotate(90deg);
+    width: 1.2em;
+    height: 1.2em;
+    fill: currentColor;
 }
 
 .textarea:disabled {

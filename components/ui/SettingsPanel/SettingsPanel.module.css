@@ -1,3 +1,11 @@
+.header {
+    width: 100%;
+    text-align: center;
+    background: #141619;
+    padding: 0.5rem;
+    color: #ececf1;
+}
+
 .panel {
     position: relative;
     width: 100%;
@@ -6,12 +14,49 @@
     border: 1px solid #30373d;
     background: #070809;
     color: #5f6368;
+    font-size: 0.8rem;
 }
 
-.header {
-    width: 100%;
-    text-align: center;
-    background: #141619;
-    padding: 0.5rem;
-    color: #ececf1;
+.settingslist {
+    padding: 12px 6px;
+}
+
+.toggle {
+    display: flex;
+    align-items: center;
+}
+
+.toggle label {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.toggle input[type=checkbox] {
+    appearance: none;
+    background-color: #ccc;
+    width: 40px;
+    height: 20px;
+    border-radius: 20px;
+    position: relative;
+    outline: none;
+    cursor: pointer;
+    transition: background-color .4s;
+}
+
+.toggle input[type=checkbox]:before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #fff;
+    transition: all .4s;
+}
+
+.toggle input[type=checkbox]:checked {
+    background-color: #4CAF50;
+}
+
+.toggle input[type=checkbox]:checked:before {
+    transform: translateX(20px);
 }

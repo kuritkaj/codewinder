@@ -1,10 +1,15 @@
+import { SettingsProvider } from "@/components/context/SettingsContext";
+import useSettings from "@/components/context/useSettings";
 import ChatPanel from "@/components/ui/ChatPanel/ChatPanel";
 import Footer from "@/components/ui/Footer/Footer";
 import Header from "@/components/ui/Header/Header";
+import SettingsPanel from "@/components/ui/SettingsPanel";
 import Head from "next/head";
 import styles from "./Home.module.css";
 
 const Home = () => {
+    const settings = useSettings();
+
     return (
         <>
             <Head>
@@ -16,14 +21,14 @@ const Home = () => {
             <div className={styles.fullscreen}>
                 <Header/>
                 <main className={styles.main}>
-                    {/*<Hidden smDown>*/}
-                    {/*    <div className={styles.settingspanel}>*/}
-                    {/*        <SettingsPanel tools={[]} onChange={() => {}}/>*/}
-                    {/*    </div>*/}
-                    {/*</Hidden>*/}
-                    <div className={styles.chatpanel}>
-                        <ChatPanel/>
-                    </div>
+                    <SettingsProvider settings={settings}>
+                        <div className={styles.chatpanel}>
+                            <ChatPanel/>
+                        </div>
+                        <div className={styles.settingspanel}>
+                            <SettingsPanel/>
+                        </div>
+                    </SettingsProvider>
                 </main>
                 <Footer/>
             </div>

@@ -1,3 +1,4 @@
+import useSettings from "@/components/context/useSettings";
 import InputTextArea from "@/components/ui/InputTextArea";
 import MessageList from "@/components/ui/MessageList";
 import { Message } from "@/lib/types/Message";
@@ -5,7 +6,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./ChatPanel.module.css";
 
 const ChatPanel = () => {
-    const [userInput, setUserInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [messageState, setMessageState] = useState<{ messages: Message[], pending?: string, context: [string, string][] }>({
         messages: [{
@@ -14,6 +14,8 @@ const ChatPanel = () => {
         }],
         context: []
     });
+    const {usePower} = useSettings();
+    const [userInput, setUserInput] = useState("");
 
     const messageListRef = useRef<HTMLDivElement>(null);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -74,7 +76,8 @@ const ChatPanel = () => {
             },
             body: JSON.stringify({
                 objective,
-                context: messageState.context
+                context: messageState.context,
+                usePower: usePower,
             })
         });
 
