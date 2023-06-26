@@ -124,7 +124,7 @@ export class ReActAgent extends BaseSingleActionAgent {
         );
 
         if (memories && memories.length > 0) {
-            return [new HumanChatMessage(`The following memory can be used as a guide \"\"\"${memories[0].pageContent}\"\"\" which was formed on ${memories[0].metadata?.created_at}`)];
+            return [new HumanChatMessage(`The following memory can be used as a guide:\n\"\"\"\n${memories[0].pageContent}\n\"\"\"\nwhich was formed on: \`${memories[0].metadata?.created_at}\``)];
         } else {
             return [];
         }

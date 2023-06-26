@@ -4,7 +4,8 @@ import { StructuredTool, ToolParams } from "langchain/tools";
 import { z } from "zod";
 
 export const NAME = "plan-and-solve";
-export const DESCRIPTION = `useful for objectives that require multiple steps.`;
+export const DESCRIPTION = `useful for objectives that require multiple steps.
+Note that steps are expensive, so prefer fewer steps.`;
 
 interface MultistepInput extends ToolParams {
     multistepExecutor: MultistepExecutor;

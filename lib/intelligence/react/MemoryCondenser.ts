@@ -16,10 +16,8 @@ Based on these past actions and experiences, the AI responded with:
 
 Based on the provided history and AI response, now respond using the following format:
 Objective: the derived objective phrased as a question or directive for later recall
-Functions: a summary of the functions used to meet the objective
-Final Response: a summary of the AI response suitable with enough detail to support future recall
-...(include significant individuals, locations, and concepts; preserve entities and acronyms including proper nouns.)
-Evaluation: did the response meet the objective and how could it have been improved?`;
+Guidance: based on the provided actions and the response, briefly share guidance on how the AI Assistant can improve the outcomes next time?
+...(note: it's okay to also say no additional changes are needed)`;
 
 interface CondenserInput {
     callbacks?: Callbacks;
