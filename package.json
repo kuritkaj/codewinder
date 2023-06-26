@@ -24,6 +24,7 @@
     "dotenv": "^16.0.3",
     "eslint": "8.42.0",
     "hnswlib-node": "^1.4.2",
+    "js-cookie": "^3.0.5",
     "js-tiktoken": "^1.0.7",
     "langchain": "^0.0.96",
     "next": "13.4.7",

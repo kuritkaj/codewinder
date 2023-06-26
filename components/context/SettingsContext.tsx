@@ -1,4 +1,5 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
+import Cookies from "js-cookie";
 
 export interface Settings {
     availableTools: string[];
@@ -15,11 +16,11 @@ interface SettingsContextProps extends Settings {
 const defaultSettings = {
     availableTools: [],
     selectedTools: [],
-    usePower: true
+    usePower: true,
 };
 
 const SettingsContext = createContext<SettingsContextProps>({
-    ...defaultSettings
+    ...defaultSettings,
 });
 
 export const SettingsProvider = ({ children, settings }) => {
@@ -27,26 +28,40 @@ export const SettingsProvider = ({ children, settings }) => {
         settings || defaultSettings
     );
 
+    useEffect(() => {
+        const usePowerCookie = Cookies.get("usePower");
+        if (usePowerCookie !== undefined) {
+            setCurrentSettings((state) => ({
+                ...state,
+                usePower: JSON.parse(usePowerCookie),
+            }));
+        }
+    }, []);
+
     const setSelectedTools = (selectedTools: string[]) => {
-        setCurrentSettings(state => ({
+        setCurrentSettings((state) => ({
             ...state,
-            selectedTools
+            selectedTools,
         }));
-    }
+    };
 
     const setUsePower = (usePower: boolean) => {
-        setCurrentSettings(state => ({
+        setCurrentSettings((state) => ({
             ...state,
-            usePower
+            usePower,
         }));
-    }
+        Cookies.set("usePower", JSON.stringify(usePower));
+    };
 
     const saveSettings = (values) => {
-        setCurrentSettings(values)
+        setCurrentSettings(values);
+        Cookies.set("usePower", JSON.stringify(values.usePower));
     };
 
     return (
-        <SettingsContext.Provider value={{ ...currentSettings, saveSettings, setSelectedTools, setUsePower }}>
+        <SettingsContext.Provider
+            value={{ ...currentSettings, saveSettings, setSelectedTools, setUsePower }}
+        >
             {children}
         </SettingsContext.Provider>
     );
