@@ -8,10 +8,11 @@ import remarkGfm from "remark-gfm";
 import { Pluggable } from "unified";
 
 interface MarkdownViewerProps {
+    loading: boolean;
     markdown: string;
 }
 
-const MarkdownViewer = ({ markdown }: MarkdownViewerProps) => {
+const MarkdownViewer = ({ loading, markdown }: MarkdownViewerProps) => {
     return (
         <div className={styles.reactmarkdown}>
             <ReactMarkdown linkTarget="_blank"
@@ -20,7 +21,7 @@ const MarkdownViewer = ({ markdown }: MarkdownViewerProps) => {
                 components={{
                     code({inline, className, children, ...props}) {
                         const match = /language-(\w+)/.exec(className || '');
-                        return !inline && match ? (
+                        return !loading && !inline && match ? (
                             <CodeEditor>
                                {children}
                             </CodeEditor>

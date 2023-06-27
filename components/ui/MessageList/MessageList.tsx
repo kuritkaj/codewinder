@@ -38,7 +38,7 @@ const MessageList = ({chatMessages, loading}: MessageListProps) => {
 
     return (
         <div ref={messageListRef} className={styles.messagelist}>
-            {chatMessages.map((message, index) => {
+            {chatMessages.map((message, index, messages) => {
                 let icon;
                 let className;
 
@@ -57,7 +57,7 @@ const MessageList = ({chatMessages, loading}: MessageListProps) => {
                 return (
                     <div key={index} className={className}>
                         {icon}
-                        <MarkdownViewer markdown={message.message}/>
+                        <MarkdownViewer loading={index === messages.length - 1 ? loading : false} markdown={message.message}/>
                     </div>
                 )
             })}
