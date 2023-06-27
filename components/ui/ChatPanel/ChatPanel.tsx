@@ -67,7 +67,6 @@ const ChatPanel = () => {
 
         setLoading(true);
         setUserInput("");
-        setMessageState(state => ({...state, pending: ""}));
 
         const response = await fetch('/api/chat', {
             method: 'POST',

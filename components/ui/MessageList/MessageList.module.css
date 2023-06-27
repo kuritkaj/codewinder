@@ -33,74 +33,13 @@
     margin-top: 1rem;
 }
 
-.reactmarkdown {
-    line-height: 1.75;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    word-break: break-word;
-    hyphens: auto;
-}
-
-.reactmarkdown :first-child {
-    margin-top: 0 !important;
-}
-
-.reactmarkdown :last-child {
-    margin-bottom: 0 !important;
-}
-
-.reactmarkdown a:hover {
-    opacity: 0.8;
-}
-
-.reactmarkdown a {
-    color: #16bed7;
-    font-weight: 500;
-}
-
-.reactmarkdown code {
-    color: #15cb19;
-    font-weight: 500;
-    white-space: pre-wrap !important;
-}
-
-.reactmarkdown h1, .reactmarkdown h2, .reactmarkdown h3 {
-    font-size: inherit;
-}
-.reactmarkdown :not(:first-child) h1,
-.reactmarkdown :not(:first-child) h2,
-.reactmarkdown :not(:first-child) h3 {
-    margin-top: 1rem;
-}
-
-.reactmarkdown ol, .reactmarkdown ul {
-    margin: 1rem;
-}
-
-.reactmarkdown p {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-}
-
-.reactmarkdown table {
-    border-collapse:collapse;
-    font-size: 0.95rem;
-}
-
-.reactmarkdown td,
-.reactmarkdown th {
-    border: 1px solid white;
-    padding: 0.8rem;
-    margin-bottom: 1rem;
-}
-
 .usermessage {
     background: #070809;
     padding: 1.5rem;
     color: #ececf1;
 }
 
-.usermessagewaiting{
+.usermessagewaiting {
     padding: 1.5rem;
     color: #ececf1;
     background-size: 200% 200%;
@@ -116,12 +55,5 @@
     }
     100% {
         background-position: 100% 0;
-    }
-}
-
-/* Mobile optimization */
-@media (max-width: 600px) {
-    .reactmarkdown code {
-        white-space : pre-wrap !important;
     }
 }
