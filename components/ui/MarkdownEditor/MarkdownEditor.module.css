@@ -1,0 +1,25 @@
+.editorinput {
+    position: relative;
+    width: 100%;
+    resize: none;
+    font-size: 1rem;
+    caret-color: #fff;
+    tab-size: 1;
+    padding: 6px 0;
+}
+
+.markdowneditor {
+    width: 100%;
+    position: relative;
+}
+
+.placeholder {
+    overflow: hidden;
+    position: absolute;
+    text-overflow: ellipsis;
+    top: 3px;
+    font-size: 1rem;
+    user-select: none;
+    display: inline-block;
+    pointer-events: none;
+}

@@ -18,6 +18,8 @@
   "dependencies": {
     "@codemirror/lang-javascript": "^6.1.9",
     "@fontsource/public-sans": "^5.0.3",
+    "@lexical/markdown": "^0.11.1",
+    "@lexical/react": "^0.11.1",
     "@supabase/supabase-js": "^2.24.0",
     "@types/cheerio": "^0.22.31",
     "@types/pdf-parse": "^1.1.1",
@@ -30,6 +32,7 @@
     "js-cookie": "^3.0.5",
     "js-tiktoken": "^1.0.7",
     "langchain": "^0.0.96",
+    "lexical": "^0.11.1",
     "next": "13.4.7",
     "openai": "^3.3.0",
     "pdf-parse": "^1.1.1",

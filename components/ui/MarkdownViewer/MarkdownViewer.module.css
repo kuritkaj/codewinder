@@ -4,6 +4,7 @@
     word-wrap: break-word;
     word-break: break-word;
     hyphens: auto;
+    padding-top: 1px;
 }
 
 .reactmarkdown :first-child {

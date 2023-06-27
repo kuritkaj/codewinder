@@ -15,6 +15,7 @@
 
 .main {
   display: flex;
+  align-self: center;
   flex-direction: row;
   height: calc(100vh - 130px);
   justify-content: space-between;

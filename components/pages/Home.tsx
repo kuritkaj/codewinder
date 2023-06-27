@@ -1,7 +1,6 @@
 import { SettingsProvider } from "@/components/context/SettingsContext";
 import useSettings from "@/components/context/useSettings";
 import ChatPanel from "@/components/ui/ChatPanel/ChatPanel";
-import Footer from "@/components/ui/Footer/Footer";
 import Header from "@/components/ui/Header/Header";
 import SettingsPanel from "@/components/ui/SettingsPanel";
 import Head from "next/head";
@@ -30,7 +29,6 @@ const Home = () => {
                         </div>
                     </SettingsProvider>
                 </main>
-                <Footer/>
             </div>
         </>
     );
