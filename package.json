@@ -16,10 +16,13 @@
     "url": "https://github.com/nyvyn/codewinder"
   },
   "dependencies": {
+    "@codemirror/lang-javascript": "^6.1.9",
     "@fontsource/public-sans": "^5.0.3",
     "@supabase/supabase-js": "^2.24.0",
     "@types/cheerio": "^0.22.31",
     "@types/pdf-parse": "^1.1.1",
+    "@uiw/codemirror-theme-dracula": "^4.21.7",
+    "@uiw/react-codemirror": "^4.21.7",
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.0.3",
     "eslint": "8.42.0",

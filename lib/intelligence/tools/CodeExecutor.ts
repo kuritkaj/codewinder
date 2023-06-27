@@ -11,8 +11,8 @@ import { z } from "zod";
 
 export const NAME = "code-executor";
 export const DESCRIPTION = `an isolated Node.js environment to evaluate and run code. 
-Programs must always return a string.
-Input should include all useful context from previous actions and observations.`;
+Results are returned as a string. Never use this to respond with code to the user.
+Input should include all useful context from previous functions and results.`;
 
 const SPECIFICATION_INPUT = "specification";
 const ENVIRONMENT_INPUT = "environment";
@@ -65,7 +65,7 @@ Code:
 }})();
 \`\`\``;
 
-export interface CodeEvaluatorParams extends ToolParams {
+export interface CodeExecutorParams extends ToolParams {
     model: BaseLanguageModel;
     store: MemoryStore;
 }
@@ -81,7 +81,7 @@ export class CodeExecutor extends StructuredTool {
     private readonly llmChain: LLMChain;
     private readonly store: MemoryStore;
 
-    constructor({model, store, verbose, callbacks}: CodeEvaluatorParams) {
+    constructor({model, store, verbose, callbacks}: CodeExecutorParams) {
         super({verbose, callbacks});
 
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);

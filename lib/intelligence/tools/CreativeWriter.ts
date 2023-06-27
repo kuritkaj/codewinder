@@ -19,7 +19,7 @@ Rewrite the provided text: you may add, remove, or change the sections and headi
 Use Github Flavored Markdown (GFM) to format your response.
 The revised text should include sources from the provided text, but you should never make up a url or link.`;
 
-interface FinalResponseParams extends ToolParams {
+interface CreativeWriterInput extends ToolParams {
     model: BaseLanguageModel;
 }
 
@@ -35,7 +35,7 @@ export class CreativeWriter extends Tool {
     // Return this response directly, no further processing needed.
     returnDirect = true;
 
-    constructor({ model, verbose, callbacks }: FinalResponseParams) {
+    constructor({ model, verbose, callbacks }: CreativeWriterInput) {
         super({verbose, callbacks});
 
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);

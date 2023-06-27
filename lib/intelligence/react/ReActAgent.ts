@@ -34,6 +34,7 @@ export const INSTRUCTIONS = `Instructions:
 * Prefer the plan-and-solve function for complex objectives that require multiple steps to resolve.
 * Always respond to the user starting with \`${FINAL_RESPONSE_PREFIX}:\`.
 * Use CommonMark to format the response (plus markdown tables).
+* Examples of code should always be formatted as a code block with the language specified.
 * The response should include inline sources from functions, but you should never make up a url or link.`;
 
 interface ReActAgentInput {
@@ -124,7 +125,10 @@ export class ReActAgent extends BaseSingleActionAgent {
         );
 
         if (memories && memories.length > 0) {
-            return [new HumanChatMessage(`The following memory can be used as a guide:\n\"\"\"\n${memories[0].pageContent}\n\"\"\"\nwhich was formed on: \`${memories[0].metadata?.created_at}\``)];
+            return [new HumanChatMessage(
+                `The following memory can be used as a guide:\n\"\"\"\n${memories[0].pageContent}\n\"\"\"\n` +
+                `which was formed on: \`${memories[0].metadata?.created_at}\``
+            )];
         } else {
             return [];
         }

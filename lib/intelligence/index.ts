@@ -3,6 +3,7 @@ import { MultistepExecutor } from "@/lib/intelligence/multistep/MultistepExecuto
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 import { CodeExecutor } from "@/lib/intelligence/tools/CodeExecutor";
+import { CodeGenerator } from "@/lib/intelligence/tools/CodeGenerator";
 import { PlanAndSolve } from "@/lib/intelligence/tools/PlanAndSolve";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { WebSearch } from "@/lib/intelligence/tools/WebSearch";
@@ -26,7 +27,7 @@ export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, u
     // This should represent intelligence that is great at determiing the best tool to use.
     const predictable = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: usePower ? power: speed,
+        modelName: usePower ? power : speed,
         temperature: 0,
         topP: 0,
         streaming: Boolean(callbacks),
@@ -49,7 +50,7 @@ export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, u
     // This should represent intelligence that is great at writing code.
     const powerful = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: usePower ? power: speed,
+        modelName: usePower ? power : speed,
         temperature: 0.5,
         streaming: Boolean(callbacks),
         callbacks,
@@ -72,8 +73,9 @@ export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, u
     const code = await MemoryStore.makeDurableStore("code", embeddings);
 
     const tools: StructuredTool[] = [
-        new WebBrowser({callbacks, embeddings, store: knowledge, model: capable}),
-        new CodeExecutor({callbacks, store: code, model: powerful}),
+        new WebBrowser({callbacks, embeddings, model: capable, store: knowledge}),
+        new CodeGenerator({callbacks, model: powerful}),
+        new CodeExecutor({callbacks, model: powerful, store: code}),
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, store: knowledge}));
