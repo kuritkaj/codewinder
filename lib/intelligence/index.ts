@@ -3,7 +3,7 @@ import { MultistepExecutor } from "@/lib/intelligence/multistep/MultistepExecuto
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
 import { CodeExecutor } from "@/lib/intelligence/tools/CodeExecutor";
-import { CodeGenerator } from "@/lib/intelligence/tools/CodeGenerator";
+import { CodeWriter } from "@/lib/intelligence/tools/CodeWriter";
 import { PlanAndSolve } from "@/lib/intelligence/tools/PlanAndSolve";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { WebSearch } from "@/lib/intelligence/tools/WebSearch";
@@ -74,7 +74,7 @@ export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, u
 
     const tools: StructuredTool[] = [
         new WebBrowser({callbacks, embeddings, model: capable, store: knowledge}),
-        new CodeGenerator({callbacks, model: powerful}),
+        new CodeWriter({callbacks, model: powerful}),
         new CodeExecutor({callbacks, model: powerful, store: code}),
     ];
     if (Boolean(bingApiKey)) {
@@ -94,9 +94,11 @@ export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, u
         tools,
         verbose: true,
     })
-    const toolkit = [...tools];
+    const toolkit = [];
     toolkit.push(new PlanAndSolve({callbacks, multistepExecutor, verbose: true}));
 
+    // The effect is that the top level ReAct agent can only choose from the PlanAndSolve tool.
+    // The PlanAndSolve tool can choose from any of the other tools except itself.
     const agent = ReActAgent.fromLLMAndTools({
         callbacks,
         model: predictable,

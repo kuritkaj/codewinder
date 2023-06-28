@@ -6,15 +6,16 @@ import { PromptTemplate } from "langchain/prompts";
 export const CONTEXT_INPUT = "context";
 export const OBJECTIVE_INPUT = "objective";
 
-export const GUIDANCE = `Provided the following text:
-\"\"\"{${CONTEXT_INPUT}}\"\"\"
-
-And using this as your guide: 
+export const GUIDANCE = `
+This was the initial objective: 
 \"\"\"{${OBJECTIVE_INPUT}}\"\"\"
 
-Rewrite the provided text: you may add, remove, or change the content as needed.
+And the following text is intended to resolve this objective:
+\"\"\"{${CONTEXT_INPUT}}\"\"\"
+
+Based on the provided text, write a response which meets the initial objective.
 Use CommonMark to format the response (plus markdown tables).
-The revised text should include inline sources from the provided text, but you should never make up a url or link.`;
+The revised text can optionally include inline sources from the provided text, but you should never make up a url or link.`;
 
 interface EditorInput {
     callbacks?: Callbacks;

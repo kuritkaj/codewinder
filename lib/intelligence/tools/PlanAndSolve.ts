@@ -4,8 +4,9 @@ import { StructuredTool, ToolParams } from "langchain/tools";
 import { z } from "zod";
 
 export const NAME = "plan-and-solve";
-export const DESCRIPTION = `useful for objectives that require multiple steps.
-Note that steps are expensive, so prefer fewer steps.`;
+export const DESCRIPTION = `should always be used for objectives requiring multiple steps to solve.
+Steps are expensive, so use as few steps as necessary to achieve the objective.
+When possible, combine and remove steps that are redundant or unnecessary.`;
 
 interface MultistepInput extends ToolParams {
     multistepExecutor: MultistepExecutor;
@@ -18,7 +19,11 @@ export class PlanAndSolve extends StructuredTool {
     public readonly schema = z.
     object({
         objective: z.string().describe("the objective to achieve"),
-        steps: z.array(z.string()).describe("an array of steps to achieve the objective"),
+        steps: z.array(z.object({
+            id: z.number().describe("the id of the step"),
+            plan: z.string().describe("a detailed plan on how this step meets the objective"),
+            dependency: z.number().optional().describe("an optional id of a step that must be completed before this step"),
+        }).describe("as few steps as possible to achieve the objective")),
     });
 
     private readonly multistepExecutor: MultistepExecutor;

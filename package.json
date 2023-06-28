@@ -31,7 +31,7 @@
     "hnswlib-node": "^1.4.2",
     "js-cookie": "^3.0.5",
     "js-tiktoken": "^1.0.7",
-    "langchain": "^0.0.96",
+    "langchain": "^0.0.97",
     "lexical": "^0.11.1",
     "next": "13.4.7",
     "openai": "^3.3.0",

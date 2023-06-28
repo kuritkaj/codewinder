@@ -5,9 +5,9 @@ import { PromptTemplate } from "langchain/prompts";
 import { StructuredTool, ToolParams } from "langchain/tools";
 import { z } from "zod";
 
-export const NAME = "code-generator";
-export const DESCRIPTION = `used to generate code. 
-Results are returned as code blocks. Never use this to respond with code to the user.
+export const NAME = "code-writer";
+export const DESCRIPTION = `used to write code. 
+Results are returned as code blocks to the user.
 Input should include all useful context from previous functions and results.`;
 
 const SPECIFICATION_INPUT = "specification";
@@ -21,11 +21,11 @@ This is the code specification:
 Now, based on the natural language description, 
 your task is to write JavaScript wrapped in a code block with the language specified.`;
 
-export interface CodeGeneratorParams extends ToolParams {
+export interface CodeWriterParams extends ToolParams {
     model: BaseLanguageModel;
 }
 
-export class CodeGenerator extends StructuredTool {
+export class CodeWriter extends StructuredTool {
     public readonly name = NAME;
     public readonly description = DESCRIPTION;
     public readonly returnDirect = true;
@@ -36,7 +36,7 @@ export class CodeGenerator extends StructuredTool {
 
     private readonly llmChain: LLMChain;
 
-    constructor({model, verbose, callbacks}: CodeGeneratorParams) {
+    constructor({model, verbose, callbacks}: CodeWriterParams) {
         super({verbose, callbacks});
 
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);

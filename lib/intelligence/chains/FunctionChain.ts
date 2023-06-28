@@ -4,19 +4,22 @@ import { CallbackManagerForChainRun } from "langchain/callbacks";
 import { LLMChain, LLMChainInput } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { BaseChatMessage, ChainValues } from "langchain/schema";
-import { StructuredTool } from "langchain/tools";
+import { StructuredTool, Tool } from "langchain/tools";
 
 export interface FunctionChainInput extends LLMChainInput<BaseChatMessage, ChatOpenAI> {
+    function_call?: Tool;
     tools: StructuredTool[];
 }
 
 export class FunctionChain extends LLMChain<BaseChatMessage, ChatOpenAI> {
 
+    private readonly function_call: Tool;
     private readonly tools: StructuredTool[];
 
     constructor(input: FunctionChainInput) {
         super(input);
 
+        this.function_call = input.function_call;
         this.tools = input.tools;
     }
 
@@ -26,7 +29,7 @@ export class FunctionChain extends LLMChain<BaseChatMessage, ChatOpenAI> {
     ): Promise<ChainValues> {
         const valuesForPrompt = {...values};
         const valuesForLLM = {
-            tools: this.tools,
+            tools: this.tools
         };
         for (const key of this.llm.callKeys) {
             if (key in values) {
@@ -36,9 +39,14 @@ export class FunctionChain extends LLMChain<BaseChatMessage, ChatOpenAI> {
         }
 
         const promptValue = await this.prompt.formatPromptValue(valuesForPrompt);
+        const messages = promptValue.toChatMessages();
+        if (this.function_call) messages.forEach(message => message.additional_kwargs.function_call = {
+            name: this.function_call.name,
+            arguments: "",
+        });
 
         const message = await this.llm.predictMessages(
-            promptValue.toChatMessages(),
+            messages,
             valuesForLLM,
             runManager?.getChild()
         );

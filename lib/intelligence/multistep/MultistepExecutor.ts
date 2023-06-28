@@ -69,12 +69,16 @@ export class MultistepExecutor extends BaseChain {
 
         let results = [];
         for (const step of steps) {
-            await runManager?.handleText("Starting: " + step);
+            await runManager?.handleText("Starting: " + step.plan);
+
+            const context = step.dependency && step.dependency > 0 && step.dependency <= results.length ? results[step.dependency - 1] : "";
+            const plan = `Your task is to \"\"\"${step.plan}\"\"\" ` +
+                `which is one task of several to \"\"\"${objective}\"\"\". ` +
+                `Only complete your assigned task and no more.`;
 
             let stepInputs = {};
-            stepInputs[CONTEXT_INPUT] = results.length > 0 ? results[results.length - 1] : "";
-            stepInputs[OBJECTIVE_INPUT] =
-                `Your task is to \"\"\"${step}\"\"\" which is one step of several to \"\"\"${objective}\"\"\". Only complete your assigned task and no more.`;
+            stepInputs[CONTEXT_INPUT] = context;
+            stepInputs[OBJECTIVE_INPUT] = plan;
 
             const completion = await executor.predict(stepInputs);
             if (completion) results.push(completion);

@@ -1657,7 +1657,7 @@ __metadata:
     hnswlib-node: ^1.4.2
     js-cookie: ^3.0.5
     js-tiktoken: ^1.0.7
-    langchain: ^0.0.96
+    langchain: ^0.0.97
     lexical: ^0.11.1
     next: 13.4.7
     openai: ^3.3.0
@@ -1866,10 +1866,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decamelize@npm:5":
-  version: 5.0.1
-  resolution: "decamelize@npm:5.0.1"
-  checksum: 7c3b1ed4b3e60e7fbc00a35fb248298527c1cdfe603e41dfcf05e6c4a8cb9efbee60630deb677ed428908fb4e74e322966c687a094d1478ddc9c3a74e9dc7140
+"decamelize@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "decamelize@npm:1.2.0"
+  checksum: ad8c51a7e7e0720c70ec2eeb1163b66da03e7616d7b98c9ef43cce2416395e84c1e9548dd94f5f6ffecfee9f8b94251fc57121a8b021f2ff2469b2bae247b8aa
   languageName: node
   linkType: hard
 
@@ -3683,20 +3683,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langchain@npm:^0.0.96":
-  version: 0.0.96
-  resolution: "langchain@npm:0.0.96"
+"langchain@npm:^0.0.97":
+  version: 0.0.97
+  resolution: "langchain@npm:0.0.97"
   dependencies:
     "@anthropic-ai/sdk": ^0.4.3
     ansi-styles: ^5.0.0
     binary-extensions: ^2.2.0
     camelcase: 6
-    decamelize: 5
+    decamelize: ^1.2.0
     expr-eval: ^2.0.2
     flat: ^5.0.2
     js-tiktoken: ^1.0.7
     jsonpointer: ^5.0.1
-    langchainplus-sdk: ^0.0.11
+    langchainplus-sdk: ^0.0.15
     ml-distance: ^4.0.0
     object-hash: ^3.0.0
     openai: ^3.3.0
@@ -3852,13 +3852,13 @@ __metadata:
       optional: true
     weaviate-ts-client:
       optional: true
-  checksum: fd9fbd0da77b3a95adb3d3294f272ceb9cea993a6cd674ef6012cb558ca2200942bd0c0660992238c8abec24fd61e8e83c921ea5cf8798e977d95f8c2026a955
+  checksum: 1caca42d1cd258c9d9627a7b4c9cd280b5adea5868529ec573fe0c3fa9e61e190b40113d5e6f8dd8d4506b447c351340763bf29f27eed88da6dd147e0b0d10cd
   languageName: node
   linkType: hard
 
-"langchainplus-sdk@npm:^0.0.11":
-  version: 0.0.11
-  resolution: "langchainplus-sdk@npm:0.0.11"
+"langchainplus-sdk@npm:^0.0.15":
+  version: 0.0.15
+  resolution: "langchainplus-sdk@npm:0.0.15"
   dependencies:
     "@types/uuid": ^9.0.1
     commander: ^10.0.1
@@ -3867,7 +3867,7 @@ __metadata:
     uuid: ^9.0.0
   bin:
     langchain: dist/cli/main.cjs
-  checksum: 721ecb73aa9d4b270bd14e9c49e6b51b6787394e0fc0e188e417b4091c69542f3984ec636eac7159ae838e25a6dd067b21ad7b8aaa4a732976113351117f60e9
+  checksum: 7467364922753a44e2e15f6c54fe20c191105e10b42774cb7ebc4bfbeb2c2fa4ee159eaea52637083673f821beb0bfd155918abf8c2f14cf8151dd74b4bac32f
   languageName: node
   linkType: hard
 

@@ -16,6 +16,7 @@ Based on these past actions and experiences, the AI responded with:
 
 Based on the provided history and AI response, now respond using the following format:
 Objective: the derived objective phrased as a question or directive for later recall
+Overview: a brief overview of the steps taken to meet the objective
 Guidance: based on the provided actions and the response, briefly share guidance on how the AI Assistant can improve the outcomes next time?
 ...(note: it's okay to also say no additional changes are needed)`;
 

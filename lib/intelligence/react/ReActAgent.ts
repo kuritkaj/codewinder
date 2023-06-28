@@ -19,7 +19,7 @@ import {
     FunctionChatMessage,
     HumanChatMessage
 } from "langchain/schema";
-import { StructuredTool } from "langchain/tools";
+import { StructuredTool, Tool } from "langchain/tools";
 
 export const CONTEXT_INPUT = "context";
 export const MEMORY = "memory";
@@ -28,14 +28,16 @@ export const SCRATCHPAD = "scratchpad";
 
 export const FINAL_RESPONSE_PREFIX = "Final Response";
 
-export const SYSTEM = `You are a helpful AI Assistant. The current date and time is: ${new Date().toLocaleString()}.`;
+export const SYSTEM = `You are a helpful AI Assistant.
+The current date and time is: ${new Date().toLocaleString()}.
+Access the internet and real-time data are using functions.
+`;
 
 export const INSTRUCTIONS = `Instructions:
-* Prefer the plan-and-solve function for complex objectives that require multiple steps to resolve.
 * Always respond to the user starting with \`${FINAL_RESPONSE_PREFIX}:\`.
 * Use CommonMark to format the response (plus markdown tables).
-* Examples of code should always be formatted as a code block with the language specified.
-* The response should include inline sources from functions, but you should never make up a url or link.`;
+* The response should include inline sources from functions, but you should never make up a url or link.
+* Examples of code should always be formatted as a code block with the language specified.`;
 
 interface ReActAgentInput {
     callbacks?: Callbacks;
@@ -74,10 +76,11 @@ export class ReActAgent extends BaseSingleActionAgent {
         ]);
     }
 
-    public static fromLLMAndTools = ({callbacks, model, store, tools, verbose}: {
+    public static fromLLMAndTools = ({callbacks, function_call, model, store, tools, verbose}: {
         callbacks?: Callbacks,
-        store: MemoryStore,
+        function_call?: Tool,
         model: ChatOpenAI,
+        store: MemoryStore,
         tools: StructuredTool[],
         verbose?: boolean,
     }) => {
@@ -88,9 +91,10 @@ export class ReActAgent extends BaseSingleActionAgent {
 
         const prompt = this.createPrompt();
         const chain = new FunctionChain({
-            prompt,
-            llm: model,
             callbacks,
+            function_call,
+            llm: model,
+            prompt,
             tools
         });
 
