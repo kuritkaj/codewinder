@@ -2,6 +2,7 @@
   display: flex;
   flex-grow: 1;
   max-width: 750px;
+  width: 100%;
   margin: 0 auto;
   flex-direction: column;
 }
@@ -15,7 +16,6 @@
 
 .main {
   display: flex;
-  align-self: center;
   flex-direction: row;
   height: calc(100vh - 130px);
   justify-content: space-between;
@@ -23,11 +23,20 @@
 }
 
 .settingspanel {
-  flex-basis: min(25%, 200px);
+  flex-basis: min(25%, 300px);
   height: 100%;
   padding-bottom: 4px;
   margin-left: 2rem;
   display: block;
+}
+
+@media (min-width: 950px) {
+  .main {
+    align-self: center;
+  }
+  .chatpanel {
+    width: 750px;
+  }
 }
 
 /* Mobile optimization */
