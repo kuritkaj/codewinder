@@ -5,8 +5,10 @@ import { z } from "zod";
 
 export const NAME = "plan-and-solve";
 export const DESCRIPTION = `should always be used for objectives requiring multiple steps to solve.
+This has access to the internet and a variety of capabilities to solve problems.
 Steps are expensive, so use as few steps as necessary to achieve the objective.
-When possible, combine and remove steps that are redundant or unnecessary.`;
+When possible, combine and remove steps that are redundant or unnecessary 
+- e.g. browser tools can retrieve and summarize a webpage in one step.`;
 
 interface MultistepInput extends ToolParams {
     multistepExecutor: MultistepExecutor;

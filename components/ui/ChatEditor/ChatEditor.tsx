@@ -1,11 +1,15 @@
 import useSettings from "@/components/context/useSettings";
+import styles from "@/components/ui/ChatPanel/ChatPanel.module.css";
 import InputTextArea from "@/components/ui/InputTextArea";
-import MessageList from "@/components/ui/MessageList";
 import { Message } from "@/lib/types/Message";
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
-import styles from "./ChatPanel.module.css";
 
-const ChatPanel = () => {
+const MarkdownEditor = dynamic(() => import('@/components/ui/MarkdownEditor'), {
+    ssr: false,
+})
+
+const ChatEditor = () => {
     const [loading, setLoading] = useState(false);
     const [messageState, setMessageState] = useState<{ messages: Message[], pending?: string, context: [string, string][] }>({
         messages: [{
@@ -16,6 +20,7 @@ const ChatPanel = () => {
     });
     const {usePower} = useSettings();
     const [userInput, setUserInput] = useState("");
+
 
     const handleError = () => {
         setMessageState(state => ({
@@ -129,7 +134,7 @@ const ChatPanel = () => {
     return (
         <>
             <div className={styles.chatmessages}>
-                <MessageList chatMessages={chatMessages} loading={loading}/>
+                <MarkdownEditor markdown={"hello!!"} loading={loading}/>
             </div>
             <div className={styles.textinput}>
                 <InputTextArea
@@ -144,4 +149,4 @@ const ChatPanel = () => {
     );
 }
 
-export default ChatPanel;
+export default ChatEditor;

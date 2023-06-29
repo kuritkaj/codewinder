@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import styles from "./InputTextArea.module.css";
 
@@ -18,6 +18,11 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
     loading
 }) => {
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+    // Focus on text field on load
+    useEffect(() => {
+        if (!loading) textAreaRef.current?.focus();
+    }, [loading]);
 
     return (
         <form onSubmit={handleSubmit}>
