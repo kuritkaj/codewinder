@@ -1,14 +1,14 @@
-.textinput {
-    position: relative;
-}
-
-.chatmessages {
-    background: #070809;
+.notebook {
     border-radius: 0.5rem;
     border: 1px solid #30373d;
     display: flex;
     flex-grow: 1;
     overflow-y: auto;
     width: 100%;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+}
+
+.textinput {
+    position: relative;
+    margin-bottom: -4px;
 }

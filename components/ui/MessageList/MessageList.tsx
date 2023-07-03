@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useEffect, useRef } from "react";
 import styles from "./MessageList.module.css";
 
-interface MessageListProps {
+type MessageListProps = {
     chatMessages: Message[];
     loading: boolean;
 }

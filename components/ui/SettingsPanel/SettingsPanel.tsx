@@ -19,7 +19,6 @@ const SettingsPanel = () => {
 
     return (
         <div className={styles.panel}>
-            <div className={styles.header}>Settings</div>
             <div className={styles.settingslist}>
                 <div className={styles.toggle}>
                     <label htmlFor="usePowerToggle">{usePower ? 'Power:' : 'Speed:'}</label>

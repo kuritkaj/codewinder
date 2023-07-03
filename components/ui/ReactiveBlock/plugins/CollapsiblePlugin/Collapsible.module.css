@@ -1,0 +1,55 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ *
+ */
+
+.container {
+  border: 1px solid #30373d;
+  border-radius: 10px;
+}
+
+.title {
+  cursor: pointer;
+  padding: 5px 5px 5px 20px;
+  position: relative;
+  font-weight: bold;
+  list-style: none;
+  outline: none;
+}
+
+.title::marker,
+.title::-webkit-details-marker {
+  display: none;
+}
+
+.title:before {
+  border-style: solid;
+  border-color: transparent;
+  border-width: 4px 6px 4px 6px;
+  border-left-color: #fff;
+  display: block;
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.container[open] .title:before {
+  border-color: transparent;
+  border-width: 6px 4px 0 4px;
+  border-top-color: #fff;
+}
+
+.content {
+  padding: 0 5px 5px 20px;
+}
+
+.collapsed .content {
+  display: none;
+  user-select: none;
+}

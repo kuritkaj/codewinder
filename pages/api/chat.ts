@@ -1,6 +1,6 @@
 // Based on: https://github.com/sullivan-sean/chat-langchainjs/blob/main/pages/api/chat-stream.ts
 
-import { makeChain } from "@/lib/intelligence";
+import { makeChain } from "@/lib/intelligence/makeChain";
 import { CallbackManager } from "langchain/callbacks";
 import { NextApiHandler } from "next";
 
@@ -59,12 +59,11 @@ const Service: NextApiHandler = async (req, res) => {
     const chain = await makeChain({ callbacks, usePower });
 
     try {
-        sendLine("<details><summary>Thinking...</summary>");
+        sendLine("Thinking...");
         const completion = await chain.predict({
             objective,
             context
         });
-        sendLine("</details>");
         sendClear();
         sendLine(completion);
     } catch (error) {

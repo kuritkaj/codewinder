@@ -1,12 +1,3 @@
-.chatpanel {
-  display: flex;
-  flex-grow: 1;
-  max-width: 750px;
-  width: 100%;
-  margin: 0 auto;
-  flex-direction: column;
-}
-
 .fullscreen {
   display: flex;
   flex-direction: column;
@@ -18,30 +9,44 @@
   display: flex;
   flex-direction: row;
   height: calc(100vh - 130px);
-  justify-content: space-between;
+  justify-content: center;
   padding: 2rem;
 }
 
-.settingspanel {
-  flex-basis: min(25%, 300px);
+.notebookpanel {
+  display: flex;
+  flex-direction: column;
+  flex-basis: min(40%, 750px);
+  flex-grow: 1;
+  max-width: 750px;
   height: 100%;
-  padding-bottom: 4px;
-  margin-left: 2rem;
-  display: block;
+}
+
+.chatpanel {
+  display: flex;
+  flex-direction: column;
+  flex-basis: min(40%, 500px);
+  flex-grow: 1;
+  max-width: 500px;
+  height: 100%;
+}
+
+.settingspanel {
+  display: flex;
+  flex-direction: column;
+  flex-basis: min(20%, 300px);
+  max-width: 300px;
+  height: 100%;
 }
 
 @media (min-width: 950px) {
-  .main {
-    align-self: center;
-  }
   .chatpanel {
-    width: 750px;
+    width: 500px;
   }
 }
 
 /* Mobile optimization */
 @media (max-width: 600px) {
-
   .main {
     padding: 1rem;
   }

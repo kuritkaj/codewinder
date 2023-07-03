@@ -1,0 +1,78 @@
+.apimessage {
+    background: #141619;
+    color: #ececf1;
+    animation: fadein 0.5s;
+}
+
+.block {
+    position: relative;
+    width: 100%;
+    border: 0;
+    outline: 0;
+    z-index: 0;
+    resize: none;
+}
+
+.editable {
+    font-size: 1rem;
+    outline: none;
+    padding: 1.5rem 2rem;
+    pointer-events: fill;
+}
+
+.placeholder {
+    position: absolute;
+    padding: 1.5rem 2rem;
+    top: 50%;
+    opacity: 50%;
+    transform: translate(0, -50%);
+    pointer-events: none;
+}
+
+.usermessage {
+    background: #070809;
+    color: #ececf1;
+}
+
+/** CSS Stying for the block editor */
+
+.editable > *:last-child {
+    margin-bottom: 0;
+}
+
+.editable .ltr {
+    text-align: left;
+}
+
+.editable .rtl {
+    text-align: right;
+}
+
+.editable > code {
+    font-family: monospace !important;
+    font-size: 0.9rem;
+    color: springgreen;
+}
+
+.editable code + * {
+    margin-top: 1rem;
+}
+
+.editable p {
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.editable table {
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.editable table td, .editable table th {
+    border: 1px solid #30373d;
+    padding: 0.5rem;
+}
+
+.editable ul li {
+    margin-left: 1.5rem;
+}

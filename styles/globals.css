@@ -1,11 +1,12 @@
-/*noinspection CssUnknownTarget*/
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+/** Modified from: https://www.joshwcomeau.com/css/custom-css-reset/ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
 * {
-  box-sizing: border-box;
   padding: 0;
   margin: 0;
-  font-family: 'public-sans', sans-serif;
 }
 
 html,
@@ -15,8 +16,11 @@ body {
 }
 
 body {
-  color: snow;
   background: #070809;
+  color: snow;
+  font-family: "Public Sans Variable", sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
@@ -24,6 +28,21 @@ a {
   text-decoration: none;
 }
 
-a:hover {
-  opacity: 0.8;
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  margin-block-start: 0;
+  margin-block-end: 1rem;
+}
+
+#root, #__next {
+  isolation: isolate;
 }

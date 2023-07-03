@@ -1,8 +1,8 @@
 import { SettingsProvider } from "@/components/context/SettingsContext";
 import useSettings from "@/components/context/useSettings";
-import ChatPanel from "@/components/ui/ChatPanel";
 import Header from "@/components/ui/Header/Header";
 import SettingsPanel from "@/components/ui/SettingsPanel";
+import NotebookPanel from "components/ui/NotebookPanel";
 import Head from "next/head";
 import styles from "./Home.module.css";
 
@@ -21,11 +21,9 @@ const Home = () => {
                 <Header/>
                 <main className={styles.main}>
                     <SettingsProvider settings={settings}>
-                        <div className={styles.chatpanel}>
-                            <ChatPanel/>
-                        </div>
-                        <div className={styles.settingspanel}>
+                        <div className={styles.notebookpanel}>
                             <SettingsPanel/>
+                            <NotebookPanel/>
                         </div>
                     </SettingsProvider>
                 </main>
