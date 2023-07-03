@@ -8,9 +8,9 @@ const ReactiveBlock = dynamic(() => import('@/components/ui/ReactiveBlock'), {
 })
 
 export interface EditableNotebook {
-    addBlock: ({markdown, namespace, type}: BlockData) => void;
-    appendBlock: ({markdown, namespace}: PartialBlockData) => void;
-    replaceBlock: ({markdown, namespace}: PartialBlockData) => void;
+    addBlock: (block: BlockData) => void;
+    appendToBlock: (partial: PartialBlockData) => void;
+    replaceBlock: (block: BlockData) => void;
 }
 
 export type BlockData = {
@@ -30,7 +30,7 @@ const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, ref
     const hasUserScrolledUp = useRef(false);
 
     const [blocks, setBlocks] = useState<BlockData[]>([
-        {editable: false, markdown: "How can I help?", namespace: "welcome", type: "apimessage"}
+        {editable: false, markdown: "Hi there! How can I help?", namespace: "welcome", type: "apimessage"}
     ]);
 
     useEffect(() => {
@@ -63,7 +63,7 @@ const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, ref
             });
         },
 
-        appendBlock(partial: PartialBlockData) {
+        appendToBlock(partial: PartialBlockData) {
             setBlocks(prevBlocks => {
                 return prevBlocks.map(block => {
                     if (block.namespace === partial.namespace) {
@@ -77,13 +77,12 @@ const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, ref
             });
         },
 
-        replaceBlock(partial: PartialBlockData) {
+        replaceBlock(replacement: BlockData) {
             setBlocks(prevBlocks => {
                 return prevBlocks.map(block => {
-                    if (block.namespace === partial.namespace) {
+                    if (block.namespace === replacement.namespace) {
                         return {
-                            ...block,
-                            markdown: partial.markdown,
+                            ...replacement
                         };
                     }
                     return block;

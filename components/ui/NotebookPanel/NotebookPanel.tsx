@@ -15,12 +15,12 @@ const NotebookPanel = () => {
         notebookRef.current.addBlock(block);
     }
 
-    const appendBlock = (partial: PartialBlockData) => {
-        notebookRef.current.appendBlock(partial);
+    const appendToBlock = (partial: PartialBlockData) => {
+        notebookRef.current.appendToBlock(partial);
     }
 
-    const replaceBlock = (partial: PartialBlockData) => {
-        notebookRef.current.replaceBlock(partial);
+    const replaceBlock = (block: BlockData) => {
+        notebookRef.current.replaceBlock(block);
     }
 
     // Handle form submission
@@ -50,11 +50,13 @@ const NotebookPanel = () => {
         const onMessage = (partial: PartialBlockData) => {
             if (partial.markdown.includes("{clear}")) {
                 replaceBlock({
-                    ...partial,
+                    editable: false,
+                    namespace: partial.namespace,
                     markdown: partial.markdown.split("{clear}").pop() || "",
+                    type: "apimessage",
                 });
             } else {
-                appendBlock(partial);
+                appendToBlock(partial);
             }
         }
 

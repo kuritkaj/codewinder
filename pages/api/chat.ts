@@ -46,7 +46,7 @@ const Service: NextApiHandler = async (req, res) => {
             sendData(text);
         },
         handleToolStart: (tool, input) => {
-            sendLine(`\`\`\`${tool.id[tool.id.length - 1]}: ${input}\`\`\`\n\n`);
+            sendLine(`\`\`\`\n${tool.id[tool.id.length - 1]}: ${input}\n\`\`\`\n\n`);
         },
         handleToolEnd: async () => {
             sendLine();
