@@ -1,3 +1,4 @@
+import { theme } from "@/components/ui/ReactiveBlock/content/theme";
 import CodeHighlightPlugin from "@/components/ui/ReactiveBlock/plugins/CodeHighlightPlugin";
 import CollapsiblePlugin from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin";
 import { CollapsibleContainerNode } from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin/CollapsibleContainerNode";
@@ -45,7 +46,9 @@ type ReactiveBlockProps = {
 }
 
 export const ReactiveBlock = ({editable, markdown, namespace, type}: ReactiveBlockProps) => {
+
     const initialConfig: InitialConfigType = {
+        theme,
         namespace,
         editable,
         nodes: EDITOR_NODES,

@@ -1,0 +1,89 @@
+/** Inspired by: https://github.com/mdx-editor/editor/blob/main/src/content/theme.module.css */
+
+.bold {
+    font-weight: bold;
+}
+
+.code {
+    font-family: monospace !important;
+    font-size: 0.9em;
+    color: springgreen;
+}
+
+.code + * {
+    margin-top: 1em;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.ltr {
+    text-align: left;
+}
+
+.nestedListItem {
+    list-style: none;
+}
+
+.ol {
+    margin-left: 1.2rem;
+}
+
+.paragraph {
+    line-height: 1.5;
+    margin-bottom: 1em;
+}
+
+.quote {
+
+}
+
+.root > *:last-child {
+    margin-bottom: 0;
+}
+
+.rtl {
+    text-align: right;
+}
+
+.strikethrough {
+    text-decoration: line-through
+}
+
+.subscript {
+    font-size: .8em;
+    vertical-align: sub!important
+}
+
+.superscript {
+    font-size: .8em;
+    vertical-align: super
+}
+
+.table {
+    border-collapse: collapse;
+    margin-bottom: 1em;
+}
+
+.tableCellHeader {
+    border: 1px solid #30373d;
+    padding: 0.5em;
+}
+
+.tableRow {
+    border: 1px solid #30373d;
+    padding: 0.5em;
+}
+
+.ul {
+    margin-left: 1.2rem;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.underlineStrikethrough {
+    text-decoration: underline line-through
+}
