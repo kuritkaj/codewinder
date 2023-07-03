@@ -50,29 +50,29 @@
 
 .editable > code {
     font-family: monospace !important;
-    font-size: 0.9rem;
+    font-size: 0.9em;
     color: springgreen;
 }
 
 .editable code + * {
-    margin-top: 1rem;
+    margin-top: 1em;
 }
 
 .editable p {
     line-height: 1.5;
-    margin-bottom: 1rem;
+    margin-bottom: 1em;
 }
 
 .editable table {
     border-collapse: collapse;
-    margin-bottom: 1rem;
+    margin-bottom: 1em;
 }
 
 .editable table td, .editable table th {
     border: 1px solid #30373d;
-    padding: 0.5rem;
+    padding: 0.5em;
 }
 
-.editable ul li {
+.editable ul, .editable ol {
     margin-left: 1.5rem;
 }

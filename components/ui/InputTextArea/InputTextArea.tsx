@@ -25,8 +25,9 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
     }, [loading]);
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className={styles.form} onSubmit={handleSubmit}>
             <TextareaAutosize
+                className={styles.textarea}
                 disabled={loading}
                 onKeyDown={handleEnter}
                 ref={textAreaRef}
@@ -38,15 +39,14 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                 placeholder={loading ? "Waiting for response..." : "Send a message..."}
                 value={userInput}
                 onChange={e => setUserInput(e.target.value)}
-                className={styles.textarea}
             />
             <button
                 type="submit"
+                className={styles.generate}
                 disabled={loading}
-                className={styles.generatebutton}
             >
                 {loading ? (
-                    <div className={styles.loadingwheel} aria-busy="true" aria-describedby="progress-bar">
+                    <div className={styles.loading} aria-busy="true" aria-describedby="progress-bar">
                         <progress id="progress-bar" aria-label="Thinking…"/>
                     </div>
                 ) : (

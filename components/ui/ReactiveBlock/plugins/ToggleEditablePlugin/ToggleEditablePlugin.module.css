@@ -1,0 +1,15 @@
+.toggle {
+    vertical-align: middle;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translate(50%, -50%);
+    z-index: 10;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.toggle i {
+    color: snow;
+}

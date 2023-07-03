@@ -33,6 +33,7 @@ const NotebookPanel = () => {
         }
 
         addBlock({
+            editable: false,
             markdown: objective,
             namespace: Math.random().toString(),
             type: "usermessage"

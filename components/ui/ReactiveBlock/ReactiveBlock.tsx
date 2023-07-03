@@ -6,6 +6,7 @@ import { CollapsibleTitleNode } from "@/components/ui/ReactiveBlock/plugins/Coll
 import FloatingTextFormatToolbarPlugin from "@/components/ui/ReactiveBlock/plugins/FloatingTextFormatToolbarPlugin";
 import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/plugins/MarkdownTransformers/MarkdownTransformers";
 import StreamingPlugin from "@/components/ui/ReactiveBlock/plugins/StreamingPlugin";
+import ToggleEditablePlugin from "@/components/ui/ReactiveBlock/plugins/ToggleEditablePlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -71,9 +72,10 @@ export const ReactiveBlock = ({editable, markdown, namespace, type}: ReactiveBlo
                 <LinkPlugin/>
                 <ListPlugin/>
                 <MarkdownShortcutPlugin transformers={REACTIVE_NOTEBOOK_TRANSFORMERS}/>
+                <StreamingPlugin markdown={markdown}/>
                 <TablePlugin/>
                 <TabIndentationPlugin/>
-                <StreamingPlugin markdown={markdown}/>
+                <ToggleEditablePlugin/>
             </LexicalComposer>
         </div>
     );

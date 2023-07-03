@@ -1,29 +1,39 @@
-.generatebutton {
+.form {
+    line-height: 0;
+}
+
+.generate {
     position: absolute;
-    top: 0.87rem;
-    right: 1rem;
+    top: calc(50%);
+    right: 2rem;
+    transform: translate(0, -50%);
     background: none;
-    padding: 0.3rem;
     border: none;
-    display: flex;
     color: #ececf1;
     cursor: pointer;
 }
 
-.generatebutton:hover {
+.generate:hover {
     border-radius: 0.2rem;
 }
 
-.generatebutton:disabled {
+.generate:disabled {
     opacity: 0.9;
     cursor: not-allowed;
     background: none;
 }
 
-.loadingwheel {
+.loading {
     position: absolute;
     top: 0.2rem;
     right: 0.25rem;
+}
+
+.svgicon {
+    transform: rotate(90deg);
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
 }
 
 .textarea {
@@ -32,19 +42,13 @@
     font-size: 1rem;
     padding: 1rem 2rem;
     margin: 0;
+    line-height: 1.5;
     width: 100%;
     border-radius: 0.5rem;
     border: 1px solid #30373d;
     background: #070809;
     outline: none;
     color: #ececf1;
-}
-
-.svgicon {
-    transform: rotate(90deg);
-    width: 1.2em;
-    height: 1.2em;
-    fill: currentColor;
 }
 
 .textarea:disabled {
