@@ -1,0 +1,13 @@
+.codesandbox {
+    margin-bottom: 1em;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #30373d;
+}
+
+.layout > :first-child {
+    border-bottom: 1px solid #30373d;
+}
