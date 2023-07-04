@@ -281,12 +281,12 @@ const mapToTableCells = (textContent: string): Array<TableCellNode> | null => {
 };
 
 export const REACTIVE_NOTEBOOK_TRANSFORMERS: Array<Transformer> = [
+    ...ELEMENT_TRANSFORMERS,
+    ...TEXT_FORMAT_TRANSFORMERS,
+    ...TEXT_MATCH_TRANSFORMERS,
     CHECK_LIST,
     DETAILS,
     EMOJI,
     HR,
     TABLE,
-    ...ELEMENT_TRANSFORMERS,
-    ...TEXT_FORMAT_TRANSFORMERS,
-    ...TEXT_MATCH_TRANSFORMERS,
 ];

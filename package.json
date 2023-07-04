@@ -16,7 +16,7 @@
     "url": "https://github.com/nyvyn/codewinder"
   },
   "dependencies": {
-    "@codemirror/lang-javascript": "^6.1.9",
+    "@codesandbox/sandpack-react": "^2.6.9",
     "@excalidraw/excalidraw": "^0.15.2",
     "@fontsource-variable/public-sans": "^5.0.4",
     "@lexical/react": "^0.11.1",
@@ -38,7 +38,6 @@
     "react": "18.2.0",
     "react-dom": "^18.2.0",
     "react-textarea-autosize": "^8.4.1",
-    "replicate": "^0.12.3",
     "ws": "^8.12.1"
   },
   "devDependencies": {
