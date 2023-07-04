@@ -65,6 +65,12 @@
     margin-top: 1em;
 }
 
+.root > hr {
+    border: 0;
+    border-top: 1px solid #30373d;
+    margin: 2em 0;
+}
+
 .root > *:last-child {
     margin-bottom: 0;
 }
