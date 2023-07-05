@@ -1,4 +1,4 @@
-import { CodeSandboxLayout } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxLayout";
+import CodeSandboxLayout from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxLayout";
 import { SANDBOX_TEMPLATES, SandpackCodeEditor, SandpackPreview, SandpackProvider } from "@codesandbox/sandpack-react";
 import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react/types";
 import { DecoratorNode, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";

@@ -5,6 +5,7 @@ import { CallbackManager } from "langchain/callbacks";
 import { NextApiHandler } from "next";
 
 const Service: NextApiHandler = async (req, res) => {
+    // context should be array of "[message, type]" pairs, where type is "apimessage" or "usermessage"
     const { context, objective, usePower }: { context: [ string, string ][], objective: string, usePower: boolean } = await req.body;
 
     res.writeHead(200, {
@@ -46,7 +47,7 @@ const Service: NextApiHandler = async (req, res) => {
             sendData(text);
         },
         handleToolStart: (tool, input) => {
-            sendLine(`\`\`\`\n${tool.id[tool.id.length - 1]}: ${input}\n\`\`\`\n\n`);
+            sendLine(`\`${tool.id[tool.id.length - 1]}: ${input}\`\n\n`);
         },
         handleToolEnd: async () => {
             sendLine();

@@ -4,12 +4,13 @@ import React, { forwardRef, ForwardRefRenderFunction, useEffect, useImperativeHa
 import styles from "./ReactiveNotebook.module.css";
 
 const ReactiveBlock = dynamic(() => import('@/components/ui/ReactiveBlock'), {
-    ssr: false,
+    ssr: false
 })
 
 export interface EditableNotebook {
     addBlock: (block: BlockData) => void;
     appendToBlock: (partial: PartialBlockData) => void;
+    getContents: () => [markdown: string, type: string][];
     replaceBlock: (block: BlockData) => void;
 }
 
@@ -25,7 +26,7 @@ export type PartialBlockData = {
     namespace: string;
 }
 
-const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, ref) => {
+const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, forwardedRef) => {
     const notebookRef = useRef<HTMLDivElement>(null);
     const hasUserScrolledUp = useRef(false);
 
@@ -56,7 +57,7 @@ const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, ref
         }
     }, [blocks]);
 
-    useImperativeHandle(ref, () => ({
+    useImperativeHandle(forwardedRef, () => ({
         addBlock(block: BlockData) {
             setBlocks(prevBlocks => {
                 return [...prevBlocks, block];
@@ -77,6 +78,12 @@ const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, ref
             });
         },
 
+        getContents() {
+            return blocks.map(block => {
+                return [block.markdown, block.type];
+            });
+        },
+
         replaceBlock(replacement: BlockData) {
             setBlocks(prevBlocks => {
                 return prevBlocks.map(block => {
@@ -91,15 +98,28 @@ const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, ref
         }
     }));
 
+    const handleOnChange = (replacement: BlockData) => {
+        setBlocks(prevBlocks => {
+            prevBlocks.forEach((prevBlock, index) => {
+                if (prevBlock.namespace === replacement.namespace) {
+                    prevBlocks[index] = replacement;
+                }
+            });
+            return prevBlocks;
+        });
+    }
+
     return (
         <div ref={notebookRef} className={styles.notebook}>
             {
                 blocks.map((block) => {
-                    return <ReactiveBlock key={block.namespace}
-                                          editable={block.editable}
-                                          markdown={block.markdown}
-                                          namespace={block.namespace}
-                                          type={block.type}
+                    return <ReactiveBlock
+                        key={block.namespace}
+                        editable={block.editable}
+                        markdown={block.markdown}
+                        namespace={block.namespace}
+                        onChange={handleOnChange}
+                        type={block.type}
                     />;
                 })
             }

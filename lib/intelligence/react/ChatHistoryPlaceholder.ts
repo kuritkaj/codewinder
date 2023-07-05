@@ -14,16 +14,18 @@ export class ChatHistoryPlaceholder extends MessagesPlaceholder {
                 if (history) messages.push(new HumanChatMessage(history));
             } else if (Array.isArray(history)) {
                 // Case: array of two strings or array of arrays of two strings
+                // Example: ["Hi there! How can I help?", "apimessage"]
                 if (typeof history[0] === 'string') {
                     // Case: array of two strings
-                    const [human, ai] = history;
-                    if (human) messages.push(new HumanChatMessage(human));
-                    if (ai) messages.push(new AIChatMessage(ai.replace(/<details>[\s\S]*?<\/details>/g, '').trim()));
+                    const [message, type] = history;
+                    if (type === "apimessage") messages.push(new HumanChatMessage(message));
+                    if (type === "usermessage") messages.push(new AIChatMessage(message));
                 } else if (Array.isArray(history[0])) {
                     // Case: array of arrays of two strings
-                    for (const [human, ai] of history) {
-                        if (human) messages.push(new HumanChatMessage(human));
-                        if (ai) messages.push(new AIChatMessage(ai.replace(/<details>[\s\S]*?<\/details>/g, '').trim()));
+                    // Example: [["Hi there! How can I help?", "apimessage"]]
+                    for (const [message, type] of history) {
+                        if (type === "apimessage") messages.push(new HumanChatMessage(message));
+                        if (type === "usermessage") messages.push(new AIChatMessage(message));
                     }
                 }
             }

@@ -18,6 +18,7 @@ export const theme: EditorThemeClasses = {
     root: styles.root,
     rtl: styles.rtl,
     table: styles.table,
+    tableCell: styles.tableCell,
     tableCellHeader: styles.tableCellHeader,
     tableRow: styles.tableRow,
     text: {

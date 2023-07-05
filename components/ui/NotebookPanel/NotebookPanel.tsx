@@ -64,8 +64,11 @@ const NotebookPanel = () => {
             addBlock({...partial, editable: false, type: "apimessage"});
         }
 
+        const context = notebookRef.current.getContents();
+        console.log("context", context);
         const namespace = Math.random().toString();
         await streamIntelligence({
+            context,
             objective,
             onClose,
             onOpen: () => {
