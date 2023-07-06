@@ -13,7 +13,7 @@
   padding: 2rem;
 }
 
-.notebookpanel {
+.panels {
   display: flex;
   flex-direction: column;
   flex-basis: min(40%, 750px);
@@ -22,36 +22,9 @@
   height: 100%;
 }
 
-.chatpanel {
-  display: flex;
-  flex-direction: column;
-  flex-basis: min(40%, 500px);
-  flex-grow: 1;
-  max-width: 500px;
-  height: 100%;
-}
-
-.settingspanel {
-  display: flex;
-  flex-direction: column;
-  flex-basis: min(20%, 300px);
-  max-width: 300px;
-  height: 100%;
-}
-
-@media (min-width: 950px) {
-  .chatpanel {
-    width: 500px;
-  }
-}
-
 /* Mobile optimization */
 @media (max-width: 600px) {
   .main {
     padding: 1rem;
-  }
-
-  .settingspanel {
-    display: none;
   }
 }

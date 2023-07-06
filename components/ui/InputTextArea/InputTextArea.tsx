@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import styles from "./InputTextArea.module.css";
 
-interface InputTextAreaProps {
+type InputTextAreaProps = {
     userInput: string;
     setUserInput: (input: string) => void;
     handleSubmit: (e: React.FormEvent) => void;

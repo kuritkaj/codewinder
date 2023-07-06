@@ -1,4 +1,3 @@
-import { BlockData } from "@/components/context/NotebookContext";
 import { theme } from "@/components/ui/ReactiveBlock/content/theme";
 import { CodeSandboxNode } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxNode";
 import CollapsiblePlugin from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin";
@@ -9,7 +8,7 @@ import FloatingTextFormatToolbarPlugin from "@/components/ui/ReactiveBlock/plugi
 import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/plugins/MarkdownTransformers/MarkdownTransformers";
 import StreamingPlugin from "@/components/ui/ReactiveBlock/plugins/StreamingPlugin";
 import ToggleEditablePlugin from "@/components/ui/ReactiveBlock/plugins/ToggleEditablePlugin";
-import { MessageType } from "@/lib/types/MessageType";
+import { BlockData } from "@/lib/types/BlockData";
 import { CodeNode } from "@lexical/code";
 import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -40,14 +39,11 @@ const EDITOR_NODES = [
 ];
 
 export type ReactiveBlockProps = {
-    editable?: boolean;
-    markdown: string;
-    namespace: string;
-    onChange: (block: BlockData) => void;
-    type: MessageType;
+    block: BlockData;
 }
 
-export const ReactiveBlock = ({editable, markdown, namespace, type}: ReactiveBlockProps) => {
+export const ReactiveBlock = ({block}: ReactiveBlockProps) => {
+    const {namespace, type, editable} = block;
 
     const initialConfig: InitialConfigType = {
         theme,
@@ -58,26 +54,6 @@ export const ReactiveBlock = ({editable, markdown, namespace, type}: ReactiveBlo
             console.error(error);
         },
     };
-
-    // const handleOnChange = (markdown, editorState: EditorState, editor: LexicalEditor) => {
-    //     console.log('handleOnChange', markdown);
-    //     onChange({
-    //         editable: editor.isEditable(),
-    //         markdown,
-    //         namespace,
-    //         type,
-    //     });
-    // };
-
-    // const handleOnChange = debounce((markdown, editorState: EditorState, editor: LexicalEditor) => {
-    //     console.log('handleOnChange', markdown);
-    //     onChange({
-    //         editable: editor.isEditable(),
-    //         markdown,
-    //         namespace,
-    //         type,
-    //     });
-    // }, 500);
 
     return (
         <div className={`${styles.block} ${styles[type]}`}>
@@ -97,7 +73,7 @@ export const ReactiveBlock = ({editable, markdown, namespace, type}: ReactiveBlo
                 <LinkPlugin/>
                 <ListPlugin/>
                 <MarkdownShortcutPlugin transformers={REACTIVE_NOTEBOOK_TRANSFORMERS}/>
-                <StreamingPlugin markdown={markdown}/>
+                <StreamingPlugin namespace={block.namespace}/>
                 <TablePlugin/>
                 <TabIndentationPlugin/>
                 <ToggleEditablePlugin/>
@@ -107,5 +83,5 @@ export const ReactiveBlock = ({editable, markdown, namespace, type}: ReactiveBlo
 }
 
 export default memo(ReactiveBlock, (prevProps, nextProps) => {
-    return prevProps.markdown === nextProps.markdown;
+    return prevProps.block.namespace === nextProps.block.namespace;
 });

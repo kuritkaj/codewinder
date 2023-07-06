@@ -1,57 +1,97 @@
+import { BlockData, PartialBlockData } from "@/lib/types/BlockData";
 import { MessageType } from "@/lib/types/MessageType";
-import { createContext, useState } from "react";
+import { createContext, useRef, useState } from "react";
 
-export type BlockData = {
-    editable?: boolean;
-    markdown: string;
-    namespace: string;
-    type: MessageType;
-}
-
-export type PartialBlockData = {
-    markdown: string;
-    namespace: string;
-}
+type SubscribeFunction = (block: BlockData) => void;
 
 interface NotebookContextProps {
-    blocks: BlockData[];
     addBlock?: (addition: BlockData) => void;
     appendToBlock?: (partial: PartialBlockData) => void;
-    replaceBlock?: (replacement: BlockData) => void;
+    getBlock?: (namespace: string) => BlockData | undefined;
+    getBlocks?: () => BlockData[];
+    getContents?: () => string[][];
+    replaceBlock?: (replacement: BlockData, silent?: boolean) => void;
+    subscribeToBlock?: (namespace: string, callback: SubscribeFunction) => void;
 }
 
 const initialBlocks: BlockData[] = [
     {editable: false, markdown: "Hi there! How can I help?", namespace: "welcome", type: MessageType.ApiMessage}
 ];
 
-const NotebookContext = createContext<NotebookContextProps>({
-    blocks: initialBlocks
-});
+const NotebookContext = createContext<NotebookContextProps>({});
 
-export const NotebookProvider = ({ children }) => {
+export const NotebookProvider = ({children}) => {
     const [blocks, setBlocks] = useState<BlockData[]>(initialBlocks);
+    const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
 
     const addBlock = (addition: BlockData) => {
         setBlocks(prevBlocks => [...prevBlocks, addition]);
     };
 
     const appendToBlock = (partial: PartialBlockData) => {
-        setBlocks(prevBlocks => prevBlocks.map(block =>
-            block.namespace === partial.namespace
-                ? { ...block, markdown: `${block.markdown}${partial.markdown}` }
-                : block
-        ));
+        if (!partial.markdown) return;
+
+        setBlocks(prevBlocks => {
+            const newBlocks = prevBlocks.map(block =>
+                block.namespace === partial.namespace
+                    ? {...block, markdown: `${block.markdown}${partial.markdown}`}
+                    : block
+            );
+
+            // Find the updated block and invoke the callbacks
+            const updatedBlock = newBlocks.find(block => block.namespace === partial.namespace);
+            if (updatedBlock) {
+                subscriptions.current[updatedBlock.namespace]?.forEach(callback => callback(updatedBlock));
+            }
+
+            return newBlocks;
+        });
+    };
+
+    const getBlock = (namespace: string) => {
+        return blocks.find(block => block.namespace === namespace);
+    };
+
+    const getBlocks = () => {
+        return blocks;
     }
 
-    const replaceBlock = (replacement: BlockData) => {
-        console.log("replacing block", replacement);
-        setBlocks(prevBlocks => prevBlocks.map(block =>
-            block.namespace === replacement.namespace ? replacement : block
-        ));
+    const getContents = () => {
+        return blocks.map(block => {
+            return [block.markdown, block.type];
+        });
+    };
+
+    const replaceBlock = (replacement: BlockData, silent = false) => {
+        setBlocks(prevBlocks => {
+            const newBlocks = prevBlocks.map(block =>
+                block.namespace === replacement.namespace ? replacement : block
+            );
+
+            // Invoke subscription callbacks
+            if (!silent) subscriptions.current[replacement.namespace]?.forEach(callback => callback(replacement));
+
+            return newBlocks;
+        });
+    };
+
+    const subscribeToBlock = (namespace: string, callback: SubscribeFunction) => {
+        subscriptions.current = {
+            ...subscriptions.current,
+            [namespace]: [...(subscriptions.current[namespace] || []), callback]
+        };
+
+        return () => {
+            // Remove the callback from the list of subscriptions for the given namespace.
+            subscriptions.current = {
+                ...subscriptions.current,
+                [namespace]: (subscriptions.current[namespace] || []).filter(cb => cb !== callback)
+            };
+        };
     };
 
     return (
-        <NotebookContext.Provider value={{ blocks, addBlock, appendToBlock, replaceBlock }}>
+        <NotebookContext.Provider value={{addBlock, appendToBlock, getBlock, getBlocks, getContents, replaceBlock, subscribeToBlock}}>
             {children}
         </NotebookContext.Provider>
     );
