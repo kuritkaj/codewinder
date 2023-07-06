@@ -1,3 +1,4 @@
+import { BlockData } from "@/components/context/NotebookContext";
 import { theme } from "@/components/ui/ReactiveBlock/content/theme";
 import { CodeSandboxNode } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxNode";
 import CollapsiblePlugin from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin";
@@ -8,12 +9,10 @@ import FloatingTextFormatToolbarPlugin from "@/components/ui/ReactiveBlock/plugi
 import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/plugins/MarkdownTransformers/MarkdownTransformers";
 import StreamingPlugin from "@/components/ui/ReactiveBlock/plugins/StreamingPlugin";
 import ToggleEditablePlugin from "@/components/ui/ReactiveBlock/plugins/ToggleEditablePlugin";
-import { BlockData } from "@/components/ui/ReactiveNotebook/ReactiveNotebook";
-import { debounce } from "@/lib/util/debounce";
+import { MessageType } from "@/lib/types/MessageType";
 import { CodeNode } from "@lexical/code";
 import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
-import { $convertToMarkdownString, } from '@lexical/markdown';
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { InitialConfigType, LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -25,15 +24,13 @@ import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
-import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import CodeSandboxPlugin from "components/ui/ReactiveBlock/plugins/CodeSandboxPlugin";
-import { EditorState } from "lexical";
-import React, { useState } from "react";
+import React, { memo } from "react";
 import styles from "./ReactiveBlock.module.css";
 
 const EDITOR_NODES = [
@@ -42,24 +39,15 @@ const EDITOR_NODES = [
     ListNode, ListItemNode, QuoteNode, TableCellNode, TableNode, TableRowNode
 ];
 
-export type ReactiveBlockType = "apimessage" | "usermessage";
-
 export type ReactiveBlockProps = {
     editable?: boolean;
     markdown: string;
     namespace: string;
     onChange: (block: BlockData) => void;
-    type: ReactiveBlockType;
+    type: MessageType;
 }
 
-export const ReactiveBlock = ({editable, markdown, namespace, onChange, type}: ReactiveBlockProps) => {
-
-    const [, setBlock] = useState<BlockData>({
-        editable,
-        markdown,
-        namespace,
-        type,
-    });
+export const ReactiveBlock = ({editable, markdown, namespace, type}: ReactiveBlockProps) => {
 
     const initialConfig: InitialConfigType = {
         theme,
@@ -71,19 +59,25 @@ export const ReactiveBlock = ({editable, markdown, namespace, onChange, type}: R
         },
     };
 
-    const handleOnChange = (editorState: EditorState) => {
-        editorState.read(() => {
-            const markdown = $convertToMarkdownString();
-            debounce(() => setBlock(prevBlock => {
-                const newBlock = {
-                    ...prevBlock,
-                    markdown,
-                };
-                onChange(newBlock);
-                return newBlock;
-            }), 1000);
-        });
-    }
+    // const handleOnChange = (markdown, editorState: EditorState, editor: LexicalEditor) => {
+    //     console.log('handleOnChange', markdown);
+    //     onChange({
+    //         editable: editor.isEditable(),
+    //         markdown,
+    //         namespace,
+    //         type,
+    //     });
+    // };
+
+    // const handleOnChange = debounce((markdown, editorState: EditorState, editor: LexicalEditor) => {
+    //     console.log('handleOnChange', markdown);
+    //     onChange({
+    //         editable: editor.isEditable(),
+    //         markdown,
+    //         namespace,
+    //         type,
+    //     });
+    // }, 500);
 
     return (
         <div className={`${styles.block} ${styles[type]}`}>
@@ -103,7 +97,6 @@ export const ReactiveBlock = ({editable, markdown, namespace, onChange, type}: R
                 <LinkPlugin/>
                 <ListPlugin/>
                 <MarkdownShortcutPlugin transformers={REACTIVE_NOTEBOOK_TRANSFORMERS}/>
-                <OnChangePlugin ignoreSelectionChange={true} onChange={handleOnChange}/>
                 <StreamingPlugin markdown={markdown}/>
                 <TablePlugin/>
                 <TabIndentationPlugin/>
@@ -113,4 +106,6 @@ export const ReactiveBlock = ({editable, markdown, namespace, onChange, type}: R
     );
 }
 
-export default ReactiveBlock;
+export default memo(ReactiveBlock, (prevProps, nextProps) => {
+    return prevProps.markdown === nextProps.markdown;
+});

@@ -1,4 +1,4 @@
-import { useSettings } from "@/components/context/useSettings";
+import useSettings from "@/components/context/useSettings";
 import React from "react";
 import styles from "./SettingsPanel.module.css";
 

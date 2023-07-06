@@ -1,3 +1,4 @@
+import { MessageType } from "@/lib/types/MessageType";
 import { MessagesPlaceholder } from "langchain/prompts";
 import { AIChatMessage, BaseChatMessage, HumanChatMessage, InputValues } from "langchain/schema";
 
@@ -18,14 +19,14 @@ export class ChatHistoryPlaceholder extends MessagesPlaceholder {
                 if (typeof history[0] === 'string') {
                     // Case: array of two strings
                     const [message, type] = history;
-                    if (type === "apimessage") messages.push(new HumanChatMessage(message));
-                    if (type === "usermessage") messages.push(new AIChatMessage(message));
+                    if (type === MessageType.UserMessage.toString()) messages.push(new HumanChatMessage(message));
+                    if (type === MessageType.ApiMessage.toString()) messages.push(new AIChatMessage(message));
                 } else if (Array.isArray(history[0])) {
                     // Case: array of arrays of two strings
                     // Example: [["Hi there! How can I help?", "apimessage"]]
                     for (const [message, type] of history) {
-                        if (type === "apimessage") messages.push(new HumanChatMessage(message));
-                        if (type === "usermessage") messages.push(new AIChatMessage(message));
+                        if (type === MessageType.UserMessage.toString()) messages.push(new HumanChatMessage(message));
+                        if (type === MessageType.ApiMessage.toString()) messages.push(new AIChatMessage(message));
                     }
                 }
             }

@@ -16,16 +16,16 @@ interface SettingsContextProps extends Settings {
 const defaultSettings = {
     availableTools: [],
     selectedTools: [],
-    usePower: true,
+    usePower: false,
 };
 
 const SettingsContext = createContext<SettingsContextProps>({
     ...defaultSettings,
 });
 
-export const SettingsProvider = ({ children, settings }) => {
+export const SettingsProvider = ({ children }) => {
     const [currentSettings, setCurrentSettings] = useState<Settings>(
-        settings || defaultSettings
+        defaultSettings
     );
 
     useEffect(() => {
@@ -66,7 +66,5 @@ export const SettingsProvider = ({ children, settings }) => {
         </SettingsContext.Provider>
     );
 };
-
-export const SettingsConsumer = SettingsContext.Consumer;
 
 export default SettingsContext;

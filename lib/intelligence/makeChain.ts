@@ -103,13 +103,13 @@ export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, u
         callbacks,
         model: predictable,
         store: memories,
-        tools: toolkit,
+        tools,
         verbose: true,
     });
     return ReActExecutor.fromAgentAndTools({
         agent,
         callbacks,
-        tools: toolkit,
+        tools,
         verbose: true,
     });
 }

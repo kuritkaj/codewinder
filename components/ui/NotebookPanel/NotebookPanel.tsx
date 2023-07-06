@@ -1,7 +1,10 @@
+import { BlockData, NotebookProvider, PartialBlockData } from "@/components/context/NotebookContext";
+import useSettings from "@/components/context/useSettings";
 import InputTextArea from "@/components/ui/InputTextArea";
 import ReactiveNotebook from "@/components/ui/ReactiveNotebook";
-import { BlockData, EditableNotebook, PartialBlockData } from "@/components/ui/ReactiveNotebook/ReactiveNotebook";
+import { EditableNotebook } from "@/components/ui/ReactiveNotebook/ReactiveNotebook";
 import { streamIntelligence } from "@/lib/intelligence/streamIntelligence";
+import { MessageType } from "@/lib/types/MessageType";
 import React, { useRef, useState } from "react";
 import styles from "./NotebookPanel.module.css";
 
@@ -9,6 +12,7 @@ const NotebookPanel = () => {
     const notebookRef = useRef<EditableNotebook>();
 
     const [loading, setLoading] = useState(false);
+    const {usePower} = useSettings();
     const [userInput, setUserInput] = useState("");
 
     const addBlock = (block: BlockData) => {
@@ -36,7 +40,7 @@ const NotebookPanel = () => {
             editable: false,
             markdown: objective,
             namespace: Math.random().toString(),
-            type: "usermessage"
+            type: MessageType.UserMessage
         });
 
         setLoading(true);
@@ -53,7 +57,7 @@ const NotebookPanel = () => {
                     editable: false,
                     namespace: partial.namespace,
                     markdown: partial.markdown.split("{clear}").pop() || "",
-                    type: "apimessage",
+                    type: MessageType.ApiMessage,
                 });
             } else {
                 appendToBlock(partial);
@@ -61,7 +65,7 @@ const NotebookPanel = () => {
         }
 
         const onOpen = (partial: PartialBlockData) => {
-            addBlock({...partial, editable: false, type: "apimessage"});
+            addBlock({...partial, editable: false, type: MessageType.ApiMessage});
         }
 
         const context = notebookRef.current.getContents();
@@ -76,7 +80,8 @@ const NotebookPanel = () => {
             },
             onMessage: (message) => {
                 onMessage({markdown: message, namespace})
-            }
+            },
+            usePower
         });
     }
 
@@ -94,7 +99,9 @@ const NotebookPanel = () => {
     return (
         <>
             <div className={styles.notebook}>
-                <ReactiveNotebook ref={notebookRef}/>
+                <NotebookProvider>
+                    <ReactiveNotebook ref={notebookRef}/>
+                </NotebookProvider>
             </div>
             <div className={styles.textinput}>
                 <InputTextArea

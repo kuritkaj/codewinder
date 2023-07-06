@@ -5,6 +5,7 @@ import styles from './theme.module.css'
 
 export const theme: EditorThemeClasses = {
     code: styles.code,
+    link: styles.link,
     list: {
         nested: {
             listitem: styles.nestedListItem

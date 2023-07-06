@@ -68,8 +68,8 @@ export class ReActAgent extends BaseSingleActionAgent {
     public static createPrompt(): ChatPromptTemplate {
         return ChatPromptTemplate.fromPromptMessages([
             SystemMessagePromptTemplate.fromTemplate(SYSTEM),
-            new ChatHistoryPlaceholder(CONTEXT_INPUT),
             HumanMessagePromptTemplate.fromTemplate(INSTRUCTIONS),
+            new ChatHistoryPlaceholder(CONTEXT_INPUT),
             new CachedPlaceholder(MEMORY),
             HumanMessagePromptTemplate.fromTemplate(`{${OBJECTIVE_INPUT}}`),
             new MessagesPlaceholder(SCRATCHPAD),
@@ -125,7 +125,7 @@ export class ReActAgent extends BaseSingleActionAgent {
 
         let memories = await this.store.retrieveSnippets(
             inputs[OBJECTIVE_INPUT],
-            0.75
+            0.90
         );
 
         if (memories && memories.length > 0) {

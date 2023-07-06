@@ -1,5 +1,4 @@
 import { SettingsProvider } from "@/components/context/SettingsContext";
-import useSettings from "@/components/context/useSettings";
 import Header from "@/components/ui/Header/Header";
 import SettingsPanel from "@/components/ui/SettingsPanel";
 import NotebookPanel from "components/ui/NotebookPanel";
@@ -7,8 +6,6 @@ import Head from "next/head";
 import styles from "./Home.module.css";
 
 const Home = () => {
-    const settings = useSettings();
-
     return (
         <>
             <Head>
@@ -20,7 +17,7 @@ const Home = () => {
             <div className={styles.fullscreen}>
                 <Header/>
                 <main className={styles.main}>
-                    <SettingsProvider settings={settings}>
+                    <SettingsProvider>
                         <div className={styles.notebookpanel}>
                             <SettingsPanel/>
                             <NotebookPanel/>

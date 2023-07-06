@@ -1,6 +1,7 @@
-import { ReactiveBlockType } from "@/components/ui/ReactiveBlock/ReactiveBlock";
+import { BlockData, PartialBlockData } from "@/components/context/NotebookContext";
+import useNotebook from "@/components/context/useNotebook";
 import dynamic from "next/dynamic";
-import React, { forwardRef, ForwardRefRenderFunction, useEffect, useImperativeHandle, useRef, useState } from "react";
+import React, { forwardRef, ForwardRefRenderFunction, useEffect, useImperativeHandle, useRef } from "react";
 import styles from "./ReactiveNotebook.module.css";
 
 const ReactiveBlock = dynamic(() => import('@/components/ui/ReactiveBlock'), {
@@ -14,25 +15,11 @@ export interface EditableNotebook {
     replaceBlock: (block: BlockData) => void;
 }
 
-export type BlockData = {
-    editable?: boolean;
-    markdown: string;
-    namespace: string;
-    type: ReactiveBlockType;
-}
-
-export type PartialBlockData = {
-    markdown: string;
-    namespace: string;
-}
-
 const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, forwardedRef) => {
     const notebookRef = useRef<HTMLDivElement>(null);
     const hasUserScrolledUp = useRef(false);
 
-    const [blocks, setBlocks] = useState<BlockData[]>([
-        {editable: false, markdown: "Hi there! How can I help?", namespace: "welcome", type: "apimessage"}
-    ]);
+    const {blocks, addBlock, appendToBlock, replaceBlock} = useNotebook();
 
     useEffect(() => {
         const notebook = notebookRef.current;
@@ -59,23 +46,11 @@ const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, for
 
     useImperativeHandle(forwardedRef, () => ({
         addBlock(block: BlockData) {
-            setBlocks(prevBlocks => {
-                return [...prevBlocks, block];
-            });
+            addBlock(block);
         },
 
         appendToBlock(partial: PartialBlockData) {
-            setBlocks(prevBlocks => {
-                return prevBlocks.map(block => {
-                    if (block.namespace === partial.namespace) {
-                        return {
-                            ...block,
-                            markdown: `${block.markdown}${partial.markdown}`,
-                        };
-                    }
-                    return block;
-                });
-            });
+            appendToBlock(partial);
         },
 
         getContents() {
@@ -85,29 +60,9 @@ const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, for
         },
 
         replaceBlock(replacement: BlockData) {
-            setBlocks(prevBlocks => {
-                return prevBlocks.map(block => {
-                    if (block.namespace === replacement.namespace) {
-                        return {
-                            ...replacement
-                        };
-                    }
-                    return block;
-                });
-            });
+            replaceBlock(replacement);
         }
     }));
-
-    const handleOnChange = (replacement: BlockData) => {
-        setBlocks(prevBlocks => {
-            prevBlocks.forEach((prevBlock, index) => {
-                if (prevBlock.namespace === replacement.namespace) {
-                    prevBlocks[index] = replacement;
-                }
-            });
-            return prevBlocks;
-        });
-    }
 
     return (
         <div ref={notebookRef} className={styles.notebook}>
@@ -118,7 +73,7 @@ const ReactiveNotebook: ForwardRefRenderFunction<EditableNotebook> = (props, for
                         editable={block.editable}
                         markdown={block.markdown}
                         namespace={block.namespace}
-                        onChange={handleOnChange}
+                        onChange={replaceBlock}
                         type={block.type}
                     />;
                 })
