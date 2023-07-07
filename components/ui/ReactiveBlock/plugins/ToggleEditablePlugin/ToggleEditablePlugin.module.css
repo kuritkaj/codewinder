@@ -2,7 +2,7 @@
     vertical-align: middle;
     position: absolute;
     top: 50%;
-    right: 1rem;
+    right: 1.5rem;
     transform: translate(50%, -50%);
     z-index: 10;
     cursor: pointer;
