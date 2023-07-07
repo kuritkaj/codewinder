@@ -3,18 +3,23 @@ import Cookies from "js-cookie";
 
 export interface Settings {
     availableTools: string[];
+    hasServerKey: boolean;
+    localKey: string;
     selectedTools: string[];
     usePower: boolean;
 }
 
 interface SettingsContextProps extends Settings {
     saveSettings?: (values: Settings) => void;
+    setLocalKey?: (apiKey: string) => void;
     setSelectedTools?: (selectedTools: string[]) => void;
     setUsePower?: (usePower: boolean) => void;
 }
 
 const defaultSettings = {
     availableTools: [],
+    hasServerKey: true,
+    localKey: "",
     selectedTools: [],
     usePower: false,
 };
@@ -36,7 +41,23 @@ export const SettingsProvider = ({ children }) => {
                 usePower: JSON.parse(usePowerCookie),
             }));
         }
+
+        fetch('/api/keycheck')
+        .then(response => response.json())
+        .then(data => {
+            setCurrentSettings((state) => ({
+                ...state,
+                hasServerKey: data.hasOpenAIApiKey,
+            }));
+        });
     }, []);
+
+    const setLocalKey = (localKey: string) => {
+        setCurrentSettings((state) => ({
+            ...state,
+            localKey,
+        }));
+    };
 
     const setSelectedTools = (selectedTools: string[]) => {
         setCurrentSettings((state) => ({
@@ -53,14 +74,9 @@ export const SettingsProvider = ({ children }) => {
         Cookies.set("usePower", JSON.stringify(usePower));
     };
 
-    const saveSettings = (values) => {
-        setCurrentSettings(values);
-        Cookies.set("usePower", JSON.stringify(values.usePower));
-    };
-
     return (
         <SettingsContext.Provider
-            value={{ ...currentSettings, saveSettings, setSelectedTools, setUsePower }}
+            value={{ ...currentSettings, setSelectedTools, setLocalKey, setUsePower }}
         >
             {children}
         </SettingsContext.Provider>

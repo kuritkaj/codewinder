@@ -2,7 +2,7 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { MultistepExecutor } from "@/lib/intelligence/multistep/MultistepExecutor";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
-import { CodeExecutor } from "@/lib/intelligence/tools/CodeExecutor";
+import { CodeEvaluator } from "@/lib/intelligence/tools/CodeEvaluator";
 import { CodeWriter } from "@/lib/intelligence/tools/CodeWriter";
 import { PlanAndSolve } from "@/lib/intelligence/tools/PlanAndSolve";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
@@ -12,10 +12,16 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { StructuredTool } from "langchain/tools";
 
-export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, usePower: boolean }): Promise<ReActExecutor> => {
-    const openAiApiKey = process.env.OPENAI_API_KEY;
+type makeChainOptions = {
+    callbacks: Callbacks;
+    localKey?: string;
+    usePower?: boolean
+}
+
+export const makeChain = async ({callbacks, localKey = null, usePower = false}: makeChainOptions): Promise<ReActExecutor> => {
+    const openAiApiKey = localKey || process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
-        throw new Error('OpenAI api key not found.');
+        throw new Error("OpenAI API Key not set.");
     }
     const bingApiKey = process.env.BING_API_KEY;
     // const zapierApiKey = process.env.ZAPIER_NLA_API_KEY;
@@ -75,7 +81,7 @@ export const makeChain = async ({callbacks, usePower}: { callbacks: Callbacks, u
     const tools: StructuredTool[] = [
         new WebBrowser({callbacks, embeddings, model: capable, store: knowledge}),
         new CodeWriter({callbacks, model: powerful}),
-        new CodeExecutor({callbacks, model: powerful, store: code}),
+        new CodeEvaluator({callbacks, model: powerful, store: code}),
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, store: knowledge}));

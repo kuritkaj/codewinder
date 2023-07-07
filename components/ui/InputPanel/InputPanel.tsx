@@ -12,6 +12,7 @@ const InputPanel = () => {
     const {usePower} = useSettings();
     const [userInput, setUserInput] = useState("");
     const {appendToBlock, addBlock, getContents, replaceBlock} = useNotebook();
+    const { localKey } = useSettings();
 
     // Prevent blank submissions and allow for multiline input
     const handleEnter = async (e: any) => {
@@ -45,6 +46,15 @@ const InputPanel = () => {
             setLoading(false);
         }
 
+        const onError = (partial: PartialBlockData) => {
+            replaceBlock({
+                editable: false,
+                namespace: partial.namespace,
+                markdown: partial.markdown,
+                type: MessageType.ApiMessage,
+            });
+        }
+
         const onMessage = (partial: PartialBlockData) => {
             if (partial.markdown.includes("{clear}")) {
                 replaceBlock({
@@ -66,8 +76,12 @@ const InputPanel = () => {
         const namespace = Math.random().toString();
         await streamIntelligence({
             context,
+            localKey,
             objective,
             onClose,
+            onError: (error) => {
+                onError({markdown: error.message, namespace})
+            },
             onOpen: () => {
                 onOpen({markdown: "", namespace})
             },

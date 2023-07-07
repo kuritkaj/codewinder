@@ -4,9 +4,16 @@ import { makeChain } from "@/lib/intelligence/makeChain";
 import { CallbackManager } from "langchain/callbacks";
 import { NextApiHandler } from "next";
 
+type ServiceOptions = {
+    context?: [string, string][];
+    localKey?: string;
+    objective: string;
+    usePower?: boolean;
+}
+
 const Service: NextApiHandler = async (req, res) => {
-    // context should be array of "[message, type]" pairs, where type is "apimessage" or "usermessage"
-    const { context, objective, usePower }: { context: [ string, string ][], objective: string, usePower: boolean } = await req.body;
+    // context should be an array of "[message, type]" pairs, where type is "apimessage" or "usermessage"
+    const {context, localKey, objective, usePower}: ServiceOptions = await req.body;
 
     res.writeHead(200, {
         "Content-Type": "text/event-stream",
@@ -26,11 +33,11 @@ const Service: NextApiHandler = async (req, res) => {
     };
 
     const sendLine = (data?: string) => {
-        sendData(`\n\n${ data ? data : '' }`);
+        sendData(`${data ? data : ''}\n\n`);
     }
 
     const sendError = (error: string) => {
-        res.status(500).write(`\n\n${ error }`);
+        res.status(500).write(`${error}\n\n`);
     }
 
     const callbacks = CallbackManager.fromHandlers({
@@ -57,9 +64,11 @@ const Service: NextApiHandler = async (req, res) => {
         },
     });
 
-    const chain = await makeChain({ callbacks, usePower });
-
     try {
+        const chain = await makeChain({
+            callbacks, localKey, usePower
+        });
+
         sendLine("Thinking...");
         const completion = await chain.predict({
             objective,

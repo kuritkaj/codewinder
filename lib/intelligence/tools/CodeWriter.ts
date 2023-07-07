@@ -13,13 +13,23 @@ Input should include all useful context from previous functions and results.`;
 const SPECIFICATION_INPUT = "specification";
 
 export const GUIDANCE = `You are an AI assistant receiving a detailed code specification. 
-Your task is to translate respond with Javascript code.
+Your task is to respond with code that can be executed in a code sandbox.
+This sandbox includes a code editor, code sandbox, and a preview window.
 
 This is the code specification:
 {${SPECIFICATION_INPUT}}
 
 Now, based on the natural language description, 
-your task is to write JavaScript wrapped in a code block with the language specified.`;
+your task is to reply with a code block with one of the following languages:
+- javascript and jsx
+- typescript and tsx
+- python
+- markdown
+- marpit
+- static
+- html
+- css
+`;
 
 export interface CodeWriterParams extends ToolParams {
     model: BaseLanguageModel;

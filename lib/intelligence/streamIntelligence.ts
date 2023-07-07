@@ -1,5 +1,6 @@
 type StreamOptions = {
     context?: string[][];
+    localKey?: string;
     objective: string;
     onClose?: () => void;
     onOpen?: () => void;
@@ -8,13 +9,14 @@ type StreamOptions = {
     usePower?: boolean;
 }
 
-export const streamIntelligence = async ({context = [], objective, onClose, onError, onMessage, onOpen, usePower = false}: StreamOptions) => {
+export const streamIntelligence = async ({context = [], localKey, objective, onClose, onError, onMessage, onOpen, usePower = false}: StreamOptions) => {
     const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            localKey,
             objective,
             context,
             usePower,

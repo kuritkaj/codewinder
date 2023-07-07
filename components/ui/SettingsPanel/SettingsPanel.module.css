@@ -1,3 +1,22 @@
+.apiKeyInput {
+    display: flex;
+    align-items: center;
+}
+
+.apiKeyInput label {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.apiKeyInput input {
+    padding: 0.2rem;
+    border: 1px solid #30373d;
+    border-radius: 0.3rem;
+    background: #070809;
+    color: #5f6368;
+    font-size: 0.8rem;
+}
+
 .header {
     width: 100%;
     text-align: center;
@@ -19,6 +38,10 @@
 }
 
 .settingslist {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     padding: 12px 0;
 }
 

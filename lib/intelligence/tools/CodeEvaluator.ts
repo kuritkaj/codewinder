@@ -9,7 +9,7 @@ import { StructuredTool, ToolParams } from "langchain/tools";
 import * as vm from "node:vm";
 import { z } from "zod";
 
-export const NAME = "code-executor";
+export const NAME = "code-evaluator";
 export const DESCRIPTION = `an isolated Node.js environment to evaluate and run code. 
 Results are returned as a string. Never use this to respond with code to the user.
 Input should include all useful context from previous functions and results.`;
@@ -70,7 +70,7 @@ export interface CodeExecutorParams extends ToolParams {
     store: MemoryStore;
 }
 
-export class CodeExecutor extends StructuredTool {
+export class CodeEvaluator extends StructuredTool {
     public readonly name = NAME;
     public readonly description = DESCRIPTION;
     public schema = z.

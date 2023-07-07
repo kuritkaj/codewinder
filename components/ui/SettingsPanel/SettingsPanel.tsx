@@ -1,16 +1,12 @@
 import useSettings from "@/components/context/useSettings";
-import React from "react";
+import { ChangeEvent } from "react";
 import styles from "./SettingsPanel.module.css";
 
 const SettingsPanel = () => {
-    const {availableTools, selectedTools, usePower, setSelectedTools, setUsePower} = useSettings();
+    const {hasServerKey, localKey, setLocalKey, setUsePower, usePower} = useSettings();
 
-    const handleToolSelection = (tool: string) => {
-        if (selectedTools.includes(tool)) {
-            setSelectedTools(selectedTools.filter((selectedTool) => selectedTool !== tool));
-        } else {
-            setSelectedTools([...selectedTools, tool]);
-        }
+    const handleApiKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setLocalKey(event.target.value);
     };
 
     const handleUsePowerToggle = () => {
@@ -31,21 +27,18 @@ const SettingsPanel = () => {
                     />
                 </div>
                 <div className={styles.divider}/>
-                <div className={styles.toolslist}>
-                    {availableTools.map((tool) => (
-                        <div key={tool} className={styles.toggle}>
-                            <input
-                                type="checkbox"
-                                id={tool}
-                                name={tool}
-                                className={styles.toggle}
-                                checked={selectedTools.includes(tool)}
-                                onChange={() => handleToolSelection(tool)}
-                            />
-                            <label htmlFor={tool}>{tool}</label>
-                        </div>
-                    ))}
-                </div>
+                {!hasServerKey && (
+                    <div className={styles.apiKeyInput}>
+                        <label htmlFor="apiKey">OpenAI API Key:</label>
+                        <input
+                            type="password"
+                            id="apiKey"
+                            name="apiKey"
+                            value={localKey}
+                            onChange={handleApiKeyChange}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
