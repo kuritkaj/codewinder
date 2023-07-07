@@ -9,16 +9,7 @@ import { CallbackManager } from "langchain/callbacks";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { Callbacks } from "langchain/dist/callbacks/manager";
 import { ChatPromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder, SystemMessagePromptTemplate } from "langchain/prompts";
-import {
-    AgentAction,
-    AgentFinish,
-    AgentStep,
-    AIChatMessage,
-    BaseChatMessage,
-    ChainValues,
-    FunctionChatMessage,
-    HumanChatMessage
-} from "langchain/schema";
+import { AgentAction, AgentFinish, AgentStep, AIMessage, BaseMessage, ChainValues, FunctionMessage, HumanMessage } from "langchain/schema";
 import { StructuredTool, Tool } from "langchain/tools";
 
 export const CONTEXT_INPUT = "context";
@@ -120,7 +111,7 @@ export class ReActAgent extends BaseSingleActionAgent {
     public async constructMemories(
         inputs: ChainValues,
         steps: AgentStep[]
-    ): Promise<BaseChatMessage[]> {
+    ): Promise<BaseMessage[]> {
         if (steps && steps.length > 0) return []; // The prompt is cached (see createPrompt); no need to generate new memories
 
         let memories = await this.store.retrieveSnippets(
@@ -129,7 +120,7 @@ export class ReActAgent extends BaseSingleActionAgent {
         );
 
         if (memories && memories.length > 0) {
-            return [new HumanChatMessage(
+            return [new HumanMessage(
                 `The following memory can be used as a guide:\n\"\"\"\n${memories[0].pageContent}\n\"\"\"\n` +
                 `which was formed on: \`${memories[0].metadata?.created_at}\``
             )];
@@ -140,15 +131,15 @@ export class ReActAgent extends BaseSingleActionAgent {
 
     public async constructScratchPad(
         steps: AgentStep[]
-    ): Promise<BaseChatMessage[]> {
+    ): Promise<BaseMessage[]> {
         return steps.flatMap(({action, observation}) => [
-            new AIChatMessage("", {
+            new AIMessage("", {
                 function_call: {
                     name: action.tool,
                     arguments: JSON.stringify(action.toolInput),
                 },
             }),
-            new FunctionChatMessage(observation, action.tool),
+            new FunctionMessage(observation, action.tool),
         ]);
     }
 

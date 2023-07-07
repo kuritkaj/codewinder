@@ -1,11 +1,11 @@
 import { MessagesPlaceholder } from "langchain/prompts";
-import { BaseChatMessage, InputValues } from "langchain/schema";
+import { BaseMessage, InputValues } from "langchain/schema";
 
 export class CachedPlaceholder extends MessagesPlaceholder {
 
-    private cachedMessages: BaseChatMessage[];
+    private cachedMessages: BaseMessage[];
 
-    public async formatMessages(values: InputValues): Promise<BaseChatMessage[]> {
+    public async formatMessages(values: InputValues): Promise<BaseMessage[]> {
         if (this.cachedMessages) {
             return Promise.resolve(this.cachedMessages);
         } else {

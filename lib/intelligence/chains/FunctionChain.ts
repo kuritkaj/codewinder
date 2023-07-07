@@ -3,15 +3,15 @@
 import { CallbackManagerForChainRun } from "langchain/callbacks";
 import { LLMChain, LLMChainInput } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { BaseChatMessage, ChainValues } from "langchain/schema";
+import { BaseMessage, ChainValues } from "langchain/schema";
 import { StructuredTool, Tool } from "langchain/tools";
 
-export interface FunctionChainInput extends LLMChainInput<BaseChatMessage, ChatOpenAI> {
+export interface FunctionChainInput extends LLMChainInput<BaseMessage, ChatOpenAI> {
     function_call?: Tool;
     tools: StructuredTool[];
 }
 
-export class FunctionChain extends LLMChain<BaseChatMessage, ChatOpenAI> {
+export class FunctionChain extends LLMChain<BaseMessage, ChatOpenAI> {
 
     private readonly function_call: Tool;
     private readonly tools: StructuredTool[];
