@@ -27,7 +27,6 @@
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.3.1",
     "eslint": "8.44.0",
-    "hnswlib-node": "^1.4.2",
     "js-cookie": "^3.0.5",
     "js-tiktoken": "^1.0.7",
     "langchain": "^0.0.103",

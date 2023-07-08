@@ -2,12 +2,11 @@ import { SupabaseVectorStore } from "@/lib/intelligence/vectorstores/SupabaseVec
 import { Metadata } from "@/lib/types/Document";
 import { getEmbeddingContextSize } from "@/lib/util/tokens";
 import { createClient } from "@supabase/supabase-js";
-import * as fs from "fs";
 import { VectorStore } from "langchain/dist/vectorstores/base";
 import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { RecursiveCharacterTextSplitter, TextSplitter, TokenTextSplitter } from "langchain/text_splitter";
-import { HNSWLib } from "langchain/vectorstores/hnswlib";
+import { HNSWLib } from "langchain/vectorstores";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import * as path from "path";
 
@@ -48,17 +47,8 @@ export class MemoryStore {
 
             return new MemoryStore(vectorStore, index);
         } else {
-            const directory = path.join(process.cwd(), CACHE_DIR, index);
-            if (!fs.existsSync(directory)) fs.mkdirSync(directory);
-
-            let vectorStore: HNSWLib;
-            if (fs.readdirSync(directory).length > 0) {
-                vectorStore = await HNSWLib.load(directory, embeddings);
-            } else {
-                vectorStore = await HNSWLib.fromTexts(["initialize"], {}, embeddings);
-                await vectorStore.save(directory);
-            }
-            return new MemoryStore(vectorStore, index);
+            console.log("No Supabase API Key or URL found.");
+            return this.makeTransientStore(index, embeddings);
         }
     }
 
