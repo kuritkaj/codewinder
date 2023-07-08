@@ -23,7 +23,7 @@ And optionally the following environment variables:
 
 Notes: 
 * without the Bing Search key, the search will use the Web Browser tool for searches, which is less efficient.
-* without the Supabase key, HNSWLIB is used to store memories in a local directory named .cache.
+* without the Supabase key, in-memory vectorstore is used to store memories in a local directory named .cache.
 * the Zapier NLA key is amazing! read more here: https://blog.langchain.dev/langchain-zapier-nla/
 
 ### Running the Server
@@ -31,7 +31,7 @@ Notes:
 Then, run the development server:
 
 ```bash
-yarn dev
+next dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
