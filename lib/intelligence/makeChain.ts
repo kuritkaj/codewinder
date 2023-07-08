@@ -2,7 +2,7 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import { MultistepExecutor } from "@/lib/intelligence/multistep/MultistepExecutor";
 import { ReActAgent } from "@/lib/intelligence/react/ReActAgent";
 import { ReActExecutor } from "@/lib/intelligence/react/ReActExecutor";
-import { CodeEvaluator } from "@/lib/intelligence/tools/CodeEvaluator";
+// import { CodeEvaluator } from "@/lib/intelligence/tools/CodeEvaluator";
 import { CodeWriter } from "@/lib/intelligence/tools/CodeWriter";
 import { PlanAndSolve } from "@/lib/intelligence/tools/PlanAndSolve";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
@@ -76,12 +76,12 @@ export const makeChain = async ({callbacks, localKey = null, usePower = false}: 
     const embeddings = new OpenAIEmbeddings({openAIApiKey: openAiApiKey});
     const memories = await MemoryStore.makeDurableStore("memories", embeddings);
     const knowledge = await MemoryStore.makeDurableStore("knowledge", embeddings);
-    const code = await MemoryStore.makeDurableStore("code", embeddings);
+    // const code = await MemoryStore.makeDurableStore("code", embeddings);
 
     const tools: StructuredTool[] = [
         new WebBrowser({callbacks, embeddings, model: capable, store: knowledge}),
         new CodeWriter({callbacks, model: powerful}),
-        new CodeEvaluator({callbacks, model: powerful, store: code}),
+        // new CodeEvaluator({callbacks, model: powerful, store: code}),
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, store: knowledge}));

@@ -2,7 +2,7 @@
 
 import cheerio from "cheerio";
 import { Callbacks } from "langchain/dist/callbacks/manager";
-import PDFParse from "pdf-parse";
+// import PDFParse from "pdf-parse";
 import { BaseLanguageModel } from "langchain/base_language";
 import { StructuredTool, ToolParams } from "langchain/tools";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
@@ -50,31 +50,31 @@ const getContent = async (
     }
 };
 
-async function getPdf(content: Blob): Promise<{ text: string, title: string }> {
-    const parsePdf = async (): Promise<ArrayBuffer> => {
-        try {
-            return await content.arrayBuffer();
-        } catch (error) {
-            throw new Error("Failed to read Blob as ArrayBuffer.");
-        }
-    };
-
-    try {
-        const buffer = await parsePdf();
-        const pdfData = await PDFParse(Buffer.from(buffer));
-        const pdfExtract = pdfData.text;
-        const pdfTitle = pdfData.info.Title || "Untitled";
-
-        return {
-            title: pdfTitle,
-            text: pdfExtract
-        };
-    } catch (error) {
-        // Handle any parsing errors
-        console.error("Error parsing PDF:", error);
-        throw new Error("Failed to parse the PDF.");
-    }
-}
+// async function getPdf(content: Blob): Promise<{ text: string, title: string }> {
+//     const parsePdf = async (): Promise<ArrayBuffer> => {
+//         try {
+//             return await content.arrayBuffer();
+//         } catch (error) {
+//             throw new Error("Failed to read Blob as ArrayBuffer.");
+//         }
+//     };
+//
+//     try {
+//         const buffer = await parsePdf();
+//         const pdfData = await PDFParse(Buffer.from(buffer));
+//         const pdfExtract = pdfData.text;
+//         const pdfTitle = pdfData.info.Title || "Untitled";
+//
+//         return {
+//             title: pdfTitle,
+//             text: pdfExtract
+//         };
+//     } catch (error) {
+//         // Handle any parsing errors
+//         console.error("Error parsing PDF:", error);
+//         throw new Error("Failed to parse the PDF.");
+//     }
+// }
 
 export const getText = (
     html: string,
@@ -195,9 +195,9 @@ export class WebBrowser extends StructuredTool {
         try {
             const content = await getContent(baseUrl, this.headers);
             if (content instanceof Blob) {
-                const result = await getPdf(content);
-                text = result.text;
-                title = result.title;
+            //     const result = await getPdf(content);
+            //     text = result.text;
+            //     title = result.title;
             } else {
                 const result = getText(content, baseUrl, doSummary);
                 text = result.text;
