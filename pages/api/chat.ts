@@ -5,10 +5,6 @@ import { Langchainstream } from "@/lib/util/langchainstream";
 import { streamToResponse } from "ai";
 import { NextApiHandler } from "next";
 
-export const config = {
-    runtime: "edge",
-};
-
 type ServiceOptions = {
     context?: [string, string][];
     localKey?: string;
