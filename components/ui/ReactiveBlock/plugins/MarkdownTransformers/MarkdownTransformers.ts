@@ -46,9 +46,21 @@ import {
     TableNode,
     TableRowNode,
 } from '@lexical/table';
-import { $createTextNode, $isParagraphNode, $isTextNode, LexicalNode, } from 'lexical';
+import { $createLineBreakNode, $createTextNode, $isParagraphNode, $isTextNode, LexicalNode, } from 'lexical';
 
 import emojiList from '../../utils/emoji-list';
+
+export const BR: TextMatchTransformer = {
+    dependencies: [],
+    export: () => null,
+    importRegExp: /<br\/>/,
+    regExp: /<br\/>/,
+    replace: (textNode) => {
+        textNode.replace($createLineBreakNode());
+    },
+    trigger: '<br/>',
+    type: 'text-match',
+};
 
 export const DETAILS: ElementTransformer = {
     dependencies: [CollapsibleContainerNode, CollapsibleTitleNode, CollapsibleContentNode],
@@ -86,7 +98,6 @@ export const DETAILS: ElementTransformer = {
     },
     type: 'element',
 } as ElementTransformer;
-
 
 export const EMOJI: TextMatchTransformer = {
     dependencies: [],
@@ -284,6 +295,7 @@ export const REACTIVE_NOTEBOOK_TRANSFORMERS: Array<Transformer> = [
     ...ELEMENT_TRANSFORMERS,
     ...TEXT_FORMAT_TRANSFORMERS,
     ...TEXT_MATCH_TRANSFORMERS,
+    BR,
     CHECK_LIST,
     DETAILS,
     EMOJI,

@@ -6,11 +6,7 @@ import { VectorStore } from "langchain/dist/vectorstores/base";
 import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { RecursiveCharacterTextSplitter, TextSplitter, TokenTextSplitter } from "langchain/text_splitter";
-import { HNSWLib } from "langchain/vectorstores";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import * as path from "path";
-
-export const CACHE_DIR = ".cache";
 
 export class MemoryStore {
     private readonly index: string;
@@ -38,7 +34,11 @@ export class MemoryStore {
         const supabaseUrl = process.env.SUPABASE_URL;
 
         if (Boolean(supabaseApiKey) && Boolean(supabaseUrl)) {
-            const client = createClient(supabaseUrl, supabaseApiKey);
+            const client = createClient(supabaseUrl, supabaseApiKey, {
+                auth: {
+                    persistSession: false
+                },
+            });
             const vectorStore = await SupabaseVectorStore.fromExistingIndex(embeddings, {
                 client,
                 tableName: index,
@@ -104,17 +104,16 @@ export class MemoryStore {
         return snippets;
     }
 
-    public async storeDocuments(documents: Document[], metadata: Metadata = {}) {
-        metadata.created_at = new Date(); // Patch in the current date/time for future reference
-
-        if (!documents || documents.length === 0) throw new Error("Documents are required.");
-        // Add created date to metadata for all documents
-        for (const document of documents) {
-            document.metadata = metadata;
-        }
-        await this.memory.addDocuments(documents);
-        await this.save();
-    }
+    // public async storeDocuments(documents: Document[], metadata: Metadata = {}) {
+    //     metadata.created_at = new Date(); // Patch in the current date/time for future reference
+    //
+    //     if (!documents || documents.length === 0) throw new Error("Documents are required.");
+    //     // Add created date to metadata for all documents
+    //     for (const document of documents) {
+    //         document.metadata = metadata;
+    //     }
+    //     await this.memory.addDocuments(documents);
+    // }
 
     public async storeTexts(texts: string[], metadata: Metadata = {}) {
         metadata.created_at = new Date(); // Patch in the current date/time for future reference
@@ -127,14 +126,5 @@ export class MemoryStore {
             document.metadata = metadata;
         }
         await this.memory.addDocuments(documents);
-        await this.save();
-    }
-
-    private async save() {
-        const directory = path.join(process.cwd(), CACHE_DIR, this.index);
-
-        if (this.memory instanceof HNSWLib) {
-            await this.memory.save(directory);
-        }
     }
 }

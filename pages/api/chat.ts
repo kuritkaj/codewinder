@@ -1,7 +1,8 @@
 // Based on: https://github.com/sullivan-sean/chat-langchainjs/blob/main/pages/api/chat-stream.ts
 
 import { makeChain } from "@/lib/intelligence/makeChain";
-import { CallbackManager } from "langchain/callbacks";
+import { Langchainstream } from "@/lib/util/langchainstream";
+import { streamToResponse } from "ai";
 import { NextApiHandler } from "next";
 
 type ServiceOptions = {
@@ -15,71 +16,28 @@ const Service: NextApiHandler = async (req, res) => {
     // context should be an array of "[message, type]" pairs, where type is "apimessage" or "usermessage"
     const {context, localKey, objective, usePower}: ServiceOptions = await req.body;
 
-    res.writeHead(200, {
-        "Content-Type": "text/event-stream",
-        // Important to set no-transform to avoid compression, which will delay
-        // writing response chunks to the client.
-        // See https://github.com/vercel/next.js/issues/9965
-        "Cache-Control": "no-cache, no-transform",
-        Connection: "keep-alive",
-    });
-
-    const sendClear = () => {
-        res.write("{clear}");
-    }
-
-    const sendData = (data: string) => {
-        res.write(data);
-    };
-
-    const sendLine = (data?: string) => {
-        sendData(`${data ? data : ''}\n\n`);
-    }
-
-    const sendError = (error: string) => {
-        res.status(500).write(`${error}\n\n`);
-    }
-
-    const callbacks = CallbackManager.fromHandlers({
-        handleLLMStart: () => {
-            sendLine();
-        },
-        handleLLMNewToken: async (token) => {
-            sendData(token);
-        },
-        handleLLMEnd: () => {
-            sendLine();
-        },
-        handleText: (text: string) => {
-            sendData(text);
-        },
-        handleToolStart: (tool, input) => {
-            sendLine(`\`${tool.id[tool.id.length - 1]}: ${input}\`\n\n`);
-        },
-        handleToolEnd: async () => {
-            sendLine();
-        },
-        handleLLMError: async (error) => {
-            sendError(error);
-        },
-    });
-
     try {
+        const {stream, handlers} = Langchainstream();
         const chain = await makeChain({
-            callbacks, localKey, usePower
+            callbacks: [handlers], localKey, usePower
         });
 
-        sendLine("Thinking...");
-        const completion = await chain.predict({
+        handlers.sendData("Thinking...").then();
+        chain.predict({
             objective,
             context
+        }).then((completion: string) => {
+            handlers.sendClear();
+            handlers.sendData(completion);
+        }).catch((e) => {
+            handlers.sendError(e);
+        }).finally(() => {
+            handlers.closeStream();
         });
-        sendClear();
-        sendLine(completion);
-    } catch (error) {
-        sendError(error)
-    } finally {
-        res.end();
+
+        return streamToResponse(stream, res)
+    } catch (error: any) {
+        console.error(error);
     }
 }
 

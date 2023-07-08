@@ -21,7 +21,7 @@ export const FINAL_RESPONSE_PREFIX = "Final Response";
 
 export const SYSTEM = `You are a helpful AI Assistant.
 The current date and time is: ${new Date().toLocaleString()}.
-Access to the internet and real-time data is available using functions.
+You have access to the internet and real-time data.
 `;
 
 export const INSTRUCTIONS = `Instructions:

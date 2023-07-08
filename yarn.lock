@@ -1182,6 +1182,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ai@npm:^2.1.17":
+  version: 2.1.17
+  resolution: "ai@npm:2.1.17"
+  dependencies:
+    eventsource-parser: 1.0.0
+    nanoid: ^3.3.6
+    sswr: ^1.10.0
+    swr: 2.1.5
+    swrv: 1.0.3
+  peerDependencies:
+    react: ^18.2.0
+    svelte: ^3.0.0 || ^4.0.0
+    vue: ^3.3.4
+  peerDependenciesMeta:
+    react:
+      optional: true
+    svelte:
+      optional: true
+    vue:
+      optional: true
+  checksum: 5762c6c27a3ea4faac764cfa54a2fd49818a2d9804960a86fd4dfc9029d0ecb6d88237c3889518e7d113eaf3d8f7a4a62605fe832362d4fcef8c1361295867c2
+  languageName: node
+  linkType: hard
+
 "ajv@npm:^6.10.0, ajv@npm:^6.12.4":
   version: 6.12.6
   resolution: "ajv@npm:6.12.6"
@@ -1647,6 +1671,7 @@ __metadata:
     "@types/react": 18.2.14
     "@types/react-dom": 18.2.6
     "@types/ws": ^8.5.5
+    ai: ^2.1.17
     bootstrap-icons: ^1.10.5
     cheerio: ^1.0.0-rc.12
     cross-env: ^7.0.3
@@ -2502,6 +2527,13 @@ __metadata:
   version: 4.0.7
   resolution: "eventemitter3@npm:4.0.7"
   checksum: 1875311c42fcfe9c707b2712c32664a245629b42bb0a5a84439762dd0fd637fc54d078155ea83c2af9e0323c9ac13687e03cfba79b03af9f40c89b4960099374
+  languageName: node
+  linkType: hard
+
+"eventsource-parser@npm:1.0.0":
+  version: 1.0.0
+  resolution: "eventsource-parser@npm:1.0.0"
+  checksum: 1bcef98c6e35e5afe6bdbcd6985187d26f3e706f7283a9a8e114491322a2a3be6fb75298ad8426bd5f7ca3de99a632417e8b60d14cc9bc3f4b6aebc03a81c00d
   languageName: node
   linkType: hard
 
@@ -4055,7 +4087,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.3.4":
+"nanoid@npm:^3.3.4, nanoid@npm:^3.3.6":
   version: 3.3.6
   resolution: "nanoid@npm:3.3.6"
   bin:
@@ -5006,6 +5038,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sswr@npm:^1.10.0":
+  version: 1.10.0
+  resolution: "sswr@npm:1.10.0"
+  dependencies:
+    swrev: ^3.0.0
+  peerDependencies:
+    svelte: ^3.29.0
+  checksum: a5331c8d0efed38efcbc41e37b5cb701cc3ce994935eadf4bd28652361a095a6e2cc101d1a6a6e8784aae2bc5096f4a1d1106db110565dd613b472580c31ca43
+  languageName: node
+  linkType: hard
+
 "static-browser-server@npm:1.0.3":
   version: 1.0.3
   resolution: "static-browser-server@npm:1.0.3"
@@ -5183,6 +5226,33 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 53b1e247e68e05db7b3808b99b892bd36fb096e6fba213a06da7fab22045e97597db425c724f2bbd6c99a3c295e1e73f3e4de78592289f38431049e1277ca0ae
+  languageName: node
+  linkType: hard
+
+"swr@npm:2.1.5":
+  version: 2.1.5
+  resolution: "swr@npm:2.1.5"
+  dependencies:
+    use-sync-external-store: ^1.2.0
+  peerDependencies:
+    react: ^16.11.0 || ^17.0.0 || ^18.0.0
+  checksum: f2ef9b83ec4b2ebf4d520578ab847307700db01ffcab64b3aec6ea94feaf96ca10e38e8b08bc8adfab8eaa6ec1bdfd64f82b6f5c14cc4cb5cf11e6fd22b405a4
+  languageName: node
+  linkType: hard
+
+"swrev@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "swrev@npm:3.0.0"
+  checksum: 1dfc42916649059919ae2c2e4e7ff0f206a30e09a0dd4bb61ffad19bb05f0aa66fa0ab389f24c125d04ee497579f91a14e9124aa43406fda7d3fd636e5f42a00
+  languageName: node
+  linkType: hard
+
+"swrv@npm:1.0.3":
+  version: 1.0.3
+  resolution: "swrv@npm:1.0.3"
+  peerDependencies:
+    vue: ">=3.2.26 < 4"
+  checksum: fe2e7c46d76419cfd9dda1b17018f284d54f216c1129c396892947b47ea4b6dc007cfea56bba1b414543824e0c0ae9521ee2beebf10ff6ea92056aa13d65f0e3
   languageName: node
   linkType: hard
 
@@ -5470,6 +5540,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: ed3f2ddddf6f21825e2ede4c2e0f0db8dcce5129802b69d1f0575fc1b42380436e8c76a6cd885d4e9aa8e292e60fb8b959c955f33c6a9123b83814a1a1875367
+  languageName: node
+  linkType: hard
+
+"use-sync-external-store@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "use-sync-external-store@npm:1.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 5c639e0f8da3521d605f59ce5be9e094ca772bd44a4ce7322b055a6f58eeed8dda3c94cabd90c7a41fb6fa852210092008afe48f7038792fd47501f33299116a
   languageName: node
   linkType: hard
 
