@@ -37,16 +37,7 @@ const Service: NextApiHandler = async (req, res) => {
             await handlers.closeStream();
         })
 
-        return streamToResponse(stream, res, {
-            headers: {
-                "Content-Type": "text/event-stream",
-                // Important to set no-transform to avoid compression, which will delay
-                // writing response chunks to the client.
-                // See https://github.com/vercel/next.js/issues/9965
-                "Cache-Control": "no-cache, no-transform",
-                Connection: "keep-alive",
-            }
-        });
+        return streamToResponse(stream, res);
     } catch (error: any) {
         await handlers.sendClear();
         await handlers.sendError(error);

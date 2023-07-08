@@ -4,7 +4,7 @@
   "private": true,
   "author": "Ron Lancaster",
   "license": "MIT",
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "npm@9.5.1",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
@@ -15,7 +15,9 @@
     "type": "git",
     "url": "https://github.com/nyvyn/codewinder"
   },
-  "cacheDirectories": [".next/cache"],
+  "cacheDirectories": [
+    ".next/cache"
+  ],
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.6.9",
     "@excalidraw/excalidraw": "^0.15.2",
@@ -31,7 +33,7 @@
     "eslint": "8.44.0",
     "js-cookie": "^3.0.5",
     "js-tiktoken": "^1.0.7",
-    "langchain": "^0.0.103",
+    "langchain": "^0.0.104",
     "lexical": "^0.11.1",
     "next": "13.4.9",
     "openai": "^3.3.0",
@@ -47,7 +49,7 @@
     "@types/react-dom": "18.2.6",
     "@types/ws": "^8.5.5",
     "cross-env": "^7.0.3",
-    "eslint-config-next": "13.4.9",
+    "eslint-config-next": "^12.0.4",
     "eslint-config-prettier": "^8.8.0",
     "ts-node": "^10.9.1",
     "typescript": "5.1.6"
