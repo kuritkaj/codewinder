@@ -54,7 +54,6 @@ export const streamIntelligence = async ({
         if (onOpen) onOpen();
 
         if (!response.ok) {
-            console.log("Error response", response);
             if (onError) onError(new Error(response.statusText));
             return;
         }
@@ -74,7 +73,6 @@ export const streamIntelligence = async ({
             const {value, done: doneReading} = await reader.read();
             done = doneReading;
             const data = decoder.decode(value, {stream: true});
-            console.log("Data", data);
             if (onMessage) onMessage(data);
 
             // The request has been aborted, stop reading the stream.
@@ -89,17 +87,14 @@ export const streamIntelligence = async ({
     } catch (error) {
         // Ignore abort errors as they are expected.
         if ((error as any).name === 'AbortError') {
-            console.log("Stream aborted");
             abortController = null;
             return null;
         }
 
         if (onError && error instanceof Error) {
-            console.log("Stream error", error);
             onError(error);
         }
     } finally {
-        console.log("Stream closed");
         if (onClose) onClose();
     }
 

@@ -15,6 +15,7 @@
     "type": "git",
     "url": "https://github.com/nyvyn/codewinder"
   },
+  "cacheDirectories": [".next/cache"],
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.6.9",
     "@excalidraw/excalidraw": "^0.15.2",
