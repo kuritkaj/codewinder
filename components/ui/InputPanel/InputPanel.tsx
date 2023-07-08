@@ -12,22 +12,34 @@ const InputPanel = () => {
     const {usePower} = useSettings();
     const [userInput, setUserInput] = useState("");
     const {appendToBlock, addBlock, getContents, replaceBlock} = useNotebook();
-    const { localKey } = useSettings();
+    const { hasServerKey, localKey } = useSettings();
 
     // Prevent blank submissions and allow for multiline input
     const handleEnter = async (e: any) => {
         if (e.key === "Enter" && userInput) {
             if (!e.shiftKey && userInput) {
-                await handleSubmit(userInput);
+                await handleSubmit(e, userInput);
             }
         } else if (e.key === "Enter") {
             e.preventDefault();
         }
     };
 
-    const handleSubmit = async (input: string) => {
+    const handleSubmit = async (e: any, input: string) => {
+        e.preventDefault();
+
         const objective = input.trim();
         if (objective === "") {
+            return;
+        }
+
+        if (!hasServerKey && !localKey) {
+            addBlock({
+                editable: false,
+                markdown: "You must set an OpenAI API key.",
+                namespace: Math.random().toString(),
+                type: MessageType.ApiMessage
+            });
             return;
         }
 
@@ -97,7 +109,7 @@ const InputPanel = () => {
             <InputTextArea
                 userInput={userInput}
                 setUserInput={setUserInput}
-                handleSubmit={async () => { await handleSubmit(userInput); }}
+                handleSubmit={async (e) => { await handleSubmit(e, userInput); }}
                 handleEnter={handleEnter}
                 loading={loading}
             />

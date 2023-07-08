@@ -62,6 +62,7 @@ export const streamIntelligence = async ({
         // This data is a ReadableStream
         const data = response.body;
         if (!data) {
+            if (onError) onError(new Error("No data returned"));
             return;
         }
 
@@ -88,11 +89,13 @@ export const streamIntelligence = async ({
     } catch (error) {
         // Ignore abort errors as they are expected.
         if ((error as any).name === 'AbortError') {
+            console.log("Stream aborted");
             abortController = null;
             return null;
         }
 
         if (onError && error instanceof Error) {
+            console.log("Stream error", error);
             onError(error);
         }
     } finally {

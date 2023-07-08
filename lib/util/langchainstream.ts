@@ -17,9 +17,9 @@ export function Langchainstream(callbacks?: AIStreamCallbacks) {
         await sendData("<br/><br/>");
     }
 
-    const sendError = async (error: any) => {
-        await writer.ready;
-        await writer.abort(error);
+    const sendError = async (error: Error) => {
+        console.log("Aborting with Error", error);
+        await sendData(error.message);
     }
 
     return {
@@ -34,22 +34,21 @@ export function Langchainstream(callbacks?: AIStreamCallbacks) {
                 await sendData(token);
             },
             handleLLMStart: async (_llm: any, _prompts: string[]) => {
-                //await sendLine();
             },
             handleLLMEnd: async (_output: any) => {
                 await sendLine();
             },
             handleLLMError: async (error: Error) => {
                 await sendError(error);
+                await sendLine();
             },
             handleChainStart: async (_chain: any, _inputs: any) => {
-                //await sendLine();
             },
             handleChainEnd: async (_outputs: any) => {
-                //await sendLine();
             },
             handleChainError: async (error: Error) => {
                 await sendError(error);
+                await sendLine();
             },
             handleText: async (text: string) => {
                 await sendData(text);
@@ -60,7 +59,6 @@ export function Langchainstream(callbacks?: AIStreamCallbacks) {
                 await sendLine();
             },
             handleToolEnd: async (_output: string) => {
-                //await sendLine();
             },
             handleToolError: async (error: Error) => {
                 await sendError(error);
@@ -71,9 +69,12 @@ export function Langchainstream(callbacks?: AIStreamCallbacks) {
             sendData: async (data: string) => {
                 await sendData(data);
             },
-            sendError: async (error: any) => {
+            sendError: async (error: Error) => {
                 await sendError(error);
             },
+            sendLine: async () => {
+                await sendLine();
+            }
         }
     }
 }
