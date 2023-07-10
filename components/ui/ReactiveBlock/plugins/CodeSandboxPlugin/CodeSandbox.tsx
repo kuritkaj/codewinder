@@ -32,7 +32,6 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
 
     return (
         <SandpackProvider
-            autoReload={false}
             template={language as SandpackPredefinedTemplate}
             theme="dark"
             files={{

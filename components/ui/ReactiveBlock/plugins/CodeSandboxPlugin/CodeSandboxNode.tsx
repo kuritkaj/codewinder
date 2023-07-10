@@ -1,7 +1,7 @@
 import { CodeSandbox } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandbox";
 import { SANDBOX_TEMPLATES } from "@codesandbox/sandpack-react";
 import { DecoratorNode, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
-import React from "react";
+import React, { ReactNode } from "react";
 import styles from "./CodeSandbox.module.css";
 
 export type SerializedCodeSandboxNode = Spread<
@@ -12,7 +12,7 @@ export type SerializedCodeSandboxNode = Spread<
     SerializedLexicalNode
 >;
 
-export class CodeSandboxNode extends DecoratorNode<CodeSandbox> {
+export class CodeSandboxNode extends DecoratorNode<ReactNode> {
 
     private state: {
         code: string;
@@ -57,7 +57,7 @@ export class CodeSandboxNode extends DecoratorNode<CodeSandbox> {
         return sandbox;
     }
 
-    public decorate(editor: LexicalEditor, config: EditorConfig): CodeSandbox {
+    public decorate(editor: LexicalEditor, config: EditorConfig): ReactNode {
         let mapped = Object.keys(SANDBOX_TEMPLATES).find(key => key === this.state.language);
         if ("javascript" === this.state.language) mapped = "vanilla";
         if ("typescript" === this.state.language) mapped = "vanilla-ts";
