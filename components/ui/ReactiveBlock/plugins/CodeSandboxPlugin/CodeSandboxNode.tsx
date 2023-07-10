@@ -1,8 +1,7 @@
-import CodeSandboxLayout from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxLayout";
-import { SANDBOX_TEMPLATES, SandpackCodeEditor, SandpackPreview, SandpackProvider } from "@codesandbox/sandpack-react";
-import { SandpackPredefinedTemplate } from "@codesandbox/sandpack-react/types";
+import { CodeSandbox } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandbox";
+import { SANDBOX_TEMPLATES } from "@codesandbox/sandpack-react";
 import { DecoratorNode, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
-import React, { ReactNode } from "react";
+import React from "react";
 import styles from "./CodeSandbox.module.css";
 
 export type SerializedCodeSandboxNode = Spread<
@@ -13,20 +12,35 @@ export type SerializedCodeSandboxNode = Spread<
     SerializedLexicalNode
 >;
 
-export class CodeSandboxNode extends DecoratorNode<ReactNode> {
+export class CodeSandboxNode extends DecoratorNode<CodeSandbox> {
 
-    private readonly code: string | null | undefined;
-    private readonly language: string | null | undefined;
+    private state: {
+        code: string;
+        language: string;
+    };
 
-    constructor(language?: string, code?: string, key?: NodeKey) {
+    constructor(language?: string, code?: string, readonly?: boolean, key?: NodeKey) {
         super(key);
 
-        this.code = code;
-        this.language = language;
+        this.state = {
+            code,
+            language,
+        }
+
+        // Bind this method to ensure `this` is always the component instance
+        this.handleCodeChange = this.handleCodeChange.bind(this);
     }
 
     public static clone(node: CodeSandboxNode): CodeSandboxNode {
         return new CodeSandboxNode(node.__key);
+    }
+
+    getTextContent(): string {
+        return this.state.code;
+    }
+
+    getTextContentSize(): number {
+        return this.state.code.length;
     }
 
     public static getType(): string {
@@ -43,37 +57,17 @@ export class CodeSandboxNode extends DecoratorNode<ReactNode> {
         return sandbox;
     }
 
-    public decorate(): ReactNode {
-        let mapped = Object.keys(SANDBOX_TEMPLATES).find(key => key === this.language);
-        if ("javascript" === this.language) mapped = "vanilla";
-        if ("typescript" === this.language) mapped = "vanilla-ts";
-        if (["html", "css", "scss", "sass", "less", "json", "markdown", "md", "mdx"].includes(this.language)) {
+    public decorate(editor: LexicalEditor, config: EditorConfig): CodeSandbox {
+        let mapped = Object.keys(SANDBOX_TEMPLATES).find(key => key === this.state.language);
+        if ("javascript" === this.state.language) mapped = "vanilla";
+        if ("typescript" === this.state.language) mapped = "vanilla-ts";
+        if (["html", "css", "scss", "sass", "less", "json", "markdown", "md", "mdx"].includes(this.state.language)) {
             mapped = "static";
         }
         if (!mapped) mapped = "static";
 
         return (
-            <SandpackProvider
-                template={mapped as SandpackPredefinedTemplate}
-                theme="dark"
-                files={{
-                    [SANDBOX_TEMPLATES[mapped].main]: {
-                        code: this.code,
-                        active: true,
-                    },
-                }}
-            >
-                <CodeSandboxLayout className={styles.layout}>
-                    <SandpackCodeEditor
-                        showLineNumbers
-                        initMode="user-visible"
-                    />
-                    <SandpackPreview
-                        showOpenInCodeSandbox={false}
-                        showRefreshButton={true}
-                    />
-                </CodeSandboxLayout>
-            </SandpackProvider>
+            <CodeSandbox code={this.state.code} editor={editor} language={mapped} onCodeChange={this.handleCodeChange}/>
         );
     }
 
@@ -81,18 +75,22 @@ export class CodeSandboxNode extends DecoratorNode<ReactNode> {
         return {
             type: CodeSandboxNode.getType(),
             version: 1,
-            code: this.code,
-            language: this.language,
+            code: this.state.code,
+            language: this.state.language,
         };
     }
 
-    public updateDOM(): false {
+    public updateDOM(): boolean {
         return false;
+    }
+
+    private handleCodeChange(code: string) {
+        this.state.code = code;
     }
 }
 
-export function $createCodeSandboxNode(language?: string, code?: string): CodeSandboxNode {
-    return new CodeSandboxNode(language, code);
+export function $createCodeSandboxNode(language?: string, code?: string, readonly?: boolean): CodeSandboxNode {
+    return new CodeSandboxNode(language, code, readonly);
 }
 
 export function $isCodeSandboxNode(node: LexicalNode | null | undefined): node is CodeSandboxNode {

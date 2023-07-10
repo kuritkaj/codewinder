@@ -1,4 +1,4 @@
-import { $createCodeSandboxNode } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxNode";
+import { $createCodeSandboxNode, $isCodeSandboxNode } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxNode";
 import { CodeNode } from "@lexical/code";
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
@@ -10,14 +10,18 @@ export default function CodeSandboxPlugin(): React.JSX.Element | null {
 
     useEffect(() => {
         editor.registerNodeTransform(CodeNode, (node) => {
-            const parentNode = node.getParent();
+            if ($isCodeSandboxNode(node)) {
+                return;
+            }
 
             // Skip inline CodeNodes
+            const parentNode = node.getParent();
             if ($isRootNode(parentNode)) {
                 $setSelection(null);
                 const sandbox = $createCodeSandboxNode(
                     node.getLanguage(),
                     node.getTextContent(),
+                    !editor.isEditable(),
                 );
                 node.replace(sandbox);
             }

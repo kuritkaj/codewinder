@@ -22,7 +22,7 @@ export const useCombinedRefs = <T extends any>(
             (ref as any).current = element;
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        refs
+        [refs]
     );
 
 export interface CodeSandboxLayoutProps extends React.HtmlHTMLAttributes<unknown> {
