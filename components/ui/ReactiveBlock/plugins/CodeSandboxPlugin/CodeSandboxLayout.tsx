@@ -1,6 +1,7 @@
 import { useSandpack } from "@codesandbox/sandpack-react";
 import { forwardRef, ForwardRefRenderFunction } from "react";
 import * as React from "react";
+import styles from "./CodeSandboxLayout.module.css";
 
 // Source: https://github.com/codesandbox/sandpack/blob/main/sandpack-react/src/components/CodeEditor/utils.ts
 export const useCombinedRefs = <T extends any>(
@@ -30,12 +31,12 @@ export interface CodeSandboxLayoutProps extends React.HtmlHTMLAttributes<unknown
 }
 
 const CodeSandboxLayout: ForwardRefRenderFunction<HTMLDivElement, CodeSandboxLayoutProps> = ((props, forwardedRef) => {
-    const {children, className, ...otherProps} = props;
+    const {children, ...otherProps} = props;
     const {sandpack} = useSandpack();
     const combinedRef = useCombinedRefs(sandpack.lazyAnchorRef, forwardedRef);
 
     return (
-        <div ref={combinedRef} className={className} {...otherProps}>
+        <div ref={combinedRef} className={styles.layout} {...otherProps}>
             {children}
         </div>
     );

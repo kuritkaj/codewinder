@@ -43,20 +43,19 @@ export type ReactiveBlockProps = {
 }
 
 export const ReactiveBlock = ({block}: ReactiveBlockProps) => {
-    const {namespace, type, editable} = block;
 
     const initialConfig: InitialConfigType = {
-        theme,
-        namespace,
-        editable,
+        editable: block.editable,
+        namespace: "ReactiveBlock",
         nodes: EDITOR_NODES,
         onError: (error) => {
             console.error(error);
         },
+        theme,
     };
 
     return (
-        <div className={`${styles.block} ${styles[type]}`}>
+        <div className={`${styles.block} ${styles[block.type]}`}>
             <LexicalComposer initialConfig={initialConfig}>
                 <RichTextPlugin
                     contentEditable={<ContentEditable className={styles.editable}/>}

@@ -5,7 +5,7 @@ import styles from "./ToggleEditablePlugin.module.css";
 
 export const ToggleEditablePlugin = () => {
     const [editor] = useLexicalComposerContext();
-    const [locked, setLocked] = useState<boolean>();
+    const [locked, setLocked] = useState<boolean>(true);
 
     useEffect(() => {
         setLocked(!editor.isEditable());

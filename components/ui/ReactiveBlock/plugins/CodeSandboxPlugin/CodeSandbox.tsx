@@ -1,4 +1,3 @@
-import styles from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandbox.module.css";
 import CodeSandboxLayout from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxLayout";
 import { EditorView } from "@codemirror/view";
 import {
@@ -10,20 +9,20 @@ import {
     SandpackProvider
 } from "@codesandbox/sandpack-react";
 import { LexicalEditor } from "lexical";
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 
 export type CodeSandboxProps = {
     code: string;
     editor: LexicalEditor;
     language: string;
-    onCodeChange?: (code: string) => void;
+    onCodeChange?: (code: string, editor: LexicalEditor) => void;
 }
 
 export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSandboxProps) => {
     const [code, setCode] = useState<string>(init);
     const [readonly, setReadonly] = useState<boolean>(false);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         setReadonly(!editor.isEditable());
         return editor.registerEditableListener((editable) => {
             setReadonly(!editable);
@@ -41,7 +40,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                 },
             }}
         >
-            <CodeSandboxLayout className={styles.layout}>
+            <CodeSandboxLayout>
                 <SandpackCodeEditor
                     showLineNumbers
                     initMode="user-visible"
@@ -52,7 +51,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                         EditorView.updateListener.of((value) => {
                             const content = value.state.doc.toString();
                             setCode(content);
-                            if (onCodeChange) onCodeChange(content);
+                            if (onCodeChange) onCodeChange(content, editor);
                         })
                     ]}
                 />

@@ -1,7 +1,7 @@
 import { MessageType } from "@/lib/types/MessageType";
 
 export type BlockData = {
-    editable?: boolean;
+    editable: boolean;
     markdown: string;
     namespace: string;
     type: MessageType;

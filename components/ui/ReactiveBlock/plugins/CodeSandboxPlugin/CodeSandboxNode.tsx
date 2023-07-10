@@ -2,7 +2,7 @@ import { CodeSandbox } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPl
 import { SANDBOX_TEMPLATES } from "@codesandbox/sandpack-react";
 import { DecoratorNode, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
 import React, { ReactNode } from "react";
-import styles from "./CodeSandbox.module.css";
+import styles from "./CodeSandboxNode.module.css";
 
 export type SerializedCodeSandboxNode = Spread<
     {
@@ -35,20 +35,20 @@ export class CodeSandboxNode extends DecoratorNode<ReactNode> {
         return new CodeSandboxNode(node.__key);
     }
 
-    getTextContent(): string {
-        return this.state.code;
-    }
-
-    getTextContentSize(): number {
-        return this.state.code.length;
-    }
-
     public static getType(): string {
         return "codesandbox";
     }
 
     public static importJSON(serializedNode: SerializedCodeSandboxNode): CodeSandboxNode {
         return $createCodeSandboxNode(serializedNode.language, serializedNode.code);
+    }
+
+    getTextContent(): string {
+        return this.state.code;
+    }
+
+    getTextContentSize(): number {
+        return this.state.code.length;
     }
 
     createDOM(_config: EditorConfig, _editor: LexicalEditor): HTMLElement {
@@ -84,7 +84,7 @@ export class CodeSandboxNode extends DecoratorNode<ReactNode> {
         return false;
     }
 
-    private handleCodeChange(code: string) {
+    private handleCodeChange(code: string): void {
         this.state.code = code;
     }
 }
