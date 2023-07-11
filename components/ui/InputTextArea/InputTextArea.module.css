@@ -5,7 +5,7 @@
 .generate {
     position: absolute;
     top: calc(50%);
-    right: 2rem;
+    right: 1.5rem;
     transform: translate(0, -50%);
     background: none;
     border: none;
@@ -23,11 +23,40 @@
     background: none;
 }
 
+.indicator {
+    position: absolute;
+    height: 100%;
+    width: 20%; /* Adjust this value to make the "eye" wider or narrower */
+    background: snow;
+    animation: moveEye 1.75s linear infinite;
+}
+
 .loading {
     position: absolute;
     top: calc(50%);
-    right: 0;
     transform: translate(0, -50%);
+    right: 1.5rem;
+    width: 200px;
+    height: 3px;
+}
+
+@keyframes moveEye {
+    0% {
+        left: -20%; /* Start position is completely off the progress bar */
+    }
+    50% {
+        left: 100%; /* Middle position is completely on the progress bar */
+    }
+    100% {
+        left: -20%; /* End position is back off the progress bar */
+    }
+}
+
+.progress {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 .svgicon {
@@ -41,7 +70,7 @@
     position: relative;
     resize: none;
     font-size: 1rem;
-    padding: 1rem 2rem;
+    padding: 1rem 1.5rem;
     margin: 0;
     line-height: 1.5;
     width: 100%;

@@ -40,22 +40,24 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                 value={userInput}
                 onChange={e => setUserInput(e.target.value)}
             />
-            <button
-                type="submit"
-                className={styles.generate}
-                disabled={loading}
-            >
-                {loading ? (
-                    <div className={styles.loading} aria-busy="true" aria-describedby="progress-bar">
-                        <progress id="progress-bar" aria-label="Thinking…"/>
+            {loading ? (
+                <div className={styles.loading} aria-busy="true" aria-describedby="progress">
+                    <div id="progress" className={styles.progress}>
+                        <div className={styles.indicator}></div>
                     </div>
-                ) : (
+                </div>
+            ): (
+                <button
+                    type="submit"
+                    className={styles.generate}
+                    disabled={loading}
+                >
                     <svg viewBox='0 0 20 20' className={styles.svgicon} xmlns="http://www3.org/2000/svg">
                         <path
                             d='M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z'></path>
                     </svg>
-                )}
-            </button>
+                </button>
+            )}
         </form>
     );
 };

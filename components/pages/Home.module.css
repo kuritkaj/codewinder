@@ -8,7 +8,7 @@
 .main {
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 130px);
+  height: calc(100vh - 60px);
   justify-content: center;
   padding: 2rem;
 }
