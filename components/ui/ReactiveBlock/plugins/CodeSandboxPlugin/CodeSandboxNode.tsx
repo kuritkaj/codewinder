@@ -66,8 +66,6 @@ export class CodeSandboxNode extends DecoratorNode<ReactNode> {
         }
         if (!mapped) mapped = "static";
 
-        console.log("decorating", mapped, this.state.language, this.state.code);
-
         return (
             <CodeSandbox code={this.state.code} editor={editor} language={mapped} onCodeChange={this.handleCodeChange}/>
         );

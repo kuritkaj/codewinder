@@ -1,6 +1,6 @@
 import { BlockData, PartialBlockData } from "@/lib/types/BlockData";
 import { MessageType } from "@/lib/types/MessageType";
-import React, { createContext, ReactNode, useRef, useState } from "react";
+import React, { createContext, ReactNode, useCallback, useRef, useState } from "react";
 
 type SubscribeFunction = (block: BlockData) => void;
 
@@ -52,9 +52,9 @@ export const NotebookProvider = ({children}: Props) => {
         });
     };
 
-    const getBlock = (namespace: string) => {
+    const getBlock = useCallback((namespace: string) => {
         return blocks.find(block => block.namespace === namespace);
-    };
+    }, [blocks]);
 
     const getBlocks = () => {
         return blocks;
