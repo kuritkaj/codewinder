@@ -44,7 +44,7 @@ export class CodeSandboxNode extends DecoratorNode<ReactNode> {
     }
 
     getTextContent(): string {
-        return this.state.code;
+        return `\`\`\`${this.state.language}\n${this.state.code}\n\`\`\``;
     }
 
     getTextContentSize(): number {
