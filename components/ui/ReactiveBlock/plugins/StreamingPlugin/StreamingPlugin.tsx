@@ -1,18 +1,15 @@
 // OnChange modified from: https://github.com/facebook/lexical/blob/main/packages/lexical-react/src/LexicalOnChangePlugin.ts
 
+import useNamespace from "@/components/context/useNamespace";
 import useNotebook from "@/components/context/useNotebook";
 import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/plugins/MarkdownTransformers/MarkdownTransformers";
 import { $convertFromMarkdownString, $convertToMarkdownString } from "@lexical/markdown";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot } from "lexical";
 import { useEffect, useLayoutEffect } from "react";
 
-export type StreamingPluginProps = {
-    namespace: string;
-}
-
-export function StreamingPlugin({namespace}: StreamingPluginProps) {
+export function StreamingPlugin() {
     const [editor] = useLexicalComposerContext();
+    const {namespace} = useNamespace();
     const {getBlock, replaceBlock, subscribeToBlock} = useNotebook();
 
     function updateEditor(editor, markdown) {
@@ -50,10 +47,9 @@ export function StreamingPlugin({namespace}: StreamingPluginProps) {
             }
             editorState.read(() => {
                 const block = getBlock(namespace);
-                const node = $getRoot();
                 replaceBlock({
                     ...block,
-                    markdown: $convertToMarkdownString(REACTIVE_NOTEBOOK_TRANSFORMERS, node)
+                    markdown: $convertToMarkdownString(REACTIVE_NOTEBOOK_TRANSFORMERS)
                 }, true);
             });
         });

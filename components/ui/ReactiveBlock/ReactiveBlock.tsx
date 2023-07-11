@@ -1,3 +1,4 @@
+import { NamespaceProvider } from "@/components/context/NamespaceContext";
 import { theme } from "@/components/ui/ReactiveBlock/content/theme";
 import { CodeSandboxNode } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxNode";
 import CollapsiblePlugin from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin";
@@ -56,30 +57,34 @@ export const ReactiveBlock = ({block}: ReactiveBlockProps) => {
 
     return (
         <div className={`${styles.block} ${styles[block.type]}`}>
-            <LexicalComposer initialConfig={initialConfig}>
-                <RichTextPlugin
-                    contentEditable={<ContentEditable className={styles.editable}/>}
-                    placeholder={<div className={styles.placeholder}>Enter some text...</div>}
-                    ErrorBoundary={LexicalErrorBoundary}
-                />
-                <FloatingTextFormatToolbarPlugin/>
-                <CheckListPlugin/>
-                <ClearEditorPlugin/>
-                <CodeSandboxPlugin/>
-                <CollapsiblePlugin/>
-                <HistoryPlugin/>
-                <HorizontalRulePlugin/>
-                <LinkPlugin/>
-                <ListPlugin/>
-                <MarkdownShortcutPlugin transformers={REACTIVE_NOTEBOOK_TRANSFORMERS}/>
-                <StreamingPlugin namespace={block.namespace}/>
-                <TablePlugin/>
-                <TabIndentationPlugin/>
-                <ToggleEditablePlugin/>
-            </LexicalComposer>
+            <NamespaceProvider namespace={block.namespace}>
+                <LexicalComposer initialConfig={initialConfig}>
+                    <RichTextPlugin
+                        contentEditable={<ContentEditable className={styles.editable}/>}
+                        placeholder={<div className={styles.placeholder}>Enter some text...</div>}
+                        ErrorBoundary={LexicalErrorBoundary}
+                    />
+                    <FloatingTextFormatToolbarPlugin/>
+                    <CheckListPlugin/>
+                    <ClearEditorPlugin/>
+                    <CodeSandboxPlugin/>
+                    <CollapsiblePlugin/>
+                    <HistoryPlugin/>
+                    <HorizontalRulePlugin/>
+                    <LinkPlugin/>
+                    <ListPlugin/>
+                    <MarkdownShortcutPlugin transformers={REACTIVE_NOTEBOOK_TRANSFORMERS}/>
+                    <StreamingPlugin/>
+                    <TablePlugin/>
+                    <TabIndentationPlugin/>
+                    <ToggleEditablePlugin/>
+                </LexicalComposer>
+            </NamespaceProvider>
         </div>
     );
 }
+
+ReactiveBlock.whyDidYouRender = true;
 
 export default memo(ReactiveBlock, (prevProps, nextProps) => {
     return prevProps.block.namespace === nextProps.block.namespace;

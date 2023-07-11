@@ -1,4 +1,7 @@
+import useNamespace from "@/components/context/useNamespace";
+import useNotebook from "@/components/context/useNotebook";
 import CodeSandboxLayout from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxLayout";
+import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/plugins/MarkdownTransformers/MarkdownTransformers";
 import { EditorView } from "@codemirror/view";
 import {
     SANDBOX_TEMPLATES,
@@ -8,8 +11,9 @@ import {
     SandpackPreview,
     SandpackProvider
 } from "@codesandbox/sandpack-react";
+import { $convertToMarkdownString } from "@lexical/markdown";
 import { LexicalEditor } from "lexical";
-import React, { useLayoutEffect, useState } from "react";
+import React, { memo, useLayoutEffect, useState } from "react";
 
 export type CodeSandboxProps = {
     code: string;
@@ -19,11 +23,14 @@ export type CodeSandboxProps = {
 }
 
 export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSandboxProps) => {
+    const {namespace} = useNamespace();
+    const {getBlock, replaceBlock} = useNotebook();
     const [code, setCode] = useState<string>(init);
     const [readonly, setReadonly] = useState<boolean>(false);
 
     useLayoutEffect(() => {
-        setReadonly(!editor.isEditable());
+        // Slight delay to let the codesandbox register an editable editor, which can then be made readonly if needed.
+        setTimeout(() => setReadonly(!editor.isEditable()), 500);
         return editor.registerEditableListener((editable) => {
             setReadonly(!editable);
         });
@@ -50,7 +57,19 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                     extensions={[
                         EditorView.updateListener.of((value) => {
                             const content = value.state.doc.toString();
+                            // Set internal code variable to avoid losing the content when the editor is refreshed
                             setCode(content);
+
+                            // Update block so that the content is saved to the notebook
+                            editor.getEditorState().read(() => {
+                                const block = getBlock(namespace);
+                                replaceBlock({
+                                    ...block,
+                                    markdown: $convertToMarkdownString(REACTIVE_NOTEBOOK_TRANSFORMERS)
+                                }, true);
+                            });
+
+                            // Notify listener
                             if (onCodeChange) onCodeChange(content, editor);
                         })
                     ]}
@@ -66,3 +85,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
         </SandpackProvider>
     );
 }
+
+CodeSandbox.whyDidYouRender = true;
+
+export default memo(CodeSandbox);

@@ -48,4 +48,6 @@ const ReactiveNotebook = () => {
     );
 }
 
+ReactiveNotebook.whyDidYouRender = true;
+
 export default ReactiveNotebook;

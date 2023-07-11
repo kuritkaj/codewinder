@@ -1,6 +1,6 @@
 import { BlockData, PartialBlockData } from "@/lib/types/BlockData";
 import { MessageType } from "@/lib/types/MessageType";
-import { createContext, useRef, useState } from "react";
+import React, { createContext, ReactNode, useRef, useState } from "react";
 
 type SubscribeFunction = (block: BlockData) => void;
 
@@ -20,7 +20,11 @@ const initialBlocks: BlockData[] = [
 
 const NotebookContext = createContext<NotebookContextProps>({});
 
-export const NotebookProvider = ({children}) => {
+type Props = {
+    children: ReactNode;
+}
+
+export const NotebookProvider = ({children}: Props) => {
     const [blocks, setBlocks] = useState<BlockData[]>(initialBlocks);
     const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
 
@@ -64,9 +68,18 @@ export const NotebookProvider = ({children}) => {
 
     const replaceBlock = (replacement: BlockData, silent = false) => {
         setBlocks(prevBlocks => {
+            // Update the block
             const newBlocks = prevBlocks.map(block =>
                 block.namespace === replacement.namespace ? replacement : block
             );
+
+            // Check if the new blocks are the same as the old ones
+            const areBlocksSame = prevBlocks.every(
+                (block, index) => JSON.stringify(block) === JSON.stringify(newBlocks[index])
+            );
+
+            // If they are, return the old blocks instead of the new ones
+            if (areBlocksSame) return prevBlocks;
 
             // Invoke subscription callbacks
             if (!silent) subscriptions.current[replacement.namespace]?.forEach(callback => callback(replacement));

@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
 import Cookies from "js-cookie";
 
 export interface Settings {
@@ -28,7 +28,11 @@ const SettingsContext = createContext<SettingsContextProps>({
     ...defaultSettings,
 });
 
-export const SettingsProvider = ({ children }) => {
+type Props = {
+    children: ReactNode;
+}
+
+export const SettingsProvider = ({ children }: Props) => {
     const [currentSettings, setCurrentSettings] = useState<Settings>(
         defaultSettings
     );

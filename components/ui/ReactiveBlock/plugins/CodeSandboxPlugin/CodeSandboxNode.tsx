@@ -1,4 +1,4 @@
-import { CodeSandbox } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandbox";
+import CodeSandbox from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandbox";
 import { SANDBOX_TEMPLATES } from "@codesandbox/sandpack-react";
 import { DecoratorNode, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
 import React, { ReactNode } from "react";
@@ -65,6 +65,8 @@ export class CodeSandboxNode extends DecoratorNode<ReactNode> {
             mapped = "static";
         }
         if (!mapped) mapped = "static";
+
+        console.log("decorating", mapped, this.state.language, this.state.code);
 
         return (
             <CodeSandbox code={this.state.code} editor={editor} language={mapped} onCodeChange={this.handleCodeChange}/>
