@@ -24,9 +24,7 @@ const defaultSettings = {
     usePower: false,
 };
 
-const SettingsContext = createContext<SettingsContextProps>({
-    ...defaultSettings,
-});
+const SettingsContext = createContext<SettingsContextProps>(defaultSettings);
 
 type Props = {
     children: ReactNode;

@@ -4,7 +4,7 @@ interface NamespaceContextProps {
     namespace: string;
 }
 
-const NamespaceContext = createContext<NamespaceContextProps>("");
+const NamespaceContext = createContext<NamespaceContextProps>(undefined);
 
 type Props = {
     children: ReactNode;
