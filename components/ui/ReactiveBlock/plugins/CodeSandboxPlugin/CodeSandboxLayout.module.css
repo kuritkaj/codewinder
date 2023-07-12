@@ -7,3 +7,9 @@
 .layout > :first-child {
     border-bottom: 1px solid #30373d;
 }
+
+.layout > .sp-editor, .layout > .sp-preview {
+    max-height: 20rem;
+    overflow-y: scroll;
+    resize: horizontal;
+}

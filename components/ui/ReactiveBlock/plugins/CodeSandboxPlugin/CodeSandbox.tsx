@@ -1,5 +1,6 @@
 import useNamespace from "@/components/context/useNamespace";
 import useNotebook from "@/components/context/useNotebook";
+import CodeSandboxControls from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxControls";
 import CodeSandboxLayout from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxLayout";
 import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/plugins/MarkdownTransformers/MarkdownTransformers";
 import { EditorView } from "@codemirror/view";
@@ -38,22 +39,32 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
 
     return (
         <SandpackProvider
-            template={language as SandpackPredefinedTemplate}
-            theme="dark"
+            customSetup={{
+                dependencies: {
+                    "plotly.js-dist-min": "latest",
+                },
+            }}
             files={{
                 [SANDBOX_TEMPLATES[language].main]: {
                     code,
                     active: true,
                 },
             }}
+            options={{
+                recompileMode: "delayed",
+                recompileDelay: 1000,
+            }}
+            template={language as SandpackPredefinedTemplate}
+            theme="dark"
         >
             <CodeSandboxLayout>
                 <SandpackCodeEditor
-                    showLineNumbers
                     initMode="user-visible"
-                    showReadOnly={true}
-                    wrapContent={true}
                     readOnly={readonly}
+                    showLineNumbers
+                    showInlineErrors
+                    showReadOnly
+                    wrapContent
                     extensions={[
                         EditorView.updateListener.of((value) => {
                             const content = value.state.doc.toString();
@@ -74,9 +85,10 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                         })
                     ]}
                 />
+                <CodeSandboxControls/>
                 <SandpackPreview
                     showOpenInCodeSandbox={false}
-                    showRefreshButton={true}
+                    showRefreshButton
                 />
                 <SandpackConsole
                     maxMessageCount={1}

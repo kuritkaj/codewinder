@@ -1,0 +1,16 @@
+.controls {
+    display: flex;
+    margin: 1rem 8px;
+    color: snow;
+    justify-content: space-between;
+}
+
+.copy {
+    flex-grow: 1;
+    text-align: right;
+}
+
+.language {
+    flex-grow: 1;
+    text-align: left;
+}
