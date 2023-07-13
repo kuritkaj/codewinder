@@ -1,6 +1,7 @@
 import useNamespace from "@/components/context/useNamespace";
 import useNotebook from "@/components/context/useNotebook";
 import CodeSandboxControls from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxControls";
+import { CodeSandboxDependencies } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxDependencies";
 import CodeSandboxLayout from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxLayout";
 import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/plugins/MarkdownTransformers/MarkdownTransformers";
 import { EditorView } from "@codemirror/view";
@@ -15,6 +16,7 @@ import {
 import { $convertToMarkdownString } from "@lexical/markdown";
 import { LexicalEditor } from "lexical";
 import React, { memo, useLayoutEffect, useState } from "react";
+import styles from "./CodeSandbox.module.css";
 
 export type CodeSandboxProps = {
     code: string;
@@ -28,6 +30,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
     const {getBlock, replaceBlock} = useNotebook();
     const [code, setCode] = useState<string>(init);
     const [readonly, setReadonly] = useState<boolean>(false);
+    const [showPreview, setShowPreview] = useState<boolean>(true);
 
     useLayoutEffect(() => {
         // Slight delay to let the codesandbox register an editable editor, which can then be made readonly if needed.
@@ -37,33 +40,57 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
         });
     }, [editor]);
 
+    function togglePreview() {
+        setShowPreview(!showPreview);
+    }
+
     return (
         <SandpackProvider
             customSetup={{
-                dependencies: {
-                    "plotly.js-dist-min": "latest",
-                },
+                dependencies: CodeSandboxDependencies.reduce((acc, dep) => {
+                    acc[dep] = "latest";
+                    return acc;
+                }, {}),
             }}
             files={{
                 [SANDBOX_TEMPLATES[language].main]: {
                     code,
                     active: true,
                 },
+                "/styles.css": {
+                    code: `body {
+                        font-family: sans-serif;
+                        -webkit-font-smoothing: auto;
+                        -moz-font-smoothing: auto;
+                        -moz-osx-font-smoothing: grayscale;
+                        font-smoothing: auto;
+                        text-rendering: optimizeLegibility;
+                        font-smooth: always;
+                        -webkit-tap-highlight-color: transparent;
+                        -webkit-touch-callout: none;
+                    }
+                    
+                    h1 {
+                        font-size: 1.5rem;
+                    }`,
+                    hidden: true,
+                },
             }}
             options={{
                 recompileMode: "delayed",
-                recompileDelay: 1000,
+                recompileDelay: 3000,
             }}
             template={language as SandpackPredefinedTemplate}
             theme="dark"
         >
-            <CodeSandboxLayout>
+            <CodeSandboxLayout className={styles.layout}>
                 <SandpackCodeEditor
+                    className={styles.editor}
                     initMode="user-visible"
                     readOnly={readonly}
                     showLineNumbers
                     showInlineErrors
-                    showReadOnly
+                    showReadOnly={false}
                     wrapContent
                     extensions={[
                         EditorView.updateListener.of((value) => {
@@ -85,13 +112,21 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                         })
                     ]}
                 />
-                <CodeSandboxControls/>
+                <CodeSandboxControls
+                    className={styles.controls}
+                    language={language}
+                    togglePreview={togglePreview}
+                />
                 <SandpackPreview
+                    className={styles.preview}
+                    hidden={!showPreview}
                     showOpenInCodeSandbox={false}
-                    showRefreshButton
+                    showRefreshButton={false}
                 />
                 <SandpackConsole
+                    className={styles.console}
                     maxMessageCount={1}
+                    resetOnPreviewRestart={true}
                 />
             </CodeSandboxLayout>
         </SandpackProvider>

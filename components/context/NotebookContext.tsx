@@ -28,11 +28,11 @@ export const NotebookProvider = ({children}: Props) => {
     const [blocks, setBlocks] = useState<BlockData[]>(initialBlocks);
     const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
 
-    const addBlock = (addition: BlockData) => {
+    const addBlock = useCallback((addition: BlockData) => {
         setBlocks(prevBlocks => [...prevBlocks, addition]);
-    };
+    }, []);
 
-    const appendToBlock = (partial: PartialBlockData) => {
+    const appendToBlock = useCallback((partial: PartialBlockData) => {
         if (!partial.markdown) return;
 
         setBlocks(prevBlocks => {
@@ -50,23 +50,23 @@ export const NotebookProvider = ({children}: Props) => {
 
             return newBlocks;
         });
-    };
+    }, []);
 
     const getBlock = useCallback((namespace: string) => {
         return blocks.find(block => block.namespace === namespace);
     }, [blocks]);
 
-    const getBlocks = () => {
+    const getBlocks = useCallback(() => {
         return blocks;
-    }
+    }, [blocks]);
 
-    const getContents = () => {
+    const getContents = useCallback(() => {
         return blocks.map(block => {
             return [block.markdown, block.type];
         });
-    };
+    }, [blocks]);
 
-    const replaceBlock = (replacement: BlockData, silent = false) => {
+    const replaceBlock = useCallback((replacement: BlockData, silent = false) => {
         setBlocks(prevBlocks => {
             // Update the block
             const newBlocks = prevBlocks.map(block =>
@@ -86,9 +86,9 @@ export const NotebookProvider = ({children}: Props) => {
 
             return newBlocks;
         });
-    };
+    }, []);
 
-    const subscribeToBlock = (namespace: string, callback: SubscribeFunction) => {
+    const subscribeToBlock = useCallback((namespace: string, callback: SubscribeFunction) => {
         subscriptions.current = {
             ...subscriptions.current,
             [namespace]: [...(subscriptions.current[namespace] || []), callback]
@@ -101,7 +101,7 @@ export const NotebookProvider = ({children}: Props) => {
                 [namespace]: (subscriptions.current[namespace] || []).filter(cb => cb !== callback)
             };
         };
-    };
+    }, []);
 
     return (
         <NotebookContext.Provider value={{addBlock, appendToBlock, getBlock, getBlocks, getContents, replaceBlock, subscribeToBlock}}>

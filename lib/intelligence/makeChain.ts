@@ -54,9 +54,9 @@ export const makeChain = async ({callbacks, localKey = null, usePower = false}: 
     });
 
     // This should represent intelligence that is great at writing code.
-    const powerful = new ChatOpenAI({
+    const coder = new ChatOpenAI({
         openAIApiKey: openAiApiKey,
-        modelName: usePower ? power : speed,
+        modelName: power,
         temperature: 0.5,
         streaming: Boolean(callbacks),
         callbacks,
@@ -80,8 +80,8 @@ export const makeChain = async ({callbacks, localKey = null, usePower = false}: 
 
     const tools: StructuredTool[] = [
         new WebBrowser({callbacks, embeddings, model: capable, store: knowledge}),
-        new CodeWriter({callbacks, model: powerful}),
-        new CodeEvaluator({callbacks, model: powerful, store: code}),
+        new CodeWriter({callbacks, model: coder}),
+        new CodeEvaluator({callbacks, model: coder, store: code}),
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, store: knowledge}));

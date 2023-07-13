@@ -22,7 +22,7 @@
 
 .placeholder {
     position: absolute;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem 3rem;
     top: 50%;
     opacity: 50%;
     transform: translate(0, -50%);

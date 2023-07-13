@@ -1,6 +1,6 @@
 .controls {
     display: flex;
-    margin: 1rem 8px;
+    padding: 1rem 8px;
     color: snow;
     justify-content: space-between;
 }

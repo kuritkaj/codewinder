@@ -23,6 +23,7 @@
     "@excalidraw/excalidraw": "^0.15.2",
     "@fontsource-variable/public-sans": "^5.0.4",
     "@lexical/react": "^0.11.1",
+    "@radix-ui/react-icons": "^1.3.0",
     "@supabase/supabase-js": "^2.26.0",
     "ai": "^2.1.17",
     "bootstrap-icons": "^1.10.5",

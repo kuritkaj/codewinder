@@ -1,0 +1,35 @@
+.console .sp-console-actions {
+    visibility: hidden;
+}
+
+.console, .preview {
+    border-bottom: 0;
+}
+
+.controls, .editor {
+    border-bottom: 1px solid #30373d;
+}
+
+.editor {
+    max-height: 20rem;
+    overflow-y: scroll;
+    resize: horizontal;
+}
+
+.editor pre {
+    padding-left: 4px;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #30373d;
+}
+
+.preview {
+    height: 23rem;
+}
+
+.preview[hidden] {
+    display: none;
+}

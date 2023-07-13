@@ -58,13 +58,17 @@ export class CodeSandboxNode extends DecoratorNode<ReactNode> {
     }
 
     public decorate(editor: LexicalEditor, config: EditorConfig): ReactNode {
+        console.log("language", this.state.language);
         let mapped = Object.keys(SANDBOX_TEMPLATES).find(key => key === this.state.language);
         if ("javascript" === this.state.language) mapped = "vanilla";
         if ("typescript" === this.state.language) mapped = "vanilla-ts";
+        if ("jsx" === this.state.language) mapped = "react";
+        if ("tsx" === this.state.language) mapped = "react";
         if (["html", "css", "scss", "sass", "less", "json", "markdown", "md", "mdx"].includes(this.state.language)) {
             mapped = "static";
         }
         if (!mapped) mapped = "static";
+        console.log("mapped", mapped);
 
         return (
             <CodeSandbox code={this.state.code} editor={editor} language={mapped} onCodeChange={this.handleCodeChange}/>
