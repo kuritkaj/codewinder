@@ -18,6 +18,45 @@ import { LexicalEditor } from "lexical";
 import React, { memo, useLayoutEffect, useState } from "react";
 import styles from "./CodeSandbox.module.css";
 
+const CSS = `
+html, body {
+    background: #070809;
+    color: snow;
+}
+    
+body {
+    font-family: sans-serif;
+    -webkit-font-smoothing: auto;
+    -moz-font-smoothing: auto;
+    -moz-osx-font-smoothing: grayscale;
+    font-smoothing: auto;
+    text-rendering: optimizeLegibility;
+    font-smooth: always;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+h1 {
+    font-size: 1.5rem;
+}
+`;
+
+const HTML = `
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Parcel Sandbox</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+
+    <body>
+        <div id="app"></div>
+    </body>
+</html>
+`;
+
 export type CodeSandboxProps = {
     code: string;
     editor: LexicalEditor;
@@ -58,27 +97,17 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                     active: true,
                 },
                 "/styles.css": {
-                    code: `body {
-                        font-family: sans-serif;
-                        -webkit-font-smoothing: auto;
-                        -moz-font-smoothing: auto;
-                        -moz-osx-font-smoothing: grayscale;
-                        font-smoothing: auto;
-                        text-rendering: optimizeLegibility;
-                        font-smooth: always;
-                        -webkit-tap-highlight-color: transparent;
-                        -webkit-touch-callout: none;
-                    }
-                    
-                    h1 {
-                        font-size: 1.5rem;
-                    }`,
+                    code: CSS,
+                    hidden: true,
+                },
+                "/index.html": {
+                    code: HTML,
                     hidden: true,
                 },
             }}
             options={{
                 recompileMode: "delayed",
-                recompileDelay: 3000,
+                recompileDelay: 1000,
             }}
             template={language as SandpackPredefinedTemplate}
             theme="dark"

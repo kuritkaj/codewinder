@@ -13,10 +13,10 @@ Input should include all useful context from previous functions and results.`;
 
 const SPECIFICATION_INPUT = "specification";
 
-export const GUIDANCE = `You are an AI assistant receiving a detailed code specification. 
+export const GUIDANCE = `You are an AI assistant receiving detailed software requirements. 
 Your task is to respond with code that can be executed in a web-based JavaScript environment.
 
-This is the code specification:
+This is the code specification (use natural language to describe the requirements):
 {${SPECIFICATION_INPUT}}
 
 You have access to the following libraries (which must be imported as modules):
@@ -26,24 +26,21 @@ ${
     }).join("\n")
 }
 
-For web content, use a template like this:
-\`\`\`html
-<!DOCTYPE html>
-<html lang="en">
+Notes:
+* If a dependency needs additional elements, such as canvas, you'll need to create those in your code.
+* Chart.js uses tree-shaking, so to use it, you'll need to import from: 'chart.js/auto'.
 
-<head>
-  <title>Parcel Sandbox</title>
-  <meta charset="UTF-8" />
-</head>
-
+This is the html file that will be used to display the results (running in Parcel):
+\`\`\`
 <body>
-  <div id="app"></div>
-
-  <script src="index.js">
-  </script>
+    <div id="app"></div>
 </body>
+\`\`\`
 
-</html>
+For displaying content to the user, use a template like this:
+\`\`\`javascript
+import module from "module";
+document.getElementById("app").innerHTML = "<h1>Hello world</h1>";
 \`\`\`
 
 Now, based on the natural language description, 
