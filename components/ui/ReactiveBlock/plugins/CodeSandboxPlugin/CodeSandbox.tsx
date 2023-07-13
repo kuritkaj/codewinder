@@ -121,7 +121,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                     className={styles.preview}
                     hidden={!showPreview}
                     showOpenInCodeSandbox={false}
-                    showRefreshButton={false}
+                    showRefreshButton
                 />
                 <SandpackConsole
                     className={styles.console}
