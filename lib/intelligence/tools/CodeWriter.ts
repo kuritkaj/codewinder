@@ -7,9 +7,10 @@ import { StructuredTool, ToolParams } from "langchain/tools";
 import { z } from "zod";
 
 export const NAME = "code-writer";
-export const DESCRIPTION = `used to write and respond with code.
+export const DESCRIPTION = `used to write and respond with code and visualizations.
 Results are executed by the user in a web-based JavaScript environment.
-Input should include all useful context from previous functions and results.`;
+Input should be a detailed, natural language description of the software requirements
+including all useful context from previous interactions.`;
 
 const SPECIFICATION_INPUT = "specification";
 
