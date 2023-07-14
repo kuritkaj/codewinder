@@ -1,13 +1,21 @@
 .toggle {
     vertical-align: middle;
     position: absolute;
+    width: 2em;
+    height: 2em;
+    padding: 0.5em;
     top: 1.5rem;
     right: 1.5rem;
-    transform: translate(50%, 25%);
+    transform: translate(50%, -0.25em);
     z-index: 10;
     cursor: pointer;
     background: none;
     border: none;
+}
+
+.toggle > svg {
+    width: 1em;
+    height: 1em;
 }
 
 .indicator {

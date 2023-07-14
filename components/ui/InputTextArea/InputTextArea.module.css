@@ -6,11 +6,19 @@
     position: absolute;
     top: calc(50%);
     right: 1.5rem;
-    transform: translate(0, -50%);
+    width: 2em;
+    height: 2em;
+    padding: 0.5em;
+    transform: translate(0.25em, -50%);
     background: none;
     border: none;
     color: #ececf1;
     cursor: pointer;
+}
+
+.generate svg {
+    height: 1em;
+    width: 1em;
 }
 
 .generate:hover {

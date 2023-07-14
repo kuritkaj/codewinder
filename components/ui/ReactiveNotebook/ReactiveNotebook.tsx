@@ -41,6 +41,7 @@ const ReactiveNotebook = () => {
                     return <ReactiveBlock
                         key={block.namespace}
                         block={block}
+                        anchorRef={notebookRef}
                     />;
                 })
             }

@@ -9,13 +9,13 @@ const VERTICAL_GAP = 10;
 const HORIZONTAL_OFFSET = 5;
 
 export function setFloatingElemPosition(
-    targetRect: ClientRect | null,
+    targetRect: DOMRect | null,
     floatingElem: HTMLElement,
     anchorElem: HTMLElement,
     verticalGap: number = VERTICAL_GAP,
     horizontalOffset: number = HORIZONTAL_OFFSET,
 ): void {
-    const scrollerElem = anchorElem.parentElement;
+    const scrollerElem = anchorElem;
 
     if (targetRect === null || !scrollerElem) {
         floatingElem.style.opacity = '0';
@@ -38,8 +38,9 @@ export function setFloatingElemPosition(
         left = editorScrollerRect.right - floatingElemRect.width - horizontalOffset;
     }
 
-    top -= anchorElementRect.top;
-    left -= anchorElementRect.left;
+    console.log("scroll top", targetRect, scrollerElem.scrollTop, anchorElementRect.top, top);
+    top -= anchorElementRect.top - scrollerElem.scrollTop;
+    left -= anchorElementRect.left - scrollerElem.scrollLeft;
 
     floatingElem.style.opacity = '1';
     floatingElem.style.transform = `translate(${left}px, ${top}px)`;
