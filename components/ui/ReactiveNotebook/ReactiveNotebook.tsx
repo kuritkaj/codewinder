@@ -31,16 +31,12 @@ const ReactiveNotebook = () => {
 
     if (!hasUserScrolledUp.current) {
         const notebook = notebookRef.current;
-        if (notebook) {
-            notebook.scrollTop = notebook.scrollHeight;
-        }
+        if (notebook) notebook.scrollTop = notebook.scrollHeight;
     }
 
     function handleDragEnd(event) {
         const {active, over} = event;
-        if (active && over && active.id !== over.id) {
-            moveBlock(active.id, over.id);
-        }
+        if (active && over) moveBlock(active.id, over.id);
     }
 
     return (
