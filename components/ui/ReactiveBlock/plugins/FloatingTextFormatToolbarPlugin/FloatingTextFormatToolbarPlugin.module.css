@@ -1,4 +1,4 @@
-.floating-text-format-popup {
+.popup {
     display: flex;
     background: #fff;
     color: black;
@@ -11,118 +11,90 @@
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
     border-radius: 8px;
     transition: opacity 0.5s;
-    height: 35px;
     will-change: transform;
 }
 
-.floating-text-format-popup button.popup-item {
-    border: 0;
+.toolbar {
     display: flex;
-    background: none;
-    border-radius: 10px;
-    padding: 8px;
+    padding: 5px;
+    width: 100%;
+    min-width: max-content;
+    height: 30px;
+    border-radius: 6px;
+    background-color: white;
+    box-shadow: 0 2px 10px var(--black-a7);
+}
+
+.toggleitem,
+.link,
+.button {
+    all: unset;
+    flex: 0 0 auto;
+    color: var(--mauve-11);
+    padding: 3px 5px;
+    border-radius: 4px;
+    display: inline-flex;
+    font-size: 13px;
+    line-height: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggleitem:hover,
+.link:hover,
+.button:hover {
+    background-color: var(--violet-3);
+    color: var(--violet-11);
+}
+
+.toggleitem:focus,
+.link:focus,
+.button:focus {
+    position: relative;
+    box-shadow: 0 0 0 2px var(--violet-7);
+}
+
+.button {
+    padding-left: 10px;
+    padding-right: 10px;
+    color: white;
+    background-color: var(--violet-9);
+}
+
+.button:hover {
+    background-color: var(--violet-10);
+    color: white;
+}
+
+.link {
+    background-color: transparent;
+    color: var(--mauve-11);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.link:hover {
+    background-color: transparent;
     cursor: pointer;
-    vertical-align: middle;
 }
 
-.floating-text-format-popup button.popup-item:disabled {
-    cursor: not-allowed;
-}
-
-.floating-text-format-popup button.popup-item.spaced {
-    margin-right: 2px;
-}
-
-.floating-text-format-popup button.popup-item i.format {
-    background-size: contain;
-    font-size: 1rem;
-}
-
-.floating-text-format-popup button.popup-item:disabled i.format {
-    opacity: 0.2;
-}
-
-.floating-text-format-popup button.popup-item.active {
-    background-color: rgba(223, 232, 250, 0.3);
-}
-
-.floating-text-format-popup button.popup-item.active i {
-    opacity: 1;
-}
-
-.floating-text-format-popup .popup-item:hover:not([disabled]) {
-    background-color: #eee;
-}
-
-.floating-text-format-popup select.popup-item {
-    border: 0;
-    display: flex;
-    background: none;
-    border-radius: 10px;
-    padding: 8px;
-    vertical-align: middle;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    width: 70px;
-    font-size: 14px;
-    color: #777;
-    text-overflow: ellipsis;
-}
-
-.floating-text-format-popup select.code-language {
-    text-transform: capitalize;
-    width: 130px;
-}
-
-.floating-text-format-popup .popup-item .text {
-    display: flex;
-    line-height: 20px;
-    vertical-align: middle;
-    font-size: 14px;
-    color: #777;
-    text-overflow: ellipsis;
-    width: 70px;
-    overflow: hidden;
-    height: 20px;
-    text-align: left;
-}
-
-.floating-text-format-popup .popup-item .icon {
-    display: flex;
-    width: 20px;
-    height: 20px;
-    user-select: none;
-    margin-right: 8px;
-    line-height: 16px;
-    background-size: contain;
-}
-
-.floating-text-format-popup i.chevron-down {
-    margin-top: 3px;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    user-select: none;
-}
-
-.floating-text-format-popup i.chevron-down.inside {
-    width: 16px;
-    height: 16px;
-    display: flex;
-    margin-left: -25px;
-    margin-top: 11px;
-    margin-right: 10px;
-    pointer-events: none;
-}
-
-.floating-text-format-popup .divider {
+.separator {
     width: 1px;
-    background-color: #eee;
-    margin: 0 4px;
+    background-color: var(--mauve-6);
+    margin: 0 10px;
 }
 
-@media (max-width: 1024px) {
-    .floating-text-format-popup button.insert-comment {
-        display: none;
-    }
+.toggleitem {
+    background-color: white;
+    margin-left: 2px;
+}
+
+.toggleitem:first-child {
+    margin-left: 0;
+}
+
+.toggleitem[data-state='on'] {
+    background-color: var(--violet-5);
+    color: var(--violet-11);
 }

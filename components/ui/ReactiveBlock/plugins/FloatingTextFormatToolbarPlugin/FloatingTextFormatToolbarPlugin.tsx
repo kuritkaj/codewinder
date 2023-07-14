@@ -10,6 +10,8 @@ import { $isCodeHighlightNode } from '@lexical/code';
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mergeRegister } from '@lexical/utils';
+import { CodeIcon, FontBoldIcon, FontItalicIcon, StrikethroughIcon, UnderlineIcon } from "@radix-ui/react-icons";
+import * as Toolbar from "@radix-ui/react-toolbar";
 import {
     $getSelection,
     $isRangeSelection,
@@ -37,8 +39,6 @@ function TextFormatFloatingToolbar({
     isUnderline,
     isCode,
     isStrikethrough,
-    isSubscript,
-    isSuperscript,
 }: {
     editor: LexicalEditor;
     anchorElem: HTMLElement;
@@ -47,11 +47,17 @@ function TextFormatFloatingToolbar({
     isItalic: boolean;
     isLink: boolean;
     isStrikethrough: boolean;
-    isSubscript: boolean;
-    isSuperscript: boolean;
     isUnderline: boolean;
 }): React.JSX.Element {
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
+    const [locked, setLocked] = useState<boolean>(false);
+
+    useEffect(() => {
+        setLocked(!editor.isEditable());
+        return editor.registerEditableListener((editable) => {
+            setLocked(!editable);
+        });
+    }, [editor]);
 
     const insertLink = useCallback(() => {
         if (!isLink) {
@@ -66,14 +72,14 @@ function TextFormatFloatingToolbar({
             popupCharStylesEditorRef?.current &&
             (e.buttons === 1 || e.buttons === 3)
         ) {
-            if (popupCharStylesEditorRef.current.style.pointerEvents !== 'none') {
+            if (popupCharStylesEditorRef.current.style.pointerEvents !== "none") {
                 const x = e.clientX;
                 const y = e.clientY;
                 const elementUnderMouse = document.elementFromPoint(x, y);
 
                 if (!popupCharStylesEditorRef.current.contains(elementUnderMouse)) {
                     // Mouse is not over the target element => not a normal click, but probably a drag
-                    popupCharStylesEditorRef.current.style.pointerEvents = 'none';
+                    popupCharStylesEditorRef.current.style.pointerEvents = "none";
                 }
             }
         }
@@ -81,20 +87,20 @@ function TextFormatFloatingToolbar({
 
     function mouseUpListener() {
         if (popupCharStylesEditorRef?.current) {
-            if (popupCharStylesEditorRef.current.style.pointerEvents !== 'auto') {
-                popupCharStylesEditorRef.current.style.pointerEvents = 'auto';
+            if (popupCharStylesEditorRef.current.style.pointerEvents !== "auto") {
+                popupCharStylesEditorRef.current.style.pointerEvents = "auto";
             }
         }
     }
 
     useEffect(() => {
         if (popupCharStylesEditorRef?.current) {
-            document.addEventListener('mousemove', mouseMoveListener);
-            document.addEventListener('mouseup', mouseUpListener);
+            document.addEventListener("mousemove", mouseMoveListener);
+            document.addEventListener("mouseup", mouseUpListener);
 
             return () => {
-                document.removeEventListener('mousemove', mouseMoveListener);
-                document.removeEventListener('mouseup', mouseUpListener);
+                document.removeEventListener("mousemove", mouseMoveListener);
+                document.removeEventListener("mouseup", mouseUpListener);
             };
         }
     }, [popupCharStylesEditorRef]);
@@ -168,90 +174,52 @@ function TextFormatFloatingToolbar({
     }, [editor, updateTextFormatFloatingToolbar]);
 
     return (
-        <div ref={popupCharStylesEditorRef} className={styles["floating-text-format-popup"]}>
-            {editor.isEditable() && (
-                <>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
-                        }}
-                        className={`${styles["popup-item"]} ${styles["spaced"]} ${isBold ? styles["active"] : ''}`}
-                        aria-label="Format text as bold"
+        <div ref={popupCharStylesEditorRef} className={styles.popup}>
+            {!locked && (
+                <Toolbar.Root className={styles.toolbar} aria-label="Formatting options">
+                    <Toolbar.ToggleGroup
+                        type="multiple"
+                        aria-label="Text formatting"
+                        defaultValue={[
+                            isBold && "bold",
+                            isItalic && "italic",
+                            isUnderline && "underline",
+                            isStrikethrough && "strikethrough",
+                            isCode && "code",
+                        ]}
                     >
-                        <i className={`${styles["format"]} bi bi-type-bold`} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
-                        }}
-                        className={`${styles["popup-item"]} ${styles["spaced"]} ${isItalic ? styles["active"] : ''}`}
-                        aria-label="Format text as italics"
-                    >
-                        <i className={`${styles["format"]} bi bi-type-italic`} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
-                        }}
-                        className={`${styles["popup-item"]} ${styles["spaced"]} ${isUnderline ? styles["active"] : ''}`}
-                        aria-label="Format text to underlined"
-                    >
-                        <i className={`${styles["format"]} bi bi-type-underline`} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
-                        }}
-                        className={`${styles["popup-item"]} ${styles["spaced"]} ${isStrikethrough ? styles["active"] : ''}`}
-                        aria-label="Format text with a strikethrough"
-                    >
-                        <i className={`${styles["format"]} bi bi-type-strikethrough`} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
-                        }}
-                        className={`${styles["popup-item"]} ${styles["spaced"]} ${isSubscript ? styles["active"] : ''}`}
-                        title="Subscript"
-                        aria-label="Format Subscript"
-                    >
-                        <i className={`${styles["format"]} bi bi-subscript`} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript');
-                        }}
-                        className={`${styles["popup-item"]} ${styles["spaced"]} ${isSuperscript ? styles["active"] : ''}`}
-                        title="Superscript"
-                        aria-label="Format Superscript"
-                    >
-                        <i className={`${styles["format"]} bi bi-superscript`} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
-                        }}
-                        className={`${styles["popup-item"]} ${styles["spaced"]} ${isCode ? styles["active"] : ''}`}
-                        aria-label="Insert code block"
-                    >
-                        <i className={`${styles["format"]} bi bi-code`} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={insertLink}
-                        className={`${styles["popup-item"]} ${styles["spaced"]} ${isLink ? styles["active"] : ''}`}
-                        aria-label="Insert link"
-                    >
-                        <i className={`${styles["format"]} bi bi-link`} />
-                    </button>
-                </>
+                        <Toolbar.ToggleItem className={styles.toggleitem} value="bold" aria-label="Bold"
+                                            onClick={() => {
+                                                editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+                                            }}>
+                            <FontBoldIcon/>
+                        </Toolbar.ToggleItem>
+                        <Toolbar.ToggleItem className={styles.toggleitem} value="italic" aria-label="Italic"
+                                            onClick={() => {
+                                                editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+                                            }}>
+                            <FontItalicIcon/>
+                        </Toolbar.ToggleItem>
+                        <Toolbar.ToggleItem className={styles.toggleitem} value="underline" aria-label="Strike through"
+                                            onClick={() => {
+                                                editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+                                            }}>
+                            <UnderlineIcon/>
+                        </Toolbar.ToggleItem>
+                        <Toolbar.ToggleItem className={styles.toggleitem} value="strikethrough" aria-label="Strike through"
+                                            onClick={() => {
+                                                editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
+                                            }}>
+                            <StrikethroughIcon/>
+                        </Toolbar.ToggleItem>
+                        <Toolbar.ToggleItem className={styles.toggleitem} value="code" aria-label="Strike through"
+                                            onClick={() => {
+                                                editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
+                                            }}>
+                            <CodeIcon/>
+                        </Toolbar.ToggleItem>
+                    </Toolbar.ToggleGroup>
+                </Toolbar.Root>
             )}
         </div>
     );
@@ -267,8 +235,6 @@ function useFloatingTextFormatToolbar(
     const [isItalic, setIsItalic] = useState(false);
     const [isUnderline, setIsUnderline] = useState(false);
     const [isStrikethrough, setIsStrikethrough] = useState(false);
-    const [isSubscript, setIsSubscript] = useState(false);
-    const [isSuperscript, setIsSuperscript] = useState(false);
     const [isCode, setIsCode] = useState(false);
 
     const updatePopup = useCallback(() => {
@@ -303,8 +269,6 @@ function useFloatingTextFormatToolbar(
             setIsItalic(selection.hasFormat('italic'));
             setIsUnderline(selection.hasFormat('underline'));
             setIsStrikethrough(selection.hasFormat('strikethrough'));
-            setIsSubscript(selection.hasFormat('subscript'));
-            setIsSuperscript(selection.hasFormat('superscript'));
             setIsCode(selection.hasFormat('code'));
 
             // Update links
@@ -364,8 +328,6 @@ function useFloatingTextFormatToolbar(
             isBold={isBold}
             isItalic={isItalic}
             isStrikethrough={isStrikethrough}
-            isSubscript={isSubscript}
-            isSuperscript={isSuperscript}
             isUnderline={isUnderline}
             isCode={isCode}
         />,

@@ -59,13 +59,6 @@
     overflow: hidden;
 }
 
-.svgicon {
-    transform: rotate(90deg);
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
 .textarea {
     position: relative;
     resize: none;

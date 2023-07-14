@@ -1,15 +1,15 @@
 .toggle {
     vertical-align: middle;
     position: absolute;
-    top: 50%;
+    top: 1.5rem;
     right: 1.5rem;
-    transform: translate(50%, -50%);
+    transform: translate(50%, 25%);
     z-index: 10;
     cursor: pointer;
     background: none;
     border: none;
 }
 
-.toggle i {
+.indicator {
     color: snow;
 }

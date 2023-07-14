@@ -21,11 +21,9 @@ This is the code specification (use natural language to describe the requirement
 {${SPECIFICATION_INPUT}}
 
 You have access to the following libraries (which must be imported as modules):
-${
-    CodeSandboxDependencies.map((dep) => {
+${ CodeSandboxDependencies.map((dep) => {
         return `- ${dep}`;
-    }).join("\n")
-}
+    }).join("\n") }
 
 Notes:
 * If a dependency needs additional elements, such as canvas, you'll need to create those in your code.
