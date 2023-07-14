@@ -38,7 +38,6 @@ export function setFloatingElemPosition(
         left = editorScrollerRect.right - floatingElemRect.width - horizontalOffset;
     }
 
-    console.log("scroll top", targetRect, scrollerElem.scrollTop, anchorElementRect.top, top);
     top -= anchorElementRect.top - scrollerElem.scrollTop;
     left -= anchorElementRect.left - scrollerElem.scrollLeft;
 
