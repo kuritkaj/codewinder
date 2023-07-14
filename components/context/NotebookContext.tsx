@@ -10,12 +10,13 @@ interface NotebookContextProps {
     getBlock?: (namespace: string) => BlockData | undefined;
     getBlocks?: () => BlockData[];
     getContents?: () => string[][];
+    moveBlock?: (source: string, destination: string) => void;
     replaceBlock?: (replacement: BlockData, silent?: boolean) => void;
     subscribeToBlock?: (namespace: string, callback: SubscribeFunction) => void;
 }
 
 const initialBlocks: BlockData[] = [
-    {editable: false, markdown: "Hi there! How can I help?", namespace: "welcome", type: MessageType.ApiMessage}
+    {editable: false, markdown: "Hi there! How can I help?", namespace: Math.random().toString(), type: MessageType.ApiMessage}
 ];
 
 const NotebookContext = createContext<NotebookContextProps>({});
@@ -66,6 +67,20 @@ export const NotebookProvider = ({children}: Props) => {
         });
     }, [blocks]);
 
+    const moveBlock = useCallback((source: string, destination: string) => {
+        setBlocks(prevBlocks => {
+            const fromIndex = prevBlocks.findIndex(block => block.namespace === source);
+            const toIndex = prevBlocks.findIndex(block => block.namespace === destination);
+
+            if (fromIndex === -1 || toIndex === -1) return prevBlocks;
+
+            const newBlocks = [...prevBlocks];
+            newBlocks.splice(toIndex, 0, newBlocks.splice(fromIndex, 1)[0]);
+
+            return newBlocks;
+        });
+    }, []);
+
     const replaceBlock = useCallback((replacement: BlockData, silent = false) => {
         setBlocks(prevBlocks => {
             // Update the block
@@ -104,7 +119,7 @@ export const NotebookProvider = ({children}: Props) => {
     }, []);
 
     return (
-        <NotebookContext.Provider value={{addBlock, appendToBlock, getBlock, getBlocks, getContents, replaceBlock, subscribeToBlock}}>
+        <NotebookContext.Provider value={{addBlock, appendToBlock, getBlock, getBlocks, getContents, moveBlock, replaceBlock, subscribeToBlock}}>
             {children}
         </NotebookContext.Provider>
     );

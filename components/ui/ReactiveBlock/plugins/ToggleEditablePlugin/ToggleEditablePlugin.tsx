@@ -1,3 +1,4 @@
+import BaseButton from "@/components/ui/BaseButton";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { LockClosedIcon, LockOpen1Icon } from "@radix-ui/react-icons";
 import { useCallback, useEffect, useState } from "react";
@@ -28,13 +29,13 @@ export const ToggleEditablePlugin = () => {
     // }, [editor, toggleEditable]);
 
     return (
-        <button type="button" className={styles.toggle} onClick={toggleEditable}>
+        <BaseButton className={styles.toggle} onClick={toggleEditable}>
             {locked ? (
-                <LockClosedIcon className={styles.indicator}/>
+                <LockClosedIcon className={styles.lock}/>
             ) : (
-                <LockOpen1Icon className={styles.indicator}/>
+                <LockOpen1Icon className={styles.lock}/>
             )}
-        </button>
+        </BaseButton>
     );
 }
 

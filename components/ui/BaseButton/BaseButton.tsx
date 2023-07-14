@@ -1,12 +1,14 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import styles from "./BaseButton.module.css";
 
-const BaseButton = ({ className, children, onClick, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+type BaseButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+const BaseButton = ({className, children, onClick, ...props}: BaseButtonProps, ref) => {
     return (
-        <button className={`${className} ${styles.button}`} onClick={onClick} {...props}>
+        <button ref={ref} className={`${className} ${styles.button}`} onClick={onClick} {...props}>
             {children}
         </button>
     );
 };
 
-export default BaseButton;
+export default forwardRef(BaseButton);

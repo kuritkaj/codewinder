@@ -1,4 +1,6 @@
 import useNotebook from "@/components/context/useNotebook";
+import { DndContext } from "@dnd-kit/core";
+import { SortableContext } from "@dnd-kit/sortable";
 import dynamic from "next/dynamic";
 import React, { useEffect, useRef } from "react";
 import styles from "./ReactiveNotebook.module.css";
@@ -11,7 +13,7 @@ const ReactiveNotebook = () => {
     const notebookRef = useRef<HTMLDivElement>(null);
     const hasUserScrolledUp = useRef(false);
 
-    const {getBlocks} = useNotebook();
+    const {getBlocks, moveBlock} = useNotebook();
 
     useEffect(() => {
         const notebook = notebookRef.current;
@@ -34,17 +36,26 @@ const ReactiveNotebook = () => {
         }
     }
 
+    function handleDragEnd(event) {
+        const {active, over} = event;
+        if (active && over && active.id !== over.id) {
+            moveBlock(active.id, over.id);
+        }
+    }
+
     return (
         <div ref={notebookRef} className={styles.notebook}>
-            {
-                getBlocks().map((block) => {
-                    return <ReactiveBlock
-                        key={block.namespace}
-                        block={block}
-                        anchorRef={notebookRef}
-                    />;
-                })
-            }
+            <DndContext onDragEnd={handleDragEnd}>
+                <SortableContext items={getBlocks().map(block => block.namespace)}>
+                    {getBlocks().map((block) => {
+                        return <ReactiveBlock
+                            key={block.namespace}
+                            block={block}
+                            anchorRef={notebookRef}
+                        />;
+                    })}
+                </SortableContext>
+            </DndContext>
         </div>
     );
 }

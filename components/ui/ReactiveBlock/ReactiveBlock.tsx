@@ -5,11 +5,15 @@ import CollapsiblePlugin from "@/components/ui/ReactiveBlock/plugins/Collapsible
 import { CollapsibleContainerNode } from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin/CollapsibleContainerNode";
 import { CollapsibleContentNode } from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin/CollapsibleContentNode";
 import { CollapsibleTitleNode } from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin/CollapsibleTitleNode";
+import { DragDropPlugin } from "@/components/ui/ReactiveBlock/plugins/DragDropPlugin/DragDropPlugin";
 import FloatingTextFormatToolbarPlugin from "@/components/ui/ReactiveBlock/plugins/FloatingTextFormatToolbarPlugin";
 import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/plugins/MarkdownTransformers/MarkdownTransformers";
 import StreamingPlugin from "@/components/ui/ReactiveBlock/plugins/StreamingPlugin";
 import ToggleEditablePlugin from "@/components/ui/ReactiveBlock/plugins/ToggleEditablePlugin";
 import { BlockData } from "@/lib/types/BlockData";
+import { useSortable } from "@dnd-kit/sortable";
+
+import { CSS } from '@dnd-kit/utilities';
 import { CodeNode } from "@lexical/code";
 import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -45,6 +49,17 @@ export type ReactiveBlockProps = {
 }
 
 export const ReactiveBlock = ({block, anchorRef}: ReactiveBlockProps) => {
+    const {
+        attributes,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({id: block.namespace});
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
 
     const initialConfig: InitialConfigType = {
         editable: block.editable,
@@ -57,7 +72,7 @@ export const ReactiveBlock = ({block, anchorRef}: ReactiveBlockProps) => {
     };
 
     return (
-        <div className={`${styles.block} ${styles[block.type]}`}>
+        <div ref={setNodeRef} className={`${styles.block} ${styles[block.type]}`} style={style} {...attributes}>
             <NamespaceProvider namespace={block.namespace}>
                 <LexicalComposer initialConfig={initialConfig}>
                     <RichTextPlugin
@@ -70,6 +85,7 @@ export const ReactiveBlock = ({block, anchorRef}: ReactiveBlockProps) => {
                     <ClearEditorPlugin/>
                     <CodeSandboxPlugin/>
                     <CollapsiblePlugin/>
+                    <DragDropPlugin/>
                     <HistoryPlugin/>
                     <HorizontalRulePlugin/>
                     <LinkPlugin/>
