@@ -10,14 +10,19 @@
   --body-background: var(--slate-1);
   --app-background: var(--slate-1);
   --subtle-background: var(--slate-2);
+
   --element-background: var(--slate-3);
+  --element-box-shadow: var(--black-a7);
   --hovered-element-background: var(--slate-4);
   --selected-element-background: var(--slate-5);
   --subtle-element-border: var(--slate-6);
+  --subtle-element-box-shadow: var(--black-a3);
   --element-border: var(--slate-7);
   --hovered-element-border: var(--slate-8);
+
   --solid-background: var(--slate-9);
   --hovered-solid-background: var(--slate-10);
+
   --low-contrast-text: var(--slate-11);
   --high-contrast-text: var(--slate-12);
 

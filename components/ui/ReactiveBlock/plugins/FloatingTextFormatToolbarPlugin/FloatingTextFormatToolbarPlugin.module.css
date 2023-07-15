@@ -1,14 +1,14 @@
 .popup {
     display: flex;
-    background: #fff;
-    color: black;
+    background: var(--element-background);
+    color: var(--high-contrast-text);
     vertical-align: middle;
     position: absolute;
     top: 0;
     left: 0;
     z-index: 10;
     opacity: 0;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 10px var(--element-box-shadow);
     border-radius: 8px;
     transition: opacity 0.5s;
     will-change: transform;
@@ -21,8 +21,12 @@
     min-width: max-content;
     height: 30px;
     border-radius: 6px;
-    background-color: white;
-    box-shadow: 0 2px 10px var(--black-a7);
+    box-shadow: 0 2px 10px var(--subtle-element-box-shadow);
+}
+
+.toolbar svg {
+    width: 1em;
+    height: 1em;
 }
 
 .toggleitem,
@@ -30,11 +34,10 @@
 .button {
     all: unset;
     flex: 0 0 auto;
-    color: var(--mauve-11);
     padding: 3px 5px;
     border-radius: 4px;
     display: inline-flex;
-    font-size: 13px;
+    font-size: 1em;
     line-height: 1;
     align-items: center;
     justify-content: center;
@@ -43,50 +46,37 @@
 .toggleitem:hover,
 .link:hover,
 .button:hover {
-    background-color: var(--violet-3);
-    color: var(--violet-11);
+    background-color: var(--hovered-element-background);
+    cursor: pointer;
 }
 
 .toggleitem:focus,
 .link:focus,
 .button:focus {
     position: relative;
-    box-shadow: 0 0 0 2px var(--violet-7);
+    box-shadow: 0 0 0 2px var(--hovered-element-background);
 }
 
 .button {
     padding-left: 10px;
     padding-right: 10px;
-    color: white;
-    background-color: var(--violet-9);
-}
-
-.button:hover {
-    background-color: var(--violet-10);
-    color: white;
 }
 
 .link {
-    background-color: transparent;
-    color: var(--mauve-11);
     display: inline-flex;
     justify-content: center;
     align-items: center;
 }
 
-.link:hover {
-    background-color: transparent;
-    cursor: pointer;
-}
-
 .separator {
     width: 1px;
-    background-color: var(--mauve-6);
+    background-color: var(--element-border);
     margin: 0 10px;
 }
 
 .toggleitem {
-    background-color: white;
+    background: var(--element-background);
+    color: var(--high-contrast-text);
     margin-left: 2px;
 }
 
@@ -95,6 +85,5 @@
 }
 
 .toggleitem[data-state='on'] {
-    background-color: var(--violet-5);
-    color: var(--violet-11);
+    background-color: var(--selected-element-background);
 }
