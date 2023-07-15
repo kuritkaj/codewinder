@@ -1,5 +1,5 @@
-@import "@radix-ui/colors/grass.css";
-@import "@radix-ui/colors/grass-dark.css";
+@import "@radix-ui/colors/mint.css";
+@import "@radix-ui/colors/mint-dark.css";
 @import "@radix-ui/colors/gray.css";
 @import "@radix-ui/colors/gray-dark.css";
 @import "@radix-ui/colors/sky.css";
@@ -27,11 +27,11 @@
   --low-contrast-text: var(--slate-11);
   --high-contrast-text: var(--slate-12);
 
-  --selected: var(--grass-6);
+  --selected: var(--mint-6);
   --not-selected: var(--sky-6);
 
   --link: var(--sky-11);
-  --code: var(--grass-11);
+  --code: var(--mint-11);
 }
 
 /** Modified from: https://www.joshwcomeau.com/css/custom-css-reset/ */
