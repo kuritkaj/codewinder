@@ -5,7 +5,7 @@
 }
 
 .code {
-    color: springgreen;
+    color: var(--code);
 }
 
 .italic {
@@ -13,7 +13,7 @@
 }
 
 .link {
-    color: lightskyblue;
+    color: var(--link);
 }
 
 .ltr {
@@ -47,7 +47,6 @@
 
 .paragraph .code {
     font-family: monospace;
-    font-size: 0.9em;
 }
 
 .quote {
@@ -55,7 +54,7 @@
     font-style: italic;
     margin: 1em 0;
     border-left-width: 0.25em;
-    border-left-color: #ccc;
+    border-left-color: var(--low-contrast-text);
     border-left-style: solid;
     padding-left: 1em;
 }
@@ -71,7 +70,7 @@
 
 .root > hr {
     border: 0;
-    border-top: 1px solid #30373d;
+    border-top: 1px solid var(--element-border);
     margin: 2em 0;
 }
 
@@ -103,12 +102,12 @@
 }
 
 .tableCell, .tableCellHeader {
-    border: 1px solid #30373d;
+    border: 1px solid var(--element-border);
     padding: 0.5em;
 }
 
 .tableRow {
-    border: 1px solid #30373d;
+    border: 1px solid var(--element-border);
 }
 
 .ul {
