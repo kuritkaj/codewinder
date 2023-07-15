@@ -22,6 +22,7 @@ const SettingsPanel = () => {
                         {usePower ? 'Power:' : 'Speed:'}
                     </label>
                     <Switch.Root
+                        aria-label="Toggle between power and speed modes"
                         className={styles.switchroot}
                         id="usePowerToggle"
                         name="usePowerToggle"

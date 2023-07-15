@@ -50,6 +50,7 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                 </div>
             ) : (
                 <BaseButton
+                    aria-label="Generate response"
                     className={styles.generate}
                     disabled={loading}
                 >

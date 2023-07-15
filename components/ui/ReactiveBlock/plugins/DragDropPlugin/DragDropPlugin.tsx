@@ -13,7 +13,12 @@ export const DragDropPlugin = () => {
     } = useSortable({id: namespace});
 
     return (
-        <BaseButton ref={setActivatorNodeRef} className={styles.draggable} {...listeners}>
+        <BaseButton
+            aria-label="Drag handle to move block"
+            ref={setActivatorNodeRef}
+            className={styles.draggable}
+            {...listeners}
+        >
             <DragHandleDots2Icon className={styles.handle}/>
         </BaseButton>
     );

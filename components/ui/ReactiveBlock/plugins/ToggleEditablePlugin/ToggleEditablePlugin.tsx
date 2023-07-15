@@ -29,7 +29,11 @@ export const ToggleEditablePlugin = () => {
     // }, [editor, toggleEditable]);
 
     return (
-        <BaseButton className={styles.toggle} onClick={toggleEditable}>
+        <BaseButton
+            aria-label="Toggle readonly mode"
+            className={styles.toggle}
+            onClick={toggleEditable}
+        >
             {locked ? (
                 <LockClosedIcon className={styles.lock}/>
             ) : (

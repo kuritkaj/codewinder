@@ -22,7 +22,7 @@
     position: absolute;
     padding: 1.5rem 3rem;
     top: 50%;
-    opacity: 50%;
     transform: translate(0, -50%);
     pointer-events: none;
+    color: var(--low-contrast-text);
 }
