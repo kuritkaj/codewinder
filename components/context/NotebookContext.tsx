@@ -77,10 +77,6 @@ export const NotebookProvider = ({children}: Props) => {
             const newBlocks = [...prevBlocks];
             newBlocks.splice(toIndex, 0, newBlocks.splice(fromIndex, 1)[0]);
 
-            for (let i = 0; i < newBlocks.length; i++) {
-                newBlocks[i].type = (i + 2) % 2 === 0 ? MessageType.ApiMessage : MessageType.UserMessage;
-            }
-
             return newBlocks;
         });
     }, []);

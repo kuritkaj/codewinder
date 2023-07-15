@@ -1,6 +1,4 @@
-.apimessage {
-    background: var(--subtle-background);
-    color: var(--high-contrast-text);
+.apimessage, .usermessage {
     animation: fadein 0.5s;
 }
 
@@ -27,9 +25,4 @@
     opacity: 50%;
     transform: translate(0, -50%);
     pointer-events: none;
-}
-
-.usermessage {
-    background: var(--element-background);
-    color: var(--high-contrast-text);
 }
