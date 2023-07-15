@@ -12,7 +12,7 @@
     transform: translate(0.25em, -50%);
     background: none;
     border: none;
-    color: #ececf1;
+    color: var(--high-contrast-text);
     cursor: pointer;
 }
 
@@ -35,7 +35,7 @@
     position: absolute;
     height: 100%;
     width: 20%; /* Adjust this value to make the "eye" wider or narrower */
-    background: snow;
+    background: var(--high-contrast-text);;
     animation: moveEye 1.75s linear infinite;
 }
 
@@ -76,10 +76,10 @@
     line-height: 1.5;
     width: 100%;
     border-radius: 0.5rem;
-    border: 1px solid #30373d;
-    background: #070809;
+    border: 1px solid var(--element-border);
+    background: var(--app-background);
     outline: none;
-    color: #ececf1;
+    color: var(--high-contrast-text);
 }
 
 .textarea:disabled {
@@ -87,5 +87,5 @@
 }
 
 .textarea::placeholder {
-    color: #5f6368;
+    color: var(--high-contrast-text);
 }

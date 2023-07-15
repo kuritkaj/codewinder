@@ -1,0 +1,73 @@
+@import "@radix-ui/colors/black-alpha.css";
+@import "@radix-ui/colors/blue.css";
+@import "@radix-ui/colors/green.css";
+@import "@radix-ui/colors/mauve.css";
+@import "@radix-ui/colors/slate.css";
+@import "@radix-ui/colors/slate-dark.css";
+@import "@radix-ui/colors/violet.css";
+
+:root, .light-theme, .dark-theme {
+  --app-background: var(--slate-1);
+  --subtle-background: var(--slate-2);
+  --element-background: var(--slate-3);
+  --hovered-element-background: var(--slate-4);
+  --selected-element-background: var(--slate-5);
+  --subtle-element-border: var(--slate-6);
+  --element-border: var(--slate-7);
+  --hovered-element-border: var(--slate-8);
+  --solid-background: var(--slate-9);
+  --hovered-solid-background: var(--slate-10);
+  --low-contrast-text: var(--slate-11);
+  --high-contrast-text: var(--slate-12);
+
+  --selected: var(--green-1);
+  --not-selected: var(--blue-1);
+}
+
+/** Modified from: https://www.joshwcomeau.com/css/custom-css-reset/ */
+#root, #__next {
+  isolation: isolate;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--app-background);
+  color: var(--high-contrast-text);
+  font-family: "Public Sans Variable", sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  margin-block-start: 0;
+  margin-block-end: 1rem;
+}

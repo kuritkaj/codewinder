@@ -1,6 +1,7 @@
 import useSettings from "@/components/context/useSettings";
 import { ChangeEvent } from "react";
 import styles from "./SettingsPanel.module.css";
+import * as Switch from '@radix-ui/react-switch';
 
 const SettingsPanel = () => {
     const {hasServerKey, localKey, setLocalKey, setUsePower, usePower} = useSettings();
@@ -9,22 +10,25 @@ const SettingsPanel = () => {
         setLocalKey(event.target.value);
     };
 
-    const handleUsePowerToggle = () => {
-        setUsePower(!usePower);
+    const handleUsePowerToggle = (checked: boolean) => {
+        setUsePower(checked);
     };
 
     return (
         <div className={styles.panel}>
             <div className={styles.settingslist}>
-                <div className={styles.toggle}>
-                    <label htmlFor="usePowerToggle">{usePower ? 'Power:' : 'Speed:'}</label>
-                    <input
-                        type="checkbox"
+                <div className={styles.switch}>
+                    <label className={styles.switchlabel} htmlFor="usePowerToggle">
+                        {usePower ? 'Power:' : 'Speed:'}
+                    </label>
+                    <Switch.Root
+                        className={styles.switchroot}
                         id="usePowerToggle"
-                        name="usePowerToggle"
-                        checked={usePower}
-                        onChange={() => handleUsePowerToggle()}
-                    />
+                        defaultChecked={usePower}
+                        onCheckedChange={handleUsePowerToggle}
+                    >
+                        <Switch.Thumb className={styles.switchthumb} />
+                    </Switch.Root>
                 </div>
                 <div className={styles.divider}/>
                 {!hasServerKey && (

@@ -1,6 +1,6 @@
 .apimessage {
-    background: #141619;
-    color: #ececf1;
+    background: var(--subtle-background);
+    color: var(--high-contrast-text);
     animation: fadein 0.5s;
 }
 
@@ -30,6 +30,6 @@
 }
 
 .usermessage {
-    background: #070809;
-    color: #ececf1;
+    background: var(--element-background);
+    color: var(--high-contrast-text);
 }

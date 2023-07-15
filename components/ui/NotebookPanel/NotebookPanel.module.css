@@ -1,6 +1,6 @@
 .notebook {
     border-radius: 0.5rem;
-    border: 1px solid #30373d;
+    border: 1px solid var(--element-border);
     display: flex;
     flex-grow: 1;
     overflow-y: auto;

@@ -6,10 +6,10 @@
  *
  */
 
-import { $isCodeHighlightNode } from '@lexical/code';
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { mergeRegister } from '@lexical/utils';
+import { $isCodeHighlightNode } from "@lexical/code";
+import { $isLinkNode } from "@lexical/link";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { mergeRegister } from "@lexical/utils";
 import { CodeIcon, FontBoldIcon, FontItalicIcon, StrikethroughIcon, UnderlineIcon } from "@radix-ui/react-icons";
 import * as Toolbar from "@radix-ui/react-toolbar";
 import {
@@ -20,20 +20,20 @@ import {
     FORMAT_TEXT_COMMAND,
     LexicalEditor,
     SELECTION_CHANGE_COMMAND,
-} from 'lexical';
-import * as React from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+} from "lexical";
+import * as React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
-import { getDomRangeRect } from '../../utils/getDomRangeRect';
-import { getSelectedNode } from '../../utils/getSelectedNode';
-import { setFloatingElemPosition } from '../../utils/setFloatingElemPosition';
-import styles from './FloatingTextFormatToolbarPlugin.module.css';
+import { getDomRangeRect } from "../../utils/getDomRangeRect";
+import { getSelectedNode } from "../../utils/getSelectedNode";
+import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";
+import styles from "./FloatingTextFormatToolbarPlugin.module.css";
 
 function TextFormatFloatingToolbar({
     editor,
     anchorElem,
-    isLink,
+    // isLink,
     isBold,
     isItalic,
     isUnderline,
@@ -59,13 +59,13 @@ function TextFormatFloatingToolbar({
         });
     }, [editor]);
 
-    const insertLink = useCallback(() => {
-        if (!isLink) {
-            editor.dispatchCommand(TOGGLE_LINK_COMMAND, 'https://');
-        } else {
-            editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-        }
-    }, [editor, isLink]);
+    // const insertLink = useCallback(() => {
+    //     if (!isLink) {
+    //         editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
+    //     } else {
+    //         editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+    //     }
+    // }, [editor, isLink]);
 
     function mouseMoveListener(e: MouseEvent) {
         if (
@@ -138,15 +138,15 @@ function TextFormatFloatingToolbar({
             });
         };
 
-        window.addEventListener('resize', update);
+        window.addEventListener("resize", update);
         if (scrollerElem) {
-            scrollerElem.addEventListener('scroll', update);
+            scrollerElem.addEventListener("scroll", update);
         }
 
         return () => {
-            window.removeEventListener('resize', update);
+            window.removeEventListener("resize", update);
             if (scrollerElem) {
-                scrollerElem.removeEventListener('scroll', update);
+                scrollerElem.removeEventListener("scroll", update);
             }
         };
     }, [editor, updateTextFormatFloatingToolbar, anchorElem]);
@@ -265,11 +265,11 @@ function useFloatingTextFormatToolbar(
             const node = getSelectedNode(selection);
 
             // Update text format
-            setIsBold(selection.hasFormat('bold'));
-            setIsItalic(selection.hasFormat('italic'));
-            setIsUnderline(selection.hasFormat('underline'));
-            setIsStrikethrough(selection.hasFormat('strikethrough'));
-            setIsCode(selection.hasFormat('code'));
+            setIsBold(selection.hasFormat("bold"));
+            setIsItalic(selection.hasFormat("italic"));
+            setIsUnderline(selection.hasFormat("underline"));
+            setIsStrikethrough(selection.hasFormat("strikethrough"));
+            setIsCode(selection.hasFormat("code"));
 
             // Update links
             const parent = node.getParent();
@@ -281,15 +281,15 @@ function useFloatingTextFormatToolbar(
 
             if (
                 !$isCodeHighlightNode(selection.anchor.getNode()) &&
-                selection.getTextContent() !== ''
+                selection.getTextContent() !== ""
             ) {
                 setIsText($isTextNode(node));
             } else {
                 setIsText(false);
             }
 
-            const rawTextContent = selection.getTextContent().replace(/\n/g, '');
-            if (!selection.isCollapsed() && rawTextContent === '') {
+            const rawTextContent = selection.getTextContent().replace(/\n/g, "");
+            if (!selection.isCollapsed() && rawTextContent === "") {
                 setIsText(false);
                 return;
             }
@@ -297,9 +297,9 @@ function useFloatingTextFormatToolbar(
     }, [editor]);
 
     useEffect(() => {
-        document.addEventListener('selectionchange', updatePopup);
+        document.addEventListener("selectionchange", updatePopup);
         return () => {
-            document.removeEventListener('selectionchange', updatePopup);
+            document.removeEventListener("selectionchange", updatePopup);
         };
     }, [updatePopup]);
 

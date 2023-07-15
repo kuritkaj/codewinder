@@ -10,10 +10,10 @@
 
 .apiKeyInput input {
     padding: 0.2rem;
-    border: 1px solid #30373d;
+    border: 1px solid var(--element-border);
     border-radius: 0.3rem;
-    background: #070809;
-    color: #5f6368;
+    background: var(--app-background);
+    color: var(--high-contrast-text);
     font-size: 0.8rem;
 }
 
@@ -29,9 +29,9 @@
     position: relative;
     width: 100%;
     border-radius: 0.5rem;
-    border: 1px solid #30373d;
-    background: #070809;
-    color: #5f6368;
+    border: 1px solid var(--element-border);
+    background: var(--app-background);
+    color: var(--high-contrast-text);
     font-size: 0.8rem;
     margin-bottom: 1rem;
     padding: 0 1.5rem;
@@ -45,42 +45,47 @@
     padding: 12px 0;
 }
 
-.toggle {
+.switch {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    width: 100px;
 }
 
-.toggle label {
-    margin-right: 10px;
-    font-size: 16px;
+.switchlabel {
+    font-size: 1rem;
+    line-height: 1;
 }
 
-.toggle input[type=checkbox] {
-    appearance: none;
-    background-color: #ccc;
-    width: 40px;
-    height: 20px;
-    border-radius: 20px;
+.switchroot {
+    all: unset;
+    width: 42px;
+    height: 25px;
+    background-color: var(--element-background);
+    border-radius: 9999px;
     position: relative;
-    outline: none;
+    box-shadow: 0 2px 10px var(--black-a7);
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     cursor: pointer;
-    transition: background-color .4s;
+}
+.switchroot:focus {
+    box-shadow: 0 0 0 2px var(--hovered-element-background);
+}
+.switchroot[data-state='checked'] {
+    background-color: var(--selected-element-background);
 }
 
-.toggle input[type=checkbox]:before {
-    content: "";
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: #fff;
-    transition: all .4s;
+.switchthumb {
+    display: block;
+    width: 21px;
+    height: 21px;
+    background-color: var(--high-contrast-text);
+    border-radius: 9999px;
+    box-shadow: 0 2px 2px var(--black-a7);
+    transition: transform 100ms;
+    transform: translateX(2px);
+    will-change: transform;
 }
-
-.toggle input[type=checkbox]:checked {
-    background-color: #4CAF50;
-}
-
-.toggle input[type=checkbox]:checked:before {
-    transform: translateX(20px);
+.switchthumb[data-state='checked'] {
+    transform: translateX(19px);
 }
