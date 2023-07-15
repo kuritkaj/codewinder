@@ -1,3 +1,4 @@
+import BaseButton from "@/components/ui/BaseButton";
 import { PaperPlaneIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
@@ -47,14 +48,13 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                         <div className={styles.indicator}></div>
                     </div>
                 </div>
-            ): (
-                <button
-                    type="submit"
+            ) : (
+                <BaseButton
                     className={styles.generate}
                     disabled={loading}
                 >
                     <PaperPlaneIcon/>
-                </button>
+                </BaseButton>
             )}
         </form>
     );

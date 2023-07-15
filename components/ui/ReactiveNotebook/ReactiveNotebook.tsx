@@ -1,9 +1,11 @@
 import useNotebook from "@/components/context/useNotebook";
 import { DndContext } from "@dnd-kit/core";
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext } from "@dnd-kit/sortable";
 import dynamic from "next/dynamic";
 import React, { useEffect, useRef } from "react";
 import styles from "./ReactiveNotebook.module.css";
+
 
 const ReactiveBlock = dynamic(() => import('@/components/ui/ReactiveBlock'), {
     ssr: false
@@ -41,7 +43,7 @@ const ReactiveNotebook = () => {
 
     return (
         <div ref={notebookRef} className={styles.notebook}>
-            <DndContext onDragEnd={handleDragEnd}>
+            <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
                 <SortableContext items={getBlocks().map(block => block.namespace)}>
                     {getBlocks().map((block) => {
                         return <ReactiveBlock
