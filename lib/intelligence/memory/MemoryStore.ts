@@ -33,7 +33,9 @@ export class MemoryStore {
         const supabaseApiKey = process.env.SUPABASE_API_KEY;
         const supabaseUrl = process.env.SUPABASE_URL;
 
-        if (Boolean(supabaseApiKey) && Boolean(supabaseUrl)) {
+        if (typeof supabaseApiKey === 'string' && supabaseApiKey.length > 0 &&
+            typeof supabaseUrl === 'string' && supabaseUrl.length > 0)
+        {
             const client = createClient(supabaseUrl, supabaseApiKey, {
                 auth: {
                     persistSession: false

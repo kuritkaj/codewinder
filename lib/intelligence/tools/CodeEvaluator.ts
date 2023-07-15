@@ -120,7 +120,7 @@ export class CodeEvaluator extends StructuredTool {
 
         const regex = /(?<=```javascript)[\s\S]*?(?=\n```)/;
         const matches = completion.match(regex);
-        const code = matches.pop();
+        const code = matches?.pop() || completion;
 
         try {
             // Evaluate the generated JavaScript code.

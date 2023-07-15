@@ -1,5 +1,4 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
-import Cookies from "js-cookie";
 
 export interface Settings {
     availableTools: string[];
@@ -10,10 +9,9 @@ export interface Settings {
 }
 
 interface SettingsContextProps extends Settings {
-    saveSettings?: (values: Settings) => void;
-    setLocalKey?: (apiKey: string) => void;
-    setSelectedTools?: (selectedTools: string[]) => void;
-    setUsePower?: (usePower: boolean) => void;
+    setLocalKey: (apiKey: string) => void;
+    setSelectedTools: (selectedTools: string[]) => void;
+    setUsePower: (usePower: boolean) => void;
 }
 
 const defaultSettings = {
@@ -22,6 +20,9 @@ const defaultSettings = {
     localKey: "",
     selectedTools: [],
     usePower: false,
+    setLocalKey: (apiKey: string) => { throw new Error('Method not implemented.') },
+    setSelectedTools: (selectedTools: string[]) => { throw new Error('Method not implemented.') },
+    setUsePower: (usePower: boolean) => { throw new Error('Method not implemented.') },
 };
 
 const SettingsContext = createContext<SettingsContextProps>(defaultSettings);
@@ -36,13 +37,13 @@ export const SettingsProvider = ({ children }: Props) => {
     );
 
     useEffect(() => {
-        const usePowerCookie = Cookies.get("usePower");
-        if (usePowerCookie !== undefined) {
-            setCurrentSettings((state) => ({
-                ...state,
-                usePower: JSON.parse(usePowerCookie),
-            }));
-        }
+        // const usePowerCookie = Cookies.get("usePower");
+        // if (usePowerCookie !== undefined) {
+        //     setCurrentSettings((state) => ({
+        //         ...state,
+        //         usePower: JSON.parse(usePowerCookie),
+        //     }));
+        // }
 
         fetch('/api/keycheck')
         .then(response => response.json())
@@ -68,17 +69,17 @@ export const SettingsProvider = ({ children }: Props) => {
         }));
     };
 
-    const setUsePower = (usePower: boolean) => {
+    const setUsePower = async (usePower: boolean) => {
         setCurrentSettings((state) => ({
             ...state,
             usePower,
         }));
-        Cookies.set("usePower", JSON.stringify(usePower));
+        // await setUsePowerSetting(usePower);
     };
 
     return (
         <SettingsContext.Provider
-            value={{ ...currentSettings, setSelectedTools, setLocalKey, setUsePower }}
+            value={{ ...currentSettings, setLocalKey, setSelectedTools, setUsePower }}
         >
             {children}
         </SettingsContext.Provider>

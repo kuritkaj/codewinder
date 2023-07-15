@@ -11,8 +11,8 @@ const InputPanel = () => {
     const [loading, setLoading] = useState(false);
     const {usePower} = useSettings();
     const [userInput, setUserInput] = useState("");
-    const {appendToBlock, addBlock, getContents, replaceBlock} = useNotebook();
-    const { hasServerKey, localKey } = useSettings();
+    const {addBlock, appendToBlock, getContents, replaceBlock} = useNotebook();
+    const {hasServerKey, localKey} = useSettings();
 
     // Prevent blank submissions and allow for multiline input
     const handleEnter = async (e: any) => {

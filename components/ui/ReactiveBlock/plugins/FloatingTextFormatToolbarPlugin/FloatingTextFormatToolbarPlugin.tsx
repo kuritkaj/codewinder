@@ -181,11 +181,11 @@ function TextFormatFloatingToolbar({
                         type="multiple"
                         aria-label="Text formatting"
                         defaultValue={[
-                            isBold && "bold",
-                            isItalic && "italic",
-                            isUnderline && "underline",
-                            isStrikethrough && "strikethrough",
-                            isCode && "code",
+                            isBold ? "bold" : "",
+                            isItalic ? "italic" : "",
+                            isUnderline ? "underline" : "",
+                            isStrikethrough ? "strikethrough" : "",
+                            isCode ? "code" : "",
                         ]}
                     >
                         <Toolbar.ToggleItem className={styles.toggleitem} value="bold" aria-label="Bold"
@@ -335,11 +335,7 @@ function useFloatingTextFormatToolbar(
     );
 }
 
-export default function FloatingTextFormatToolbarPlugin({
-    anchorElem = document.body,
-}: {
-    anchorElem?: HTMLElement;
-}): React.JSX.Element | null {
+export default function FloatingTextFormatToolbarPlugin({anchorElem}: { anchorElem?: HTMLElement; }): React.JSX.Element | null {
     const [editor] = useLexicalComposerContext();
-    return useFloatingTextFormatToolbar(editor, anchorElem);
+    return useFloatingTextFormatToolbar(editor, anchorElem || document.body);
 }

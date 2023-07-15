@@ -13,7 +13,7 @@ export interface FunctionChainInput extends LLMChainInput<BaseMessage, ChatOpenA
 
 export class FunctionChain extends LLMChain<BaseMessage, ChatOpenAI> {
 
-    private readonly function_call: Tool;
+    private readonly function_call: Tool | undefined;
     private readonly tools: StructuredTool[];
 
     constructor(input: FunctionChainInput) {
@@ -40,8 +40,9 @@ export class FunctionChain extends LLMChain<BaseMessage, ChatOpenAI> {
 
         const promptValue = await this.prompt.formatPromptValue(valuesForPrompt);
         const messages = promptValue.toChatMessages();
-        if (this.function_call) messages.forEach(message => message.additional_kwargs.function_call = {
-            name: this.function_call.name,
+        const functionCall = this.function_call;
+        if (functionCall) messages.forEach(message => message.additional_kwargs.function_call = {
+            name: functionCall.name,
             arguments: "",
         });
 

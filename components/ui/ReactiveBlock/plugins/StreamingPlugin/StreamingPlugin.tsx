@@ -19,8 +19,10 @@ export const StreamingPlugin = () => {
     }
 
     useEffect(() => {
+        if (!getBlock) return;
+
         const block = getBlock(namespace);
-        updateEditor(editor, block.markdown);
+        if (block) updateEditor(editor, block.markdown);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // only update on the initial render
 
@@ -47,7 +49,7 @@ export const StreamingPlugin = () => {
             }
             editorState.read(() => {
                 const block = getBlock(namespace);
-                replaceBlock({
+                if (block) replaceBlock({
                     ...block,
                     markdown: $convertToMarkdownString(REACTIVE_NOTEBOOK_TRANSFORMERS)
                 }, true);

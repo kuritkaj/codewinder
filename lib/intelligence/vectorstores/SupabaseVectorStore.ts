@@ -120,7 +120,7 @@ export class SupabaseVectorStore extends VectorStore {
         embeddings: Embeddings,
         dbConfig: SupabaseLibArgs
     ): Promise<SupabaseVectorStore> {
-        const docs = [];
+        const docs: Document[] = [];
         for (let i = 0; i < texts.length; i += 1) {
             const metadata = Array.isArray(metadatas) ? metadatas[i] : metadatas;
             const newDoc = new Document({

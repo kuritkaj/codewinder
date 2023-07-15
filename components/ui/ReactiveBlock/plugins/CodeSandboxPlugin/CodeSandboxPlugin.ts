@@ -19,7 +19,7 @@ export default function CodeSandboxPlugin(): React.JSX.Element | null {
             if ($isRootNode(parentNode)) {
                 $setSelection(null);
                 const sandbox = $createCodeSandboxNode(
-                    node.getLanguage(),
+                    node.getLanguage() || "",
                     node.getTextContent(),
                     !editor.isEditable(),
                 );

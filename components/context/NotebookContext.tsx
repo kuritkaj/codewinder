@@ -5,21 +5,32 @@ import React, { createContext, ReactNode, useCallback, useRef, useState } from "
 type SubscribeFunction = (block: BlockData) => void;
 
 interface NotebookContextProps {
-    addBlock?: (addition: BlockData) => void;
-    appendToBlock?: (partial: PartialBlockData) => void;
-    getBlock?: (namespace: string) => BlockData | undefined;
-    getBlocks?: () => BlockData[];
-    getContents?: () => string[][];
-    moveBlock?: (source: string, destination: string) => void;
-    replaceBlock?: (replacement: BlockData, silent?: boolean) => void;
-    subscribeToBlock?: (namespace: string, callback: SubscribeFunction) => void;
+    addBlock: (addition: BlockData) => void;
+    appendToBlock: (partial: PartialBlockData) => void;
+    getBlock: (namespace: string) => BlockData | undefined;
+    getBlocks: () => BlockData[];
+    getContents: () => string[][];
+    moveBlock: (source: string, destination: string) => void;
+    replaceBlock: (replacement: BlockData, silent?: boolean) => void;
+    subscribeToBlock: (namespace: string, callback: SubscribeFunction) => void;
 }
+
+const defaultImplementation = {
+    addBlock: (addition: BlockData) => { throw new Error('Method not implemented.') },
+    appendToBlock: (partial: PartialBlockData) => { throw new Error('Method not implemented.') },
+    getBlock: (namespace: string) => { throw new Error('Method not implemented.') },
+    getBlocks: () => { throw new Error('Method not implemented.') },
+    getContents: () => { throw new Error('Method not implemented.') },
+    moveBlock: (source: string, destination: string) => { throw new Error('Method not implemented.') },
+    replaceBlock: (replacement: BlockData, silent?: boolean) => { throw new Error('Method not implemented.') },
+    subscribeToBlock: (namespace: string, callback: SubscribeFunction) => { throw new Error('Method not implemented.') },
+};
+
+const NotebookContext = createContext<NotebookContextProps>(defaultImplementation);
 
 const initialBlocks: BlockData[] = [
     {editable: false, markdown: "Hi there! How can I help?", namespace: Math.random().toString(), type: MessageType.ApiMessage}
 ];
-
-const NotebookContext = createContext<NotebookContextProps>({});
 
 type Props = {
     children: ReactNode;

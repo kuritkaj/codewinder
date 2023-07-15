@@ -59,7 +59,7 @@ export class MultistepExecutor extends BaseChain {
         });
         const executor = ReActExecutor.fromAgentAndTools({
             agent,
-            callbacks: runManager.getChild(),
+            callbacks: runManager?.getChild(),
             tools: this.tools,
             verbose: true,
         });
@@ -67,7 +67,7 @@ export class MultistepExecutor extends BaseChain {
         const objective = inputs[OBJECTIVE_INPUT];
         const steps = inputs[STEPS_INPUT];
 
-        let results = [];
+        let results: string[] = [];
         for (const step of steps) {
             await runManager?.handleText("Starting: " + step.plan);
 

@@ -6,8 +6,8 @@ import styles from "./CodeSandboxNode.module.css";
 
 export type SerializedCodeSandboxNode = Spread<
     {
-        code: string | null | undefined;
-        language: string | null | undefined;
+        code: string;
+        language: string;
     },
     SerializedLexicalNode
 >;
@@ -23,8 +23,8 @@ export class CodeSandboxNode extends DecoratorNode<ReactNode> {
         super(key);
 
         this.state = {
-            code,
-            language,
+            code: code || "",
+            language: language || "static",
         }
 
         // Bind this method to ensure `this` is always the component instance

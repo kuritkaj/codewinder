@@ -69,7 +69,7 @@ export const getEmbeddingContextSize = (modelName?: string): number => {
     }
 };
 
-export const getModelContextSize = (model?: BaseLanguageModel): number => {
+export const getModelContextSize = (model: BaseLanguageModel): number => {
     switch (getModelNameForTiktoken(model)) {
         case "gpt-3.5-turbo-16k":
             return 16384;

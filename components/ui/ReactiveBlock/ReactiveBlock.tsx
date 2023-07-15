@@ -45,7 +45,7 @@ const EDITOR_NODES = [
 
 export type ReactiveBlockProps = {
     block: BlockData;
-    anchorRef?: MutableRefObject<HTMLDivElement>;
+    anchorRef?: MutableRefObject<HTMLDivElement | null>;
 }
 
 export const ReactiveBlock = ({block, anchorRef}: ReactiveBlockProps) => {
@@ -80,7 +80,7 @@ export const ReactiveBlock = ({block, anchorRef}: ReactiveBlockProps) => {
                         placeholder={<div className={styles.placeholder}>Enter some text...</div>}
                         ErrorBoundary={LexicalErrorBoundary}
                     />
-                    <FloatingTextFormatToolbarPlugin anchorElem={anchorRef.current}/>
+                    <FloatingTextFormatToolbarPlugin anchorElem={anchorRef?.current || undefined}/>
                     <CheckListPlugin/>
                     <ClearEditorPlugin/>
                     <CodeSandboxPlugin/>

@@ -1,16 +1,15 @@
 // Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/tools/webbrowser.ts
 
-import cheerio from "cheerio";
-import { Callbacks } from "langchain/dist/callbacks/manager";
-import PDFParse from "pdf-parse";
-import { BaseLanguageModel } from "langchain/base_language";
-import { StructuredTool, ToolParams } from "langchain/tools";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { StringPromptValue } from "langchain/prompts";
-import { CallbackManagerForToolRun } from "langchain/callbacks";
-import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import { Embeddings } from "langchain/embeddings";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import cheerio from "cheerio";
+import { BaseLanguageModel } from "langchain/base_language";
+import { CallbackManagerForToolRun } from "langchain/callbacks";
+import { Embeddings } from "langchain/embeddings";
+import { StringPromptValue } from "langchain/prompts";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { StructuredTool, ToolParams } from "langchain/tools";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import PDFParse from "pdf-parse";
 import { z } from "zod";
 
 export const NAME = "browser";
@@ -148,8 +147,7 @@ export interface WebBrowserParams extends ToolParams {
 export class WebBrowser extends StructuredTool {
     public readonly name = NAME;
     public readonly description = DESCRIPTION;
-    public readonly schema = z
-    .object({
+    public readonly schema = z.object({
         baseUrl: z.string().describe("one valid url"),
         task: z.string().describe("what to find on the page")
     });
@@ -157,7 +155,7 @@ export class WebBrowser extends StructuredTool {
     private readonly embeddings: Embeddings;
     private readonly headers: Headers;
     private readonly model: BaseLanguageModel;
-    private readonly store: MemoryStore;
+    private readonly store?: MemoryStore;
 
     constructor({
         model,
@@ -173,16 +171,6 @@ export class WebBrowser extends StructuredTool {
         this.headers = headers || DEFAULT_HEADERS;
         this.model = model;
         this.store = store;
-    }
-
-    call(
-        arg: string | undefined | z.input<this["schema"]>,
-        callbacks?: Callbacks
-    ): Promise<string> {
-        return super.call(
-            typeof arg === "string" || !arg ? { baseUrl: arg } : arg,
-            callbacks
-        );
     }
 
     async _call(instructions: z.output<this["schema"]>, runManager?: CallbackManagerForToolRun) {

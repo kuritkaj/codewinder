@@ -7,7 +7,7 @@ const SettingsPanel = () => {
     const {hasServerKey, localKey, setLocalKey, setUsePower, usePower} = useSettings();
 
     const handleApiKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setLocalKey(event.target.value);
+        if (event.target?.value) setLocalKey(event.target.value);
     };
 
     const handleUsePowerToggle = (checked: boolean) => {

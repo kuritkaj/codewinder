@@ -55,14 +55,14 @@ export const streamIntelligence = async ({
 
         if (!response.ok) {
             if (onError) onError(new Error(response.statusText));
-            return;
+            return { stop };
         }
 
         // This data is a ReadableStream
         const data = response.body;
         if (!data) {
             if (onError) onError(new Error("No data returned"));
-            return;
+            return { stop };
         }
 
         const reader = data.getReader();
@@ -88,7 +88,7 @@ export const streamIntelligence = async ({
         // Ignore abort errors as they are expected.
         if ((error as any).name === 'AbortError') {
             abortController = null;
-            return null;
+            return { stop };
         }
 
         if (onError && error instanceof Error) {

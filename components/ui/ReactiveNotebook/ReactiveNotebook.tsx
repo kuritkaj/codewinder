@@ -1,13 +1,9 @@
 import useNotebook from "@/components/context/useNotebook";
+import ReactiveBlock from "@/components/ui/ReactiveBlock";
 import { DndContext } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
-import dynamic from "next/dynamic";
 import React, { useEffect, useRef } from "react";
 import styles from "./ReactiveNotebook.module.css";
-
-const ReactiveBlock = dynamic(() => import('@/components/ui/ReactiveBlock'), {
-    ssr: false
-})
 
 const ReactiveNotebook = () => {
     const notebookRef = useRef<HTMLDivElement>(null);

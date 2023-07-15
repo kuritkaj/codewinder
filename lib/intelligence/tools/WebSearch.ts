@@ -26,8 +26,8 @@ export class WebSearch extends Tool {
 
     private readonly embeddings: Embeddings;
     private readonly key: string;
-    private readonly params: Record<string, string>;
-    private readonly store: MemoryStore;
+    private readonly params?: Record<string, string>;
+    private readonly store?: MemoryStore;
 
     constructor({apiKey, params, store, embeddings, verbose, callbacks}: WebSearchParams) {
         super({verbose, callbacks});

@@ -18,7 +18,7 @@ type makeChainOptions = {
     usePower?: boolean
 }
 
-export const makeChain = async ({callbacks, localKey = null, usePower = false}: makeChainOptions): Promise<ReActExecutor> => {
+export const makeChain = async ({callbacks, localKey = undefined, usePower = false}: makeChainOptions): Promise<ReActExecutor> => {
     const openAiApiKey = localKey || process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
         throw new Error("OpenAI API Key not set.");
@@ -100,22 +100,20 @@ export const makeChain = async ({callbacks, localKey = null, usePower = false}: 
         tools,
         verbose: true,
     })
-    const toolkit = [];
+    const toolkit: StructuredTool[] = [];
     toolkit.push(new PlanAndSolve({callbacks, multistepExecutor, verbose: true}));
 
-    // The effect is that the top level ReAct agent can only choose from the PlanAndSolve tool.
-    // The PlanAndSolve tool can choose from any of the other tools except itself.
     const agent = ReActAgent.fromLLMAndTools({
         callbacks,
         model: predictable,
         store: memories,
-        tools,
+        tools: [...tools, ...toolkit],
         verbose: true,
     });
     return ReActExecutor.fromAgentAndTools({
         agent,
         callbacks,
-        tools,
+        tools: [...tools, ...toolkit],
         verbose: true,
     });
 }

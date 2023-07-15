@@ -130,6 +130,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                             // Update block so that the content is saved to the notebook
                             editor.getEditorState().read(() => {
                                 const block = getBlock(namespace);
+                                if (!block) return;
                                 replaceBlock({
                                     ...block,
                                     markdown: $convertToMarkdownString(REACTIVE_NOTEBOOK_TRANSFORMERS)

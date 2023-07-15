@@ -12,7 +12,7 @@ const MAX_ITERATIONS = 10; // Minimum should be two, once to try an action, and 
 
 export interface ReActExecutorInput {
     agent: ReActAgent;
-    callbacks: Callbacks;
+    callbacks?: Callbacks;
     earlyStoppingMethod?: StoppingMethod;
     maxIterations?: number;
     returnIntermediateSteps?: boolean;
