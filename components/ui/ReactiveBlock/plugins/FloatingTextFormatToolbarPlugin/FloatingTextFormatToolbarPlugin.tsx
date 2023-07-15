@@ -227,7 +227,7 @@ function TextFormatFloatingToolbar({
 
 function useFloatingTextFormatToolbar(
     editor: LexicalEditor,
-    anchorElem?: HTMLElement | null,
+    anchorElem: HTMLElement,
 ): React.JSX.Element | null {
     const [isText, setIsText] = useState(false);
     const [isLink, setIsLink] = useState(false);
