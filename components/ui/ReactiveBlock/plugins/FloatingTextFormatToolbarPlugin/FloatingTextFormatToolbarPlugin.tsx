@@ -23,7 +23,7 @@ import {
 } from "lexical";
 import * as React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import * as Portal from '@radix-ui/react-portal';
 
 import { getDomRangeRect } from "../../utils/getDomRangeRect";
 import { getSelectedNode } from "../../utils/getSelectedNode";
@@ -227,7 +227,7 @@ function TextFormatFloatingToolbar({
 
 function useFloatingTextFormatToolbar(
     editor: LexicalEditor,
-    anchorElem: HTMLElement,
+    anchorElem?: HTMLElement | null,
 ): React.JSX.Element | null {
     const [isText, setIsText] = useState(false);
     const [isLink, setIsLink] = useState(false);
@@ -320,22 +320,23 @@ function useFloatingTextFormatToolbar(
         return null;
     }
 
-    return createPortal(
-        <TextFormatFloatingToolbar
-            editor={editor}
-            anchorElem={anchorElem}
-            isLink={isLink}
-            isBold={isBold}
-            isItalic={isItalic}
-            isStrikethrough={isStrikethrough}
-            isUnderline={isUnderline}
-            isCode={isCode}
-        />,
-        anchorElem,
+    return (
+        <Portal.Root container={anchorElem}>
+            <TextFormatFloatingToolbar
+                editor={editor}
+                anchorElem={anchorElem}
+                isLink={isLink}
+                isBold={isBold}
+                isItalic={isItalic}
+                isStrikethrough={isStrikethrough}
+                isUnderline={isUnderline}
+                isCode={isCode}
+            />
+        </Portal.Root>
     );
 }
 
-export default function FloatingTextFormatToolbarPlugin({anchorElem}: { anchorElem?: HTMLElement; }): React.JSX.Element | null {
+export default function FloatingTextFormatToolbarPlugin({anchorElem}: { anchorElem?: HTMLElement| null; }): React.JSX.Element | null {
     const [editor] = useLexicalComposerContext();
-    return useFloatingTextFormatToolbar(editor, anchorElem || document.body);
+    return useFloatingTextFormatToolbar(editor, anchorElem || globalThis?.document?.body);
 }

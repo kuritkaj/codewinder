@@ -34,7 +34,7 @@ import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import CodeSandboxPlugin from "components/ui/ReactiveBlock/plugins/CodeSandboxPlugin";
-import React, { memo, MutableRefObject } from "react";
+import React, { memo } from "react";
 import styles from "./ReactiveBlock.module.css";
 
 const EDITOR_NODES = [
@@ -45,10 +45,9 @@ const EDITOR_NODES = [
 
 export type ReactiveBlockProps = {
     block: BlockData;
-    anchorRef?: MutableRefObject<HTMLDivElement | null>;
 }
 
-export const ReactiveBlock = ({block, anchorRef}: ReactiveBlockProps) => {
+export const ReactiveBlock = ({block}: ReactiveBlockProps) => {
     const {
         attributes,
         setNodeRef,
@@ -80,7 +79,7 @@ export const ReactiveBlock = ({block, anchorRef}: ReactiveBlockProps) => {
                         placeholder={<div className={styles.placeholder}>Enter some text...</div>}
                         ErrorBoundary={LexicalErrorBoundary}
                     />
-                    <FloatingTextFormatToolbarPlugin anchorElem={anchorRef?.current || undefined}/>
+                    <FloatingTextFormatToolbarPlugin/>
                     <CheckListPlugin/>
                     <ClearEditorPlugin/>
                     <CodeSandboxPlugin/>

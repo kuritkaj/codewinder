@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
+import Cookies from "js-cookie";
 
 export interface Settings {
     availableTools: string[];
@@ -37,13 +38,13 @@ export const SettingsProvider = ({ children }: Props) => {
     );
 
     useEffect(() => {
-        // const usePowerCookie = Cookies.get("usePower");
-        // if (usePowerCookie !== undefined) {
-        //     setCurrentSettings((state) => ({
-        //         ...state,
-        //         usePower: JSON.parse(usePowerCookie),
-        //     }));
-        // }
+        const usePowerCookie = Cookies.get("usePower");
+        if (usePowerCookie !== undefined) {
+            setCurrentSettings((state) => ({
+                ...state,
+                usePower: JSON.parse(usePowerCookie),
+            }));
+        }
 
         fetch('/api/keycheck')
         .then(response => response.json())
@@ -74,7 +75,7 @@ export const SettingsProvider = ({ children }: Props) => {
             ...state,
             usePower,
         }));
-        // await setUsePowerSetting(usePower);
+        Cookies.set("usePower", JSON.stringify(usePower));
     };
 
     return (

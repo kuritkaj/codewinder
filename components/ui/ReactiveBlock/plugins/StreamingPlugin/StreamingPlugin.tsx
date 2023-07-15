@@ -19,8 +19,6 @@ export const StreamingPlugin = () => {
     }
 
     useEffect(() => {
-        if (!getBlock) return;
-
         const block = getBlock(namespace);
         if (block) updateEditor(editor, block.markdown);
         // eslint-disable-next-line react-hooks/exhaustive-deps

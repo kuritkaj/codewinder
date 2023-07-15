@@ -24,7 +24,8 @@ const SettingsPanel = () => {
                     <Switch.Root
                         className={styles.switchroot}
                         id="usePowerToggle"
-                        defaultChecked={usePower}
+                        name="usePowerToggle"
+                        checked={usePower}
                         onCheckedChange={handleUsePowerToggle}
                     >
                         <Switch.Thumb className={styles.switchthumb} />
