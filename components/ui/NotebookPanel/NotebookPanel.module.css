@@ -1,9 +1,10 @@
 .notebook {
-    border-radius: 0.5rem;
-    border: 1px solid var(--element-border);
     display: flex;
     flex-grow: 1;
     overflow-y: auto;
     width: 100%;
     margin-bottom: 1rem;
+    background: var(--app-background);
+    border: 1px solid var(--element-border);
+    border-radius: 0.5rem;
 }
