@@ -1,3 +1,4 @@
+@import "@radix-ui/colors/black-alpha.css";
 @import "@radix-ui/colors/mint.css";
 @import "@radix-ui/colors/mint-dark.css";
 @import "@radix-ui/colors/gray.css";
@@ -7,17 +8,16 @@
 @import "@radix-ui/colors/slate.css";
 @import "@radix-ui/colors/slate-dark.css";
 
-:root, .light-theme, .dark-theme {
+.dark-theme {
   --body-background: var(--slate-1);
   --app-background: var(--slate-1);
   --subtle-background: var(--slate-2);
-
   --element-background: var(--slate-3);
-  --element-box-shadow: var(--gray-7);
+  --element-box-shadow: var(--black-a7);
   --hovered-element-background: var(--slate-4);
   --selected-element-background: var(--slate-5);
   --subtle-element-border: var(--slate-6);
-  --subtle-element-box-shadow: var(--gray-6);
+  --subtle-element-box-shadow: var(--black-a6);
   --element-border: var(--slate-7);
   --hovered-element-border: var(--slate-8);
 

@@ -20,7 +20,7 @@ import styles from "./CodeSandbox.module.css";
 
 const CSS = `
 html, body {
-    background: #070809;
+    background: black;
     color: snow;
 }
     

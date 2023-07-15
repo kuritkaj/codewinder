@@ -7,7 +7,7 @@
 }
 
 .controls, .editor {
-    border-bottom: 1px solid #30373d;
+    border-bottom: 1px solid var(--element-border);
 }
 
 .editor {
@@ -23,7 +23,7 @@
 .layout {
     display: flex;
     flex-direction: column;
-    border: 1px solid #30373d;
+    border: 1px solid var(--element-border);
 }
 
 .preview {
@@ -32,4 +32,8 @@
 
 .preview[hidden] {
     display: none;
+}
+
+.preview iframe {
+    background: var(--app-background);
 }

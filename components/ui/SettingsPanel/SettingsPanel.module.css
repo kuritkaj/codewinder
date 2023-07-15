@@ -63,6 +63,7 @@
     height: 25px;
     background-color: var(--element-background);
     border-radius: 9999px;
+    border-color: var(--element-border);
     position: relative;
     box-shadow: 0 2px 10px var(--subtle-element-box-shadow);
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);

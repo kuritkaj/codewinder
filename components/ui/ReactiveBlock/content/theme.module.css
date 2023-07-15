@@ -6,6 +6,7 @@
 
 .code {
     color: var(--code);
+    font-size: 1em;
 }
 
 .italic {
