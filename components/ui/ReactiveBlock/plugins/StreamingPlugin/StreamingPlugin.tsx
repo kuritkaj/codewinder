@@ -7,7 +7,7 @@ import { $convertFromMarkdownString, $convertToMarkdownString } from "@lexical/m
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect, useLayoutEffect } from "react";
 
-export const StreamingPlugin = () => {
+const StreamingPlugin = () => {
     const [editor] = useLexicalComposerContext();
     const {namespace} = useNamespace();
     const {getBlock, replaceBlock, subscribeToBlock} = useNotebook();

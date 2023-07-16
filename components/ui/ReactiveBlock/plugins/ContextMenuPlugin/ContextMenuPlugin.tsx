@@ -6,7 +6,7 @@ import { ContextMenuTrigger } from "@radix-ui/react-context-menu";
 import { ChevronRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import styles from "./ContextMenuPlugin.module.css";
 
-function ContextMenuPlugin() {
+const ContextMenuPlugin = () => {
     const {namespace} = useNamespace();
     const {addBlock, deleteBlock} = useNotebook();
 

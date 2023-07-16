@@ -6,7 +6,7 @@ import { CollapsibleContainerNode } from "@/components/ui/ReactiveBlock/plugins/
 import { CollapsibleContentNode } from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin/CollapsibleContentNode";
 import { CollapsibleTitleNode } from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin/CollapsibleTitleNode";
 import ContextMenuPlugin from "@/components/ui/ReactiveBlock/plugins/ContextMenuPlugin";
-import { DragDropPlugin } from "@/components/ui/ReactiveBlock/plugins/DragDropPlugin/DragDropPlugin";
+import DragDropPlugin from "@/components/ui/ReactiveBlock/plugins/DragDropPlugin";
 import FloatingTextFormatToolbarPlugin from "@/components/ui/ReactiveBlock/plugins/FloatingTextFormatToolbarPlugin";
 import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/plugins/MarkdownTransformers/MarkdownTransformers";
 import StreamingPlugin from "@/components/ui/ReactiveBlock/plugins/StreamingPlugin";
@@ -48,7 +48,7 @@ export type ReactiveBlockProps = {
     block: BlockData;
 }
 
-export function ReactiveBlock({block}: ReactiveBlockProps) {
+const ReactiveBlock = ({block}: ReactiveBlockProps) => {
     const {
         attributes,
         setNodeRef,

@@ -4,7 +4,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 import styles from "./DragDropPlugin.module.css";
 
-export const DragDropPlugin = () => {
+const DragDropPlugin = () => {
     const {namespace} = useNamespace();
 
     const {
@@ -23,3 +23,5 @@ export const DragDropPlugin = () => {
         </BaseButton>
     );
 }
+
+export default DragDropPlugin;
