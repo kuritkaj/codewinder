@@ -5,6 +5,14 @@ import styles from './theme.module.css'
 
 export const theme: EditorThemeClasses = {
     code: styles.code,
+    heading: {
+        h1: styles.h1,
+        h2: styles.h2,
+        h3: styles.h3,
+        h4: styles.h4,
+        h5: styles.h5,
+        h6: styles.h6,
+    },
     link: styles.link,
     list: {
         nested: {

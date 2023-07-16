@@ -19,7 +19,7 @@ export const DragDropPlugin = () => {
             className={styles.draggable}
             {...listeners}
         >
-            <DragHandleDots2Icon className={styles.handle}/>
+            <DragHandleDots2Icon width={16} height={16}/>
         </BaseButton>
     );
 }

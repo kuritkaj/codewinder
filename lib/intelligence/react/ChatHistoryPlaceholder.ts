@@ -19,14 +19,14 @@ export class ChatHistoryPlaceholder extends MessagesPlaceholder {
                 if (typeof history[0] === 'string') {
                     // Case: array of two strings
                     const [message, type] = history;
-                    if (type === MessageType.UserMessage.toString()) messages.push(new HumanMessage(message));
-                    if (type === MessageType.ApiMessage.toString()) messages.push(new AIMessage(message));
+                    if (message && type === MessageType.UserMessage.toString()) messages.push(new HumanMessage(message));
+                    if (message && type === MessageType.ApiMessage.toString()) messages.push(new AIMessage(message));
                 } else if (Array.isArray(history[0])) {
                     // Case: array of arrays of two strings
                     // Example: [["Hi there! How can I help?", "apimessage"]]
                     for (const [message, type] of history) {
-                        if (type === MessageType.UserMessage.toString()) messages.push(new HumanMessage(message));
-                        if (type === MessageType.ApiMessage.toString()) messages.push(new AIMessage(message));
+                        if (message && type === MessageType.UserMessage.toString()) messages.push(new HumanMessage(message));
+                        if (message && type === MessageType.ApiMessage.toString()) messages.push(new AIMessage(message));
                     }
                 }
             }

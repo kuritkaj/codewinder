@@ -35,9 +35,9 @@ export const ToggleEditablePlugin = () => {
             onClick={toggleEditable}
         >
             {locked ? (
-                <LockClosedIcon className={styles.lock}/>
+                <LockClosedIcon className={styles.lock} width={16} height={16}/>
             ) : (
-                <LockOpen1Icon className={styles.lock}/>
+                <LockOpen1Icon className={styles.lock} width={16} height={16}/>
             )}
         </BaseButton>
     );

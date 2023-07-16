@@ -1,0 +1,61 @@
+.content,
+.subcontent {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+    min-width: 150px;
+    background-color: var(--element-background);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 10px 38px -10px var(--element-box-shadow), 0 10px 20px -15px var(--subtle-element-box-shadow);
+}
+
+.menuitem {
+    cursor: pointer;
+}
+
+.menuitem,
+.subtrigger {
+    font-size: 0.9em;
+    line-height: 1;
+    color: var(--high-contrast-text);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 5px;
+    user-select: none;
+    outline: none;
+}
+
+.menuitem[data-disabled],
+.subtrigger[data-disabled] {
+    color: var(--disabled-element-background);
+    pointer-events: none;
+}
+.menuitem[data-highlighted] {
+    background-color: var(--hovered-element-background);
+}
+
+.rightslot {
+    margin-left: auto;
+}
+
+.subtrigger {
+    cursor: default;
+}
+
+.trigger {
+    position: absolute;
+    transform: translate(-50%, -0.25em);
+    top: 1.5rem;
+    right: 1.5rem;
+    padding: 0.5em;
+    border-radius: 5px;
+    cursor: context-menu;
+}
+.trigger:hover {
+    background-color: var(--hovered-element-background);
+}

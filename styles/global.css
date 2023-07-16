@@ -12,10 +12,12 @@
   --body-background: var(--slate-1);
   --app-background: var(--slate-1);
   --subtle-background: var(--slate-2);
+
   --element-background: var(--slate-3);
   --element-box-shadow: var(--black-a7);
   --hovered-element-background: var(--slate-4);
   --selected-element-background: var(--slate-5);
+  --disabled-element-background: var(--black-a3);
   --subtle-element-border: var(--slate-6);
   --subtle-element-box-shadow: var(--black-a6);
   --element-border: var(--slate-7);

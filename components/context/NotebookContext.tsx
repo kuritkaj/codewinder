@@ -5,8 +5,9 @@ import React, { createContext, ReactNode, useCallback, useRef, useState } from "
 type SubscribeFunction = (block: BlockData) => void;
 
 interface NotebookContextProps {
-    addBlock: (addition: BlockData) => void;
+    addBlock: (addition: BlockData, namespace?: string, before?: boolean) => void;
     appendToBlock: (partial: PartialBlockData) => void;
+    deleteBlock: (namespace: string) => void;
     getBlock: (namespace: string) => BlockData | undefined;
     getBlocks: () => BlockData[];
     getContents: () => string[][];
@@ -16,14 +17,33 @@ interface NotebookContextProps {
 }
 
 const defaultImplementation = {
-    addBlock: (addition: BlockData) => { throw new Error('Method not implemented.') },
-    appendToBlock: (partial: PartialBlockData) => { throw new Error('Method not implemented.') },
-    getBlock: (namespace: string) => { throw new Error('Method not implemented.') },
-    getBlocks: () => { throw new Error('Method not implemented.') },
-    getContents: () => { throw new Error('Method not implemented.') },
-    moveBlock: (source: string, destination: string) => { throw new Error('Method not implemented.') },
-    replaceBlock: (replacement: BlockData, silent?: boolean) => { throw new Error('Method not implemented.') },
-    subscribeToBlock: (namespace: string, callback: SubscribeFunction) => { throw new Error('Method not implemented.') },
+    addBlock: () => {
+        throw new Error('Method not implemented.')
+    },
+    appendToBlock: () => {
+        throw new Error('Method not implemented.')
+    },
+    deleteBlock: () => {
+        throw new Error('Method not implemented.')
+    },
+    getBlock: () => {
+        throw new Error('Method not implemented.')
+    },
+    getBlocks: () => {
+        throw new Error('Method not implemented.')
+    },
+    getContents: () => {
+        throw new Error('Method not implemented.')
+    },
+    moveBlock: () => {
+        throw new Error('Method not implemented.')
+    },
+    replaceBlock: () => {
+        throw new Error('Method not implemented.')
+    },
+    subscribeToBlock: () => {
+        throw new Error('Method not implemented.')
+    },
 };
 
 const NotebookContext = createContext<NotebookContextProps>(defaultImplementation);
@@ -36,13 +56,31 @@ type Props = {
     children: ReactNode;
 }
 
-export const NotebookProvider = ({children}: Props) => {
+export function NotebookProvider({children}: Props) {
     const [blocks, setBlocks] = useState<BlockData[]>(initialBlocks);
     const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
 
-    const addBlock = useCallback((addition: BlockData) => {
-        setBlocks(prevBlocks => [...prevBlocks, addition]);
-    }, []);
+    const addBlock = useCallback(
+        (addition: BlockData, namespace?: string, before: boolean = false) => {
+            setBlocks(prevBlocks => {
+                let newBlocks = [...prevBlocks];
+                if (namespace) {
+                    const index = newBlocks.findIndex(block => block.namespace === namespace);
+                    if (index !== -1) {
+                        if (before) {
+                            newBlocks.splice(index, 0, addition); // Insert before the block
+                        } else {
+                            newBlocks.splice(index + 1, 0, addition); // Insert after the block
+                        }
+                        return newBlocks;
+                    }
+                }
+
+                // If the namespace is not provided or not found, simply append the new block to the end
+                newBlocks.push(addition);
+                return newBlocks;
+            });
+        }, []);
 
     const appendToBlock = useCallback((partial: PartialBlockData) => {
         if (!partial.markdown) return;
@@ -62,6 +100,10 @@ export const NotebookProvider = ({children}: Props) => {
 
             return newBlocks;
         });
+    }, []);
+
+    const deleteBlock = useCallback((namespace: string) => {
+        setBlocks(prevBlocks => prevBlocks.filter(block => block.namespace !== namespace));
     }, []);
 
     const getBlock = useCallback((namespace: string) => {
@@ -130,10 +172,12 @@ export const NotebookProvider = ({children}: Props) => {
     }, []);
 
     return (
-        <NotebookContext.Provider value={{addBlock, appendToBlock, getBlock, getBlocks, getContents, moveBlock, replaceBlock, subscribeToBlock}}>
+        <NotebookContext.Provider value={{
+            addBlock, appendToBlock, deleteBlock, getBlock, getBlocks, getContents, moveBlock, replaceBlock, subscribeToBlock
+        }}>
             {children}
         </NotebookContext.Provider>
     );
-};
+}
 
 export default NotebookContext;

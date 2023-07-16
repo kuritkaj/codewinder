@@ -9,6 +9,44 @@
     font-size: 1em;
 }
 
+.h1:first-child {
+    margin-top: -0.375em;
+}
+.h2:first-child {
+    margin-top: -0.275em;
+}
+.h3:first-child {
+    margin-top: -0.135em;
+}
+.h1 {
+    font-size: 2em;
+    font-weight: 500;
+}
+.h2 {
+    font-size: 1.5em;
+    font-weight: 500;
+}
+.h3 {
+    font-size: 1.25em;
+    font-weight: bolder;
+}
+.h4 {
+    font-size: 1em;
+    font-weight: bold;
+    line-height: 1.6;
+}
+.h5 {
+    font-size: 1em;
+    font-weight: normal;
+    line-height: 1.5;
+    padding-top: 1px;
+}
+.h6 {
+    font-size: 1em;
+    font-weight: lighter;
+    line-height: 1.5;
+}
+
 .italic {
     font-style: italic;
 }
@@ -42,7 +80,7 @@
 }
 
 .paragraph {
-    line-height: 1.5;
+    line-height: 1.6;
     margin-bottom: 1em;
 }
 
