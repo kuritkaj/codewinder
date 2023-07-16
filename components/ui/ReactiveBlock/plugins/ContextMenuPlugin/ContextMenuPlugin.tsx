@@ -6,7 +6,7 @@ import { ContextMenuTrigger } from "@radix-ui/react-context-menu";
 import { ChevronRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import styles from "./ContextMenuPlugin.module.css";
 
-export function ContextMenuPlugin() {
+function ContextMenuPlugin() {
     const {namespace} = useNamespace();
     const {addBlock, deleteBlock} = useNotebook();
 
@@ -17,6 +17,7 @@ export function ContextMenuPlugin() {
     function handleOnInsertAbove() {
         addBlock({
             editable: true,
+            markdown: "",
             namespace: Math.random().toString(),
             type: MessageType.UserMessage
         }, namespace, true);
@@ -25,6 +26,7 @@ export function ContextMenuPlugin() {
     function handleOnInsertBelow() {
         addBlock({
             editable: true,
+            markdown: "",
             namespace: Math.random().toString(),
             type: MessageType.UserMessage
         }, namespace, false);
@@ -50,7 +52,6 @@ export function ContextMenuPlugin() {
                         >
                             Insert below
                         </ContextMenu.Item>
-                        <ContextMenu.Arrow />
                         <ContextMenu.SubTrigger className={styles.subtrigger}>
                             Delete <ChevronRightIcon className={styles.rightslot} width={16} height={16}/>
                         </ContextMenu.SubTrigger>

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import styles from "./ToggleEditablePlugin.module.css";
 
-export const ToggleEditablePlugin = () => {
+function ToggleEditablePlugin() {
     const [editor] = useLexicalComposerContext();
     const [locked, setLocked] = useState<boolean>(true);
 
