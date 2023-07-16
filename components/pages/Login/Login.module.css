@@ -1,0 +1,24 @@
+.auth {
+    max-width: 400px;
+}
+
+.center {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.divider {
+    max-width: 300px;
+    width: 80%;
+    border-top: 1px solid var(--element-border);
+}
+
+.navlogo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}

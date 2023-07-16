@@ -1,13 +1,13 @@
 import { MessageType } from "@/lib/types/MessageType";
 
-export type BlockData = {
+export interface BlockData {
     editable: boolean;
     markdown: string;
     namespace: string;
     type: MessageType;
 }
 
-export type PartialBlockData = {
+export interface PartialBlockData {
     markdown: string;
     namespace: string;
 }
