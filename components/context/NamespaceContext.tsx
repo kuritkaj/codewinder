@@ -10,12 +10,12 @@ const defaultNamespace = {
 
 const NamespaceContext = createContext<NamespaceContextProps>(defaultNamespace);
 
-type Props = {
+type NamespaceProviderProps = {
     children: ReactNode;
     namespace: string;
 }
 
-export const NamespaceProvider = ({children, namespace}: Props) => {
+export const NamespaceProvider = ({children, namespace}: NamespaceProviderProps) => {
     return (
         <NamespaceContext.Provider value={{namespace}}>
             {children}

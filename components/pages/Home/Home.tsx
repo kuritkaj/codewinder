@@ -15,7 +15,7 @@ const Home = () => {
     const supabase = createClientComponentClient();
 
     return (
-        <UserContextProvider supabaseClient={supabase}>
+        <UserContextProvider supabase={supabase}>
             <div className={styles.fullscreen}>
                 <Header/>
                 <main className={styles.main}>

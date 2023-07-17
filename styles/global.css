@@ -14,12 +14,13 @@
   --subtle-background: var(--slate-2);
 
   --element-background: var(--slate-3);
-  --element-box-shadow: var(--black-a7);
+  --disabled-element-background: var(--black-a3);
   --hovered-element-background: var(--slate-4);
   --selected-element-background: var(--slate-5);
-  --disabled-element-background: var(--black-a3);
+  --subtle-element-background: var(--slate-5);
   --subtle-element-border: var(--slate-6);
   --subtle-element-box-shadow: var(--black-a6);
+  --element-box-shadow: var(--black-a7);
   --element-border: var(--slate-7);
   --hovered-element-border: var(--slate-8);
 

@@ -28,11 +28,11 @@ const defaultSettings = {
 
 const SettingsContext = createContext<SettingsContextProps>(defaultSettings);
 
-type Props = {
+type SettingsProviderProps = {
     children: ReactNode;
 }
 
-export const SettingsProvider = ({ children }: Props) => {
+export const SettingsProvider = ({ children }: SettingsProviderProps) => {
     const [currentSettings, setCurrentSettings] = useState<Settings>(
         defaultSettings
     );

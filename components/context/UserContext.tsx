@@ -23,7 +23,7 @@
  */
 
 import { Session, SupabaseClient, User } from '@supabase/supabase-js'
-import { createContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 export interface AuthSession {
     user: User | null
@@ -32,42 +32,37 @@ export interface AuthSession {
 
 const UserContext = createContext<AuthSession>({user: null, session: null})
 
-export interface Props {
-    supabaseClient: SupabaseClient
-
-    [propName: string]: any
+export interface UserContextProviderProps {
+    children: ReactNode;
+    supabase: SupabaseClient
 }
 
-export const UserContextProvider = (props: Props) => {
-    const {supabaseClient} = props
+export const UserContextProvider = ({children, supabase}: UserContextProviderProps) => {
     const [session, setSession] = useState<Session | null>(null)
     const [user, setUser] = useState<User | null>(session?.user ?? null)
 
     useEffect(() => {
-        ;(async () => {
-            const {data} = await supabaseClient.auth.getSession()
-            setSession(data.session)
-            setUser(data.session?.user ?? null)
-        })()
+        (async () => {
+            const {data} = await supabase.auth.getSession();
+            setSession(data.session);
+            setUser(data.session?.user ?? null);
+        })();
 
-        const {data: authListener} = supabaseClient.auth.onAuthStateChange(
+        const {data: authListener} = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                setSession(session)
-                setUser(session?.user ?? null)
+                setSession(session);
+                setUser(session?.user ?? null);
             }
-        )
+        );
 
         return () => {
-            authListener?.subscription.unsubscribe()
+            authListener?.subscription.unsubscribe();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [supabase.auth]);
 
-    const value = {
-        session,
-        user,
-    }
-    return <UserContext.Provider value={value} {...props} />
+    return <UserContext.Provider value={{session, user}}>
+        {children}
+    </UserContext.Provider>
 }
 
 export default UserContext;

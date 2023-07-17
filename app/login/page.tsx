@@ -1,7 +1,9 @@
 import Login from "@/components/pages/Login";
 
-export default function Page() {
+function LoginPage() {
     return (
         <Login />
     );
 }
+
+export default LoginPage;

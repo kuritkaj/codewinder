@@ -52,11 +52,11 @@ const initialBlocks: BlockData[] = [
     {editable: false, markdown: "Hi there! How can I help?", namespace: Math.random().toString(), type: MessageType.ApiMessage}
 ];
 
-type Props = {
+type NotebookProviderProps = {
     children: ReactNode;
 }
 
-export function NotebookProvider({children}: Props) {
+export function NotebookProvider({children}: NotebookProviderProps) {
     const [blocks, setBlocks] = useState<BlockData[]>(initialBlocks);
     const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
 
