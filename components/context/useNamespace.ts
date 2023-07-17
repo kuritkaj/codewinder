@@ -1,7 +1,7 @@
 import NamespaceContext from "@/components/context/NamespaceContext";
 import { useContext } from "react";
 
-export const useNamespace = () => {
+const useNamespace = () => {
     return useContext(NamespaceContext);
 };
 

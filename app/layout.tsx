@@ -1,8 +1,8 @@
+import "@fontsource-variable/public-sans";
 import { Metadata } from "next";
 import { ReactNode } from "react";
-import "@fontsource-variable/public-sans";
-import "../styles/global.css";
 import '../scripts/wdyr';
+import "../styles/global.css";
 
 export const metadata: Metadata = {
     title: "Codewinder",
@@ -11,10 +11,12 @@ export const metadata: Metadata = {
     icons: ["favicon.ico"],
 }
 
-export default function RootLayout({children}: { children: ReactNode }) {
+function RootLayout({children}: { children: ReactNode }) {
     return (
         <html lang="en">
-            <body className={"dark-theme"}>{children}</body>
+        <body className={"dark-theme"}>{children}</body>
         </html>
-    )
+    );
 }
+
+export default RootLayout;

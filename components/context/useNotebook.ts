@@ -1,7 +1,7 @@
 import NotebookContext from "@/components/context/NotebookContext";
 import { useContext } from "react";
 
-export const useNotebook = () => {
+const useNotebook = () => {
     return useContext(NotebookContext);
 };
 

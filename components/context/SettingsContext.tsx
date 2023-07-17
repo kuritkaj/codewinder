@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
 import Cookies from "js-cookie";
 
-export interface Settings {
+interface Settings {
     availableTools: string[];
     hasServerKey: boolean;
     localKey: string;
@@ -21,9 +21,9 @@ const defaultSettings = {
     localKey: "",
     selectedTools: [],
     usePower: false,
-    setLocalKey: (apiKey: string) => { throw new Error('Method not implemented.') },
-    setSelectedTools: (selectedTools: string[]) => { throw new Error('Method not implemented.') },
-    setUsePower: (usePower: boolean) => { throw new Error('Method not implemented.') },
+    setLocalKey: () => { throw new Error('Method not implemented.') },
+    setSelectedTools: () => { throw new Error('Method not implemented.') },
+    setUsePower: () => { throw new Error('Method not implemented.') },
 };
 
 const SettingsContext = createContext<SettingsContextProps>(defaultSettings);
