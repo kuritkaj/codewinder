@@ -58,7 +58,8 @@ export const UserContextProvider = ({children, supabase}: UserContextProviderPro
         return () => {
             authListener?.subscription.unsubscribe();
         }
-    }, [supabase.auth]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return <UserContext.Provider value={{session, user}}>
         {children}
