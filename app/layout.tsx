@@ -41,7 +41,7 @@ function setInitialColorMode() {
 const blockingSetInitialColorMode = `(function() {
 		${setInitialColorMode.toString()}
 		setInitialColorMode();
-})()
+})();
 `;
 
 export const metadata: Metadata = {
