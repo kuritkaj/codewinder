@@ -17,14 +17,6 @@
     font-size: 0.8rem;
 }
 
-.header {
-    width: 100%;
-    text-align: center;
-    background: #141619;
-    padding: 0.5rem;
-    color: #7a7d81;
-}
-
 .panel {
     position: relative;
     width: 100%;
@@ -61,11 +53,10 @@
     all: unset;
     width: 42px;
     height: 25px;
-    background-color: var(--element-background);
+    background-color: var(--subtle-element-background);
     border-radius: 9999px;
-    border-color: var(--element-border);
+    border-color: var(--subtle-element-border);
     position: relative;
-    box-shadow: 0 2px 10px var(--subtle-element-box-shadow);
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     cursor: pointer;
 }
@@ -80,9 +71,8 @@
     display: block;
     width: 21px;
     height: 21px;
-    background-color: var(--high-contrast-text);
+    background-color: var(--app-background);
     border-radius: 9999px;
-    box-shadow: 0 2px 2px var(--subtle-element-box-shadow);
     transition: transform 100ms;
     transform: translateX(2px);
     will-change: transform;

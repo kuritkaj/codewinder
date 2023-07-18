@@ -8,7 +8,7 @@
 @import "@radix-ui/colors/slate.css";
 @import "@radix-ui/colors/slate-dark.css";
 
-.dark-theme {
+#root, .light-theme, .dark-theme {
   --body-background: var(--slate-1);
   --app-background: var(--slate-1);
   --subtle-background: var(--slate-2);
