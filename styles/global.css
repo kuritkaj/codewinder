@@ -8,11 +8,19 @@
 @import "@radix-ui/colors/slate.css";
 @import "@radix-ui/colors/slate-dark.css";
 
-#root, .light-theme, .dark-theme {
-  --body-background: var(--slate-1);
+.light-theme {
+  --body-background: var(--slate-2);
   --app-background: var(--slate-1);
-  --subtle-background: var(--slate-2);
+  --subtle-background: var(--black-a10);
+}
 
+.dark-theme {
+  --body-background: var(--slate-1);
+  --app-background: var(--slate-2);
+}
+
+#root, .light-theme, .dark-theme {
+  --subtle-background: var(--gray-2);
   --element-background: var(--slate-3);
   --disabled-element-background: var(--black-a3);
   --hovered-element-background: var(--slate-4);
@@ -35,6 +43,10 @@
 
   --link: var(--sky-11);
   --code: var(--mint-11);
+}
+
+.dark-theme img {
+  filter: brightness(.8) contrast(1.2);
 }
 
 /** Modified from: https://www.joshwcomeau.com/css/custom-css-reset/ */
