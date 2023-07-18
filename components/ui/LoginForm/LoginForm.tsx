@@ -49,8 +49,6 @@ const LoginForm = ({providers = ["github"], showEmailAuth = false}: LoginFormPro
     }
 
     const handleSignIn = async () => {
-        console("email: ", email);
-        console("password: ", password);
         const {error} = await supabase.auth.signInWithPassword({
             email,
             password,
@@ -60,7 +58,6 @@ const LoginForm = ({providers = ["github"], showEmailAuth = false}: LoginFormPro
             alert(error.message);
         }
     }
-
 
     return (
         <div className={styles.root}>
