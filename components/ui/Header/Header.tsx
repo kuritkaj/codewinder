@@ -21,12 +21,12 @@ const Header = () => {
             </div>
             <div className={styles.navlinks}>
                 {user ? (
-                    <Link href="#" onClick={signout}>
-                        Logout
+                    <Link href="" onClick={signout}>
+                        Sign out
                     </Link>
                 ) : (
-                    <Link href="/login">
-                        Login
+                    <Link href="/signin">
+                        Sign in
                     </Link>
                 )}
             </div>

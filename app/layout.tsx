@@ -50,13 +50,8 @@ export const metadata: Metadata = {
 function RootLayout({children}: { children: ReactNode }) {
     return (
         <html lang="en">
-        <body>
+        <body className="light-theme">
             {children}
-            <script
-                dangerouslySetInnerHTML={{
-                    __html: blockingSetInitialColorMode,
-                }}
-            ></script>
         </body>
         </html>
     );

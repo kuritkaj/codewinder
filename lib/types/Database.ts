@@ -72,6 +72,30 @@ export interface Database {
                 }
                 Relationships: []
             }
+            notes: {
+                Row: {
+                    content: Json | null
+                    created_at: string | null
+                    id: number
+                    owner_id: number | null
+                    updated_at: string | null
+                }
+                Insert: {
+                    content?: Json | null
+                    created_at?: string | null
+                    id?: number
+                    owner_id?: number | null
+                    updated_at?: string | null
+                }
+                Update: {
+                    content?: Json | null
+                    created_at?: string | null
+                    id?: number
+                    owner_id?: number | null
+                    updated_at?: string | null
+                }
+                Relationships: []
+            }
         }
         Views: {
             [_ in never]: never

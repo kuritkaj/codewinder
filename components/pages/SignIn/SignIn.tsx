@@ -1,19 +1,19 @@
 "use client";
 
-import LoginForm from "@/components/ui/LoginForm";
+import SignInForm from "components/ui/SignInForm";
 import Link from "next/link";
-import styles from "./Login.module.css";
+import styles from "./Signin.module.css";
 
-const Login = () => {
+const SignIn = () => {
 
     return (
         <div className={styles.center}>
             <div className={styles.navlogo}>
                 <Link href="/">Codewinder</Link>
             </div>
-            <LoginForm/>
+            <SignInForm/>
         </div>
     )
 }
 
-export default Login;
+export default SignIn;

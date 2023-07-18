@@ -1,3 +1,5 @@
+@import "@radix-ui/colors/amber.css";
+@import "@radix-ui/colors/amber-dark.css";
 @import "@radix-ui/colors/black-alpha.css";
 @import "@radix-ui/colors/mint.css";
 @import "@radix-ui/colors/mint-dark.css";
@@ -9,18 +11,33 @@
 @import "@radix-ui/colors/slate-dark.css";
 
 .light-theme {
-  --body-background: var(--slate-2);
+  --body-background: var(--gray-1);
   --app-background: var(--slate-1);
   --subtle-background: var(--black-a10);
+
+  --solid-background: var(--amber-9);
+  --hovered-solid-background: var(--amber-10);
+
+  --low-contrast-text: var(--amber-11);
+  --high-contrast-text: var(--amber-12);
 }
 
 .dark-theme {
   --body-background: var(--slate-1);
   --app-background: var(--slate-2);
+  --subtle-background: var(--gray-2);
+
+  --solid-background: var(--slate-9);
+  --hovered-solid-background: var(--slate-10);
+
+  --low-contrast-text: var(--slate-11);
+  --high-contrast-text: var(--slate-12);
 }
 
 #root, .light-theme, .dark-theme {
-  --subtle-background: var(--gray-2);
+  --selected: var(--mint-6);
+  --not-selected: var(--sky-6);
+
   --element-background: var(--slate-3);
   --disabled-element-background: var(--black-a3);
   --hovered-element-background: var(--slate-4);
@@ -31,15 +48,6 @@
   --element-box-shadow: var(--black-a7);
   --element-border: var(--slate-7);
   --hovered-element-border: var(--slate-8);
-
-  --solid-background: var(--slate-9);
-  --hovered-solid-background: var(--slate-10);
-
-  --low-contrast-text: var(--slate-11);
-  --high-contrast-text: var(--slate-12);
-
-  --selected: var(--mint-6);
-  --not-selected: var(--sky-6);
 
   --link: var(--sky-11);
   --code: var(--mint-11);

@@ -4,14 +4,14 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import styles from "./LoginForm.module.css";
+import styles from "./SignInForm.module.css";
 
-type LoginFormProps = {
+type SignInProps = {
     providers?: Provider[]
     showEmailAuth?: boolean;
 }
 
-const LoginForm = ({providers = ["github"], showEmailAuth = false}: LoginFormProps) => {
+const SignInForm = ({providers = ["github"], showEmailAuth = false}: SignInProps) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const router = useRouter();
@@ -127,4 +127,4 @@ const LoginForm = ({providers = ["github"], showEmailAuth = false}: LoginFormPro
     );
 }
 
-export default LoginForm;
+export default SignInForm;

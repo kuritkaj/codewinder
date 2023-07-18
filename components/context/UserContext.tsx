@@ -25,21 +25,22 @@
 import { Session, SupabaseClient, User } from '@supabase/supabase-js'
 import { createContext, ReactNode, useEffect, useState } from "react";
 
-export interface AuthSession {
+export type AuthSession = {
     user: User | null
     session: Session | null
 }
 
 const UserContext = createContext<AuthSession>({user: null, session: null})
 
-export interface UserContextProviderProps {
+export type UserContextProviderProps = {
     children: ReactNode;
-    supabase: SupabaseClient
+    session?: Session | null;
+    supabase: SupabaseClient;
 }
 
-export const UserContextProvider = ({children, supabase}: UserContextProviderProps) => {
-    const [session, setSession] = useState<Session | null>(null)
-    const [user, setUser] = useState<User | null>(session?.user ?? null)
+export const UserContextProvider = ({children, session: provided, supabase}: UserContextProviderProps) => {
+    const [session, setSession] = useState<Session | null>(provided)
+    const [user, setUser] = useState<User | null>(provided?.user)
 
     useEffect(() => {
         (async () => {
@@ -51,6 +52,7 @@ export const UserContextProvider = ({children, supabase}: UserContextProviderPro
         const {data: authListener} = supabase.auth.onAuthStateChange(
             async (event, session) => {
                 setSession(session);
+                console.log("user", session?.user);
                 setUser(session?.user ?? null);
             }
         );
