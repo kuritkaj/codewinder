@@ -2,7 +2,7 @@
     display: inline-flex;
     align-items: center;
     background: none;
-    color: inherit;
+    color: var(--high-contrast-text);
     border: none;
     border-radius: 5px;
     padding: 0;

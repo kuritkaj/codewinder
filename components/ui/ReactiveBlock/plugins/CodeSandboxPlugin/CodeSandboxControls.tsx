@@ -14,11 +14,11 @@ const CodeSandboxControls = ({className, language, togglePreview}: CodeSandboxCo
     const {sandpack} = useSandpack();
 
     return (
-        <div className={`${className} ${styles.controls} sp-stack`}>
+        <div className={`${className || ""} ${styles.controls} sp-stack`}>
             <div className={styles.language}>({language} - {sandpack.environment})</div>
             <div className={styles.toggles}>
                 <BaseButton onClick={togglePreview}>
-                    <AllSidesIcon/>
+                    <AllSidesIcon width={16} height={16}/>
                 </BaseButton>
             </div>
             <div className={styles.copy}>

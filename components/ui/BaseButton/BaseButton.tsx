@@ -5,7 +5,7 @@ type BaseButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const BaseButton = ({className, children, onClick, ...props}: BaseButtonProps, ref) => {
     return (
-        <button ref={ref} className={`${className} ${styles.button}`} onClick={onClick} {...props}>
+        <button ref={ref} className={`${className || ""} ${styles.button}`} onClick={onClick} {...props}>
             {children}
         </button>
     );
