@@ -26,13 +26,17 @@ function setInitialColorMode() {
         // default to 'dark'.
         return "dark";
     }
+
     const colorMode = getInitialColorMode();
-    const root = document.documentElement;
-    root.style.setProperty("--initial-color-mode", colorMode);
     // add HTML attribute
-    if (colorMode === "dark") document.documentElement.classList.add("dark-theme");
-    else document.documentElement.classList.add("light-theme");
+    if (colorMode === "dark") {
+        document.body.classList.remove("light-theme");
+        document.body.classList.add("dark-theme");
+    } else {
+        document.body.classList.add("light-theme");
+    }
 }
+
 // our function needs to be a string
 const blockingSetInitialColorMode = `(function() {
 		${setInitialColorMode.toString()}
@@ -51,7 +55,8 @@ function RootLayout({children}: { children: ReactNode }) {
     return (
         <html lang="en">
         <body className="light-theme">
-            {children}
+        {children}
+        <script dangerouslySetInnerHTML={{__html: blockingSetInitialColorMode}}/>
         </body>
         </html>
     );

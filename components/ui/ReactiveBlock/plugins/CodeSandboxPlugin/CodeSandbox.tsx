@@ -15,7 +15,7 @@ import {
 } from "@codesandbox/sandpack-react";
 import { $convertToMarkdownString } from "@lexical/markdown";
 import { LexicalEditor } from "lexical";
-import React, { memo, useEffect, useLayoutEffect, useState } from "react";
+import React, { memo, useLayoutEffect, useState } from "react";
 import styles from "./CodeSandbox.module.css";
 
 export type CodeSandboxProps = {
@@ -31,13 +31,6 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
     const [code, setCode] = useState<string>(init);
     const [readonly, setReadonly] = useState<boolean>(false);
     const [showPreview, setShowPreview] = useState<boolean>(true);
-    const [theme, setTheme] = useState<"dark" | "light">("light");
-
-    useEffect(() => {
-        // Read the value of the CSS custom property from the root element
-        const colorMode = getComputedStyle(document.documentElement).getPropertyValue('--initial-color-mode');
-        setTheme(colorMode);
-    }, []);
 
     useLayoutEffect(() => {
         // Slight delay to let the codesandbox register an editable editor, which can then be made readonly if needed.
@@ -70,7 +63,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                 recompileDelay: 1000,
             }}
             template={language as SandpackPredefinedTemplate}
-            theme={theme}
+            theme="auto"
         >
             <CodeSandboxLayout className={styles.layout}>
                 <SandpackCodeEditor
