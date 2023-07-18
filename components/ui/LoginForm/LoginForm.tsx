@@ -84,7 +84,7 @@ const LoginForm = ({providers = ["Github"], showEmailAuth = false}: LoginFormPro
             )}
 
             {showEmailAuth && (
-                <Form.Root className={styles.form} onSubmit={handleSignIn}>
+                <Form.Root className={styles.form}>
                     <Form.Field className={styles.formfield} name="email">
                         <Form.Label className={styles.formlabel}>
                             Email address
@@ -119,15 +119,15 @@ const LoginForm = ({providers = ["Github"], showEmailAuth = false}: LoginFormPro
                         </Form.Control>
                     </Form.Field>
 
-                    <Form.Submit className={styles.formsubmit} asChild>
+                    <Form.Submit className={styles.formsubmit} asChild onClick={handleSignIn}>
                         <BaseButton className={styles.button}>
-                            Login
+                            Login with password
                         </BaseButton>
                     </Form.Submit>
 
                     <Form.Submit className={styles.formsubmit} asChild onClick={handleSignUp}>
                         <BaseButton className={styles.button}>
-                            Sign up
+                            Sign up with password
                         </BaseButton>
                     </Form.Submit>
 
