@@ -88,3 +88,7 @@
     border-radius: 5px;
     padding: 2rem;
 }
+
+.touppercase {
+    text-transform: capitalize;
+}

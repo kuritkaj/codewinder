@@ -11,7 +11,7 @@ type LoginFormProps = {
     showEmailAuth?: boolean;
 }
 
-const LoginForm = ({providers = ["Github"], showEmailAuth = false}: LoginFormProps) => {
+const LoginForm = ({providers = ["github"], showEmailAuth = false}: LoginFormProps) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const router = useRouter();
@@ -61,15 +61,6 @@ const LoginForm = ({providers = ["Github"], showEmailAuth = false}: LoginFormPro
         }
     }
 
-    const handleSignOut = async () => {
-        const {error} = await supabase.auth.signOut();
-        if (error) {
-            console.log("Error: ", error);
-            alert(error.message);
-        } else {
-            router.push("/");
-        }
-    }
 
     return (
         <div className={styles.root}>
@@ -77,7 +68,7 @@ const LoginForm = ({providers = ["Github"], showEmailAuth = false}: LoginFormPro
                 <div className={styles.providers}>
                     {providers.map((provider) => (
                         <BaseButton key={provider} className={styles.button} onClick={() => handleProviderSignIn(provider)}>
-                            Login with {provider}
+                            Login with&nbsp;<span className={styles.touppercase}>{provider}</span>
                         </BaseButton>
                     ))}
                 </div>
