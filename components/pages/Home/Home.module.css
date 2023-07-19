@@ -10,7 +10,7 @@
   flex-direction: row;
   height: calc(100vh - 60px);
   justify-content: center;
-  padding: 2rem;
+  padding: 1rem 2rem 2rem 2rem;
 }
 
 .panels {

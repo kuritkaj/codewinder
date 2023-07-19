@@ -1,6 +1,5 @@
 .topnav {
     width: 100%;
-    border-bottom: 1px solid var(--element-border);
     display: flex;
     justify-content: space-between;
     padding: 1rem;
@@ -27,9 +26,8 @@
 @media (max-width: 600px) {
 
     .topnav {
-        border: 1px solid var(--app-background);
         align-items: center;
-        padding: 0.85rem 0.75rem 0.85rem 0.75rem;
+        padding: 1rem 0 0 0;
     }
 
     .navlogo {
