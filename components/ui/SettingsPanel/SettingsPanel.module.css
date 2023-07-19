@@ -22,9 +22,10 @@
     width: 100%;
     margin-bottom: 1rem;
     padding: 0 1.5rem;
+    background: var(--app-background);
     border: 1px solid var(--element-border);
     border-radius: 0.5rem;
-    background: var(--app-background);
+    box-shadow: 0 1px 4px var(--element-box-shadow);
     color: var(--high-contrast-text);
     font-size: 0.8rem;
 }

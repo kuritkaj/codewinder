@@ -48,8 +48,20 @@ const defaultImplementation = {
 
 const NotebookContext = createContext<NotebookContextProps>(defaultImplementation);
 
+function getGreeting() {
+    const currentHour = new Date().getHours();
+
+    if (currentHour < 12) {
+        return "Good morning! How can I help?";
+    } else if (currentHour < 18) {
+        return "Good afternoon! What can I help with?";
+    } else {
+        return "Good evening! How may I be of help?";
+    }
+}
+
 const initialBlocks: BlockData[] = [
-    {editable: false, markdown: "Hi there! How can I help?", namespace: Math.random().toString(), type: MessageType.ApiMessage}
+    {editable: false, markdown: getGreeting(), namespace: Math.random().toString(), type: MessageType.ApiMessage}
 ];
 
 type NotebookProviderProps = {

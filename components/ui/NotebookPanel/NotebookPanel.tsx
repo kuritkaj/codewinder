@@ -5,7 +5,7 @@ import styles from "./NotebookPanel.module.css";
 const NotebookPanel = () => {
     return (
         <>
-            <div className={styles.notebook}>
+            <div className={styles.panel}>
                 <ReactiveNotebook/>
             </div>
         </>

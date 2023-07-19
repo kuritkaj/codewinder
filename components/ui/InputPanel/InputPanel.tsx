@@ -105,7 +105,7 @@ const InputPanel = () => {
     }
 
     return (
-        <div className={styles.textinput}>
+        <div className={styles.panel}>
             <InputTextArea
                 userInput={userInput}
                 setUserInput={setUserInput}

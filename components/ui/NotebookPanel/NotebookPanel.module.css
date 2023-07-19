@@ -1,4 +1,4 @@
-.notebook {
+.panel {
     display: flex;
     flex-grow: 1;
     overflow-y: auto;
@@ -6,5 +6,6 @@
     margin-bottom: 1rem;
     background: var(--app-background);
     border: 1px solid var(--element-border);
+    box-shadow: 0 1px 4px var(--element-box-shadow);
     border-radius: 0.5rem;
 }

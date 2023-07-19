@@ -11,9 +11,12 @@
 @import "@radix-ui/colors/slate-dark.css";
 
 .light-theme {
-  --body-background: var(--gray-1);
+  --start-color: var(--slate-5);
+  --end-color: var(--gray-3);
   --app-background: var(--slate-1);
   --subtle-background: var(--black-a10);
+
+  --element-border: var(--black-a7);
 
   --solid-background: var(--amber-9);
   --hovered-solid-background: var(--amber-10);
@@ -23,7 +26,8 @@
 }
 
 .dark-theme {
-  --body-background: var(--slate-1);
+  --start-color: var(--slate-1);
+  --end-color: var(--gray-2);
   --app-background: var(--slate-2);
   --subtle-background: var(--gray-2);
 
@@ -45,7 +49,7 @@
   --subtle-element-background: var(--slate-5);
   --subtle-element-border: var(--slate-6);
   --subtle-element-box-shadow: var(--black-a6);
-  --element-box-shadow: var(--black-a7);
+  --element-box-shadow: var(--black-a4);
   --element-border: var(--slate-7);
   --hovered-element-border: var(--slate-8);
 
@@ -78,7 +82,7 @@ body {
 }
 
 body {
-  background: var(--body-background);
+  background: linear-gradient(to right, var(--start-color) 10%, var(--end-color) 50%, var(--start-color) 90%);
   color: var(--high-contrast-text);
   font-family: "Public Sans Variable", sans-serif;
   font-weight: 400;
