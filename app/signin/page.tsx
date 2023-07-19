@@ -1,9 +1,9 @@
 import SignIn from "components/pages/SignIn";
 
-function SigninPage() {
+function Page() {
     return (
         <SignIn />
     );
 }
 
-export default SigninPage;
+export default Page;

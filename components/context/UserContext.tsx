@@ -34,13 +34,12 @@ const UserContext = createContext<AuthSession>({user: null, session: null})
 
 export type UserContextProviderProps = {
     children: ReactNode;
-    session?: Session | null;
     supabase: SupabaseClient;
 }
 
-export const UserContextProvider = ({children, session: provided, supabase}: UserContextProviderProps) => {
-    const [session, setSession] = useState<Session | null>(provided)
-    const [user, setUser] = useState<User | null>(provided?.user)
+export const UserContextProvider = ({children, supabase}: UserContextProviderProps) => {
+    const [session, setSession] = useState<Session | null>(null);
+    const [user, setUser] = useState<User | null>(session?.user || null);
 
     useEffect(() => {
         (async () => {
