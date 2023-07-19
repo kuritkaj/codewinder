@@ -2,7 +2,7 @@
 
 import SignInForm from "components/ui/SignInForm";
 import Link from "next/link";
-import styles from "./Signin.module.css";
+import styles from "./SignIn.module.css";
 
 const SignIn = () => {
 

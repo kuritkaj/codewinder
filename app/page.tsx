@@ -1,8 +1,8 @@
 import Home from "@/components/pages/Home";
 import React from "react";
 
-async function Page() {
+async function HomePage() {
     return <Home/>;
 }
 
-export default Page;
+export default HomePage;
