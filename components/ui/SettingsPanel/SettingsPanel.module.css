@@ -81,3 +81,10 @@
 .switchthumb[data-state='checked'] {
     transform: translateX(19px);
 }
+
+/* Mobile optimization */
+@media (max-width: 600px) {
+    .panel {
+        box-shadow: none;
+    }
+}

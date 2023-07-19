@@ -54,9 +54,9 @@ function getGreeting() {
     if (currentHour < 12) {
         return "Good morning! How can I help?";
     } else if (currentHour < 18) {
-        return "Good afternoon! What can I help with?";
+        return "Good afternoon! What would you like to do?";
     } else {
-        return "Good evening! How may I be of help?";
+        return "Good evening! Is there anything I can help you with?";
     }
 }
 
