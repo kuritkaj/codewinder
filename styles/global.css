@@ -21,8 +21,8 @@
   --solid-background: var(--amber-9);
   --hovered-solid-background: var(--amber-10);
 
-  --low-contrast-text: var(--amber-11);
-  --high-contrast-text: var(--amber-12);
+  --low-contrast-text: var(--gray-11);
+  --high-contrast-text: var(--gray-12);
 }
 
 .dark-theme {
