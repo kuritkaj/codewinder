@@ -31,8 +31,13 @@
     outline: none;
     color: inherit;
     font-size: 1.5rem;
-    background: var(--translucent-element-background);
-    border: 1px solid var(--solid-border);
-    border-radius: 10px;
+    background: var(--app-background);
+    border: 1px solid var(--element-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 4px var(--element-box-shadow);
     max-width: 600px;
+}
+.searchinput:focus {
+    background: var(--hovered-element-background);
+    border: 1px solid var(--hovered-element-border);
 }

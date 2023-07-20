@@ -1,7 +1,7 @@
 import "@fontsource-variable/public-sans";
 import { Metadata } from "next";
 import { ReactNode } from "react";
-import '../scripts/wdyr';
+import "../scripts/wdyr";
 import "../styles/global.css";
 
 /** https://sreetamdas.com/blog/the-perfect-dark-mode */
@@ -33,6 +33,7 @@ function setInitialColorMode() {
         document.body.classList.remove("light-theme");
         document.body.classList.add("dark-theme");
     } else {
+        document.body.classList.remove("dark-theme");
         document.body.classList.add("light-theme");
     }
 }
@@ -56,7 +57,7 @@ function RootLayout({children}: { children: ReactNode }) {
         <html lang="en">
         <body className="light-theme">
         {children}
-        <script dangerouslySetInnerHTML={{__html: blockingSetInitialColorMode}}/>
+        {/*<script dangerouslySetInnerHTML={{__html: blockingSetInitialColorMode}}/>*/}
         </body>
         </html>
     );

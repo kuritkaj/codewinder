@@ -1,12 +1,17 @@
+import React from "react";
 import styles from "./Card.module.css";
 
-const Card = ({ children, className, ...rest }: CardProps) => {
+type CardProps = React.ButtonHTMLAttributes<HTMLDivElement>;
+
+const Card = ({children, className, title, ...props}: CardProps) => {
     return (
-        <div className={`${className || ""} ${styles.card}`} {...rest}>
-            <div className={styles.cardHeader}>
+        <div className={`${className || ""} ${styles.card}`} {...props}>
+            <div className={styles.cardheader}>
                 {title}
             </div>
-            {children}
+            <div className={styles.cardcontent}>
+                {children}
+            </div>
         </div>
     );
 }

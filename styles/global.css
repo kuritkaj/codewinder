@@ -8,18 +8,19 @@
 @import "@radix-ui/colors/sky.css";
 @import "@radix-ui/colors/sky-dark.css";
 @import "@radix-ui/colors/slate.css";
+@import "@radix-ui/colors/slate-alpha.css";
 @import "@radix-ui/colors/slate-dark.css";
 
-.light-theme {
+#root, .light-theme {
   /** App Backgrounds */
   --start-color: var(--slate-5);
   --end-color: var(--amber-2);
   --app-background: var(--slate-1);
 
   /** Element Backgrounds */
-  --element-background: var(--slate-3);
-  --disabled-element-background: var(--black-a3);
-  --hovered-element-background: var(--slate-4);
+  --element-background: var(--slate-2);
+  --disabled-element-background: var(--slate-3);
+  --hovered-element-background: var(--slate-1);
   --element-box-shadow: var(--black-a4);
   --element-border: var(--black-a7);
   --hovered-element-border: var(--slate-8);
@@ -110,7 +111,7 @@ body {
 }
 
 body {
-  background: linear-gradient(to right, var(--start-color) 10%, var(--end-color) 50%, var(--start-color) 90%);
+  background: linear-gradient(to bottom, var(--start-color) 0%, var(--end-color) 40%);
   color: var(--high-contrast-text);
   font-family: "Public Sans Variable", sans-serif;
   font-weight: 400;

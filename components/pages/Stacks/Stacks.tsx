@@ -18,21 +18,27 @@ type StacksProps = {
 }
 
 const Stack = ({stacks}: StacksProps) => {
-    const supabase = createClientComponentClient();
-    const router = useRouter()
+    const supabase = createClientComponentClient<Database>();
+    const router = useRouter();
 
     const onSearch = async (userInput: string) => {
-        router.push(`/stacks/new`);
+        const {error} = await supabase.from("stacks").insert({name: userInput}).select().maybeSingle();
+        if (error) {
+            console.log("Error: ", error);
+            alert(error.message);
+        } else {
+            router.push(`/stacks/new`);
+        }
     }
 
     return (
         <UserContextProvider supabase={supabase}>
             <div className={styles.fullscreen}>
                 <Header/>
-                <div className={styles.search}>
-                    <Search handleSubmit={onSearch}/>
-                </div>
-                <main className={styles.stacks}>
+                <main className={styles.main}>
+                    <div className={styles.search}>
+                        <Search handleSubmit={onSearch}/>
+                    </div>
                     <StacksPanel stacks={stacks}/>
                 </main>
             </div>

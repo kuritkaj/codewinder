@@ -6,8 +6,8 @@
     margin-bottom: 1rem;
     background: var(--app-background);
     border: 1px solid var(--element-border);
-    box-shadow: 0 1px 4px var(--element-box-shadow);
     border-radius: 0.5rem;
+    box-shadow: 0 1px 4px var(--element-box-shadow);
 }
 
 /* Mobile optimization */

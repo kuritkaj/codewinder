@@ -24,6 +24,7 @@ const Stack = ({notebooks, stack}: NotesProps) => {
             <div className={styles.fullscreen}>
                 <Header/>
                 <main className={styles.main}>
+                    {stack && <Stack stack={stack}/>}
                     {notebooks && notebooks.length > 0 ?
                         notebooks.map((notebook) => (
                             <div key={notebook.id}>
