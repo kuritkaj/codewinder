@@ -1,4 +1,4 @@
-import BaseButton from "@/components/ui/BaseButton";
+import Button from "components/ui/common/Button";
 import { useActiveCode } from "@codesandbox/sandpack-react";
 import { ClipboardCopyIcon } from "@radix-ui/react-icons";
 import React, { MouseEventHandler, useState } from "react";
@@ -16,10 +16,10 @@ const CopyButton = () => {
     };
 
     return (
-        <BaseButton className={styles.button} onClick={copyToClipboard}>
+        <Button className={styles.button} onClick={copyToClipboard}>
             <ClipboardCopyIcon/>
             <span>{copySuccess ? "Copied!" : "Copy code"}</span>
-        </BaseButton>
+        </Button>
     );
 };
 

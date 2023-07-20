@@ -72,30 +72,54 @@ export interface Database {
         }
         Relationships: []
       }
-      notes: {
+      notebooks: {
         Row: {
-          content: Json | null
-          created_at: string | null
+          contents: Json
+          created_at: string
           id: string
-          name: string | null
-          owner_id: string | null
-          updated_at: string | null
+          name: string
+          owner_id: string
+          updated_at: string
         }
         Insert: {
-          content?: Json | null
-          created_at?: string | null
+          contents: Json
+          created_at?: string
           id?: string
-          name?: string | null
-          owner_id?: string | null
-          updated_at?: string | null
+          name: string
+          owner_id: string
+          updated_at?: string
         }
         Update: {
-          content?: Json | null
-          created_at?: string | null
+          contents?: Json
+          created_at?: string
           id?: string
-          name?: string | null
-          owner_id?: string | null
-          updated_at?: string | null
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      stacks: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          notebooks: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          name: string
+          notebooks?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          notebooks?: string[] | null
+          updated_at?: string
         }
         Relationships: []
       }

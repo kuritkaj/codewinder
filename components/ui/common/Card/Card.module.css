@@ -1,0 +1,15 @@
+.card {
+    width: 160px;
+    height: 160px;
+    background: var(--element-background);
+    border-radius: 5px;
+    border: 1px solid var(--element-border);
+    box-shadow: 0 4px 4px var(--element-box-shadow);
+}
+.card:hover {
+    background-color: var(--hovered-element-background);
+    border: 1px solid var(--hovered-element-border);
+}
+.card:disabled {
+    background-color: var(--disabled-element-background);
+}

@@ -11,29 +11,68 @@
 @import "@radix-ui/colors/slate-dark.css";
 
 .light-theme {
+  /** App Backgrounds */
   --start-color: var(--slate-5);
-  --end-color: var(--gray-3);
+  --end-color: var(--amber-2);
   --app-background: var(--slate-1);
+
+  /** Element Backgrounds */
+  --element-background: var(--slate-3);
+  --disabled-element-background: var(--black-a3);
+  --hovered-element-background: var(--slate-4);
+  --element-box-shadow: var(--black-a4);
+  --element-border: var(--black-a7);
+  --hovered-element-border: var(--slate-8);
+
+  /** Subtle element backgrounds */
+  --selected-element-background: var(--slate-5);
+  --subtle-element-background: var(--slate-5);
+  --subtle-element-border: var(--slate-6);
+  --subtle-element-box-shadow: var(--black-a6);
+
+  /** Special elements */
+  --translucent-element-background: var(--black-a2);
   --subtle-background: var(--black-a10);
 
-  --element-border: var(--black-a7);
-
+  /** Web page backgrounds */
   --solid-background: var(--amber-9);
+  --solid-border: var(--slate-9);
   --hovered-solid-background: var(--amber-10);
 
+  /** Text colors */
   --low-contrast-text: var(--gray-11);
   --high-contrast-text: var(--gray-12);
 }
 
 .dark-theme {
+  /** App Backgrounds */
   --start-color: var(--slate-1);
-  --end-color: var(--gray-2);
+  --end-color: var(--gray-3);
   --app-background: var(--slate-2);
+
+  /** Element Backgrounds */
+  --element-background: var(--slate-3);
+  --disabled-element-background: var(--black-a3);
+  --hovered-element-background: var(--slate-4);
+  --selected-element-background: var(--slate-5);
+  --element-box-shadow: var(--black-a4);
+  --element-border: var(--slate-7);
+  --hovered-element-border: var(--slate-8);
+
+  /** Subtle element backgrounds */
+  --subtle-element-background: var(--slate-5);
+  --subtle-element-border: var(--slate-6);
+  --subtle-element-box-shadow: var(--black-a6);
+
+  /** Special elements */
+  --translucent-element-background: var(--gray-3);
   --subtle-background: var(--gray-2);
 
+  /** Web page backgrounds */
   --solid-background: var(--slate-9);
   --hovered-solid-background: var(--slate-10);
 
+  /** Text colors */
   --low-contrast-text: var(--slate-11);
   --high-contrast-text: var(--slate-12);
 }
@@ -41,17 +80,6 @@
 #root, .light-theme, .dark-theme {
   --selected: var(--mint-6);
   --not-selected: var(--sky-6);
-
-  --element-background: var(--slate-3);
-  --disabled-element-background: var(--black-a3);
-  --hovered-element-background: var(--slate-4);
-  --selected-element-background: var(--slate-5);
-  --subtle-element-background: var(--slate-5);
-  --subtle-element-border: var(--slate-6);
-  --subtle-element-box-shadow: var(--black-a6);
-  --element-box-shadow: var(--black-a4);
-  --element-border: var(--slate-7);
-  --hovered-element-border: var(--slate-8);
 
   --link: var(--sky-11);
   --code: var(--mint-11);

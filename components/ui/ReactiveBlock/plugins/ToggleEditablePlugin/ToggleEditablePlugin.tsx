@@ -1,4 +1,4 @@
-import BaseButton from "@/components/ui/BaseButton";
+import Button from "components/ui/common/Button";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { LockClosedIcon, LockOpen1Icon } from "@radix-ui/react-icons";
 import { useCallback, useEffect, useState } from "react";
@@ -29,7 +29,7 @@ const ToggleEditablePlugin = () => {
     // }, [editor, toggleEditable]);
 
     return (
-        <BaseButton
+        <Button
             aria-label="Toggle readonly mode"
             className={styles.toggle}
             onClick={toggleEditable}
@@ -39,7 +39,7 @@ const ToggleEditablePlugin = () => {
             ) : (
                 <LockOpen1Icon className={styles.lock} width={16} height={16}/>
             )}
-        </BaseButton>
+        </Button>
     );
 }
 

@@ -1,6 +1,6 @@
-import Home from "@/components/pages/Home";
+import Stacks from "components/pages/Stacks";
 import React from "react";
 
 export default function HomePage() {
-    return <Home/>;
+    return <Stacks/>;
 }

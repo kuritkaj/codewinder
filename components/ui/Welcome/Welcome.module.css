@@ -1,0 +1,21 @@
+.salutation {
+    font-size: 4rem;
+    font-weight: 300;
+    margin-bottom: 0;
+}
+.assistance {
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--low-contrast-text);
+    margin-bottom: 0;
+}
+
+/* Mobile optimization */
+@media (max-width: 600px) {
+    .salutation {
+        font-size: 3rem;
+    }
+    .assistance {
+        font-size: 2rem;
+    }
+}

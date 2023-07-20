@@ -1,4 +1,4 @@
-import BaseButton from "@/components/ui/BaseButton";
+import Button from "components/ui/common/Button";
 import { PaperPlaneIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
@@ -7,8 +7,7 @@ import styles from "./InputTextArea.module.css";
 type InputTextAreaProps = {
     userInput: string;
     setUserInput: (input: string) => void;
-    handleSubmit: (e: React.FormEvent) => void;
-    handleEnter: (e: React.KeyboardEvent) => void;
+    handleSubmit: (input: string) => void;
     loading: boolean;
 }
 
@@ -16,7 +15,6 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
     userInput,
     setUserInput,
     handleSubmit,
-    handleEnter,
     loading
 }) => {
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -26,8 +24,22 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
         if (!loading) textAreaRef.current?.focus();
     }, [loading]);
 
+    // Prevent blank submissions and allow for multiline input
+    const handleEnter = async (e: any) => {
+        if (loading) return;
+
+        if (e.key === "Enter" && userInput) {
+            if (!e.shiftKey && userInput) {
+                e.preventDefault();
+                await handleSubmit(userInput);
+            }
+        } else if (e.key === "Enter") {
+            e.preventDefault();
+        }
+    };
+
     return (
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <form className={styles.form}>
             <TextareaAutosize
                 className={styles.textarea}
                 disabled={loading}
@@ -36,8 +48,8 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                 autoFocus={false}
                 minRows={1}
                 maxRows={5}
-                id="userInput"
-                name="userInput"
+                id="chatInput"
+                name="chatInput"
                 placeholder={loading ? "Waiting for response..." : "Send a message..."}
                 value={userInput}
                 onChange={e => setUserInput(e.target.value)}
@@ -49,13 +61,16 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                     </div>
                 </div>
             ) : (
-                <BaseButton
-                    aria-label="Generate response"
+                <Button
+                    aria-label="Chat with AI"
                     className={styles.generate}
                     disabled={loading}
+                    onClick={async () => {
+                        handleSubmit(userInput);
+                    }}
                 >
-                    <PaperPlaneIcon/>
-                </BaseButton>
+                    <PaperPlaneIcon width={16} height={16}/>
+                </Button>
             )}
         </form>
     );

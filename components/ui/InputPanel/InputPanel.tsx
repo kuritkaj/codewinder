@@ -14,20 +14,7 @@ const InputPanel = () => {
     const {addBlock, appendToBlock, getContents, replaceBlock} = useNotebook();
     const {hasServerKey, localKey} = useSettings();
 
-    // Prevent blank submissions and allow for multiline input
-    const handleEnter = async (e: any) => {
-        if (e.key === "Enter" && userInput) {
-            if (!e.shiftKey && userInput) {
-                await handleSubmit(e, userInput);
-            }
-        } else if (e.key === "Enter") {
-            e.preventDefault();
-        }
-    };
-
-    const handleSubmit = async (e: any, input: string) => {
-        e.preventDefault();
-
+    const handleSubmit = async (input: string) => {
         const objective = input.trim();
         if (objective === "") {
             return;
@@ -110,7 +97,6 @@ const InputPanel = () => {
                 userInput={userInput}
                 setUserInput={setUserInput}
                 handleSubmit={async (e) => { await handleSubmit(e, userInput); }}
-                handleEnter={handleEnter}
                 loading={loading}
             />
         </div>

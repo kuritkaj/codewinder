@@ -1,4 +1,4 @@
-import BaseButton from "@/components/ui/BaseButton/BaseButton";
+import Button from "@/components/ui/common/Button";
 import * as Form from "@radix-ui/react-form";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Provider } from "@supabase/supabase-js";
@@ -64,9 +64,9 @@ const SignInForm = ({providers = ["github"], showEmailAuth = false}: SignInProps
             {providers && (
                 <div className={styles.providers}>
                     {providers.map((provider) => (
-                        <BaseButton key={provider} className={styles.button} onClick={() => handleProviderSignIn(provider)}>
+                        <Button key={provider} className={styles.button} onClick={() => handleProviderSignIn(provider)}>
                             Login with&nbsp;<span className={styles.touppercase}>{provider}</span>
-                        </BaseButton>
+                        </Button>
                     ))}
                 </div>
             )}
@@ -108,15 +108,15 @@ const SignInForm = ({providers = ["github"], showEmailAuth = false}: SignInProps
                     </Form.Field>
 
                     <Form.Submit className={styles.formsubmit} asChild onClick={handleSignIn}>
-                        <BaseButton className={styles.button}>
+                        <Button className={styles.button}>
                             Login with password
-                        </BaseButton>
+                        </Button>
                     </Form.Submit>
 
                     <Form.Submit className={styles.formsubmit} asChild onClick={handleSignUp}>
-                        <BaseButton className={styles.button}>
+                        <Button className={styles.button}>
                             Sign up with password
-                        </BaseButton>
+                        </Button>
                     </Form.Submit>
 
                     {/*<Link href="/forgot">Forgot your password?</Link>*/}

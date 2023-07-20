@@ -1,7 +1,7 @@
 # PlanAndSolve
 This is an Agent that is designed to take multiple steps to accomplish a task or goal.
 
-Note, this agent is called by a ReAct agent that returns two or more actions during its plan step.
+Notebook, this agent is called by a ReAct agent that returns two or more actions during its plan step.
 
 It's comprised of three parts:
 

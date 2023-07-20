@@ -1,4 +1,4 @@
-import BaseButton from "@/components/ui/BaseButton";
+import Button from "@/components/ui/common/Button";
 import CopyButton from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/ui/CopyButton";
 import { useSandpack } from "@codesandbox/sandpack-react";
 import { AllSidesIcon } from "@radix-ui/react-icons";
@@ -17,9 +17,9 @@ const CodeSandboxControls = ({className, language, togglePreview}: CodeSandboxCo
         <div className={`${className || ""} ${styles.controls} sp-stack`}>
             <div className={styles.language}>({language} - {sandpack.environment})</div>
             <div className={styles.toggles}>
-                <BaseButton onClick={togglePreview}>
+                <Button onClick={togglePreview}>
                     <AllSidesIcon width={16} height={16}/>
-                </BaseButton>
+                </Button>
             </div>
             <div className={styles.copy}>
                 <CopyButton/>

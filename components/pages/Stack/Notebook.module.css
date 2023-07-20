@@ -1,0 +1,30 @@
+.fullscreen {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+.main {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 60px);
+    justify-content: center;
+    padding: 1rem 2rem 2rem 2rem;
+}
+
+.panels {
+    display: flex;
+    flex-direction: column;
+    flex-basis: min(40%, 750px);
+    flex-grow: 1;
+    max-width: 800px;
+    height: 100%;
+}
+
+/* Mobile optimization */
+@media (max-width: 600px) {
+    .main {
+        padding: 1rem;
+    }
+}

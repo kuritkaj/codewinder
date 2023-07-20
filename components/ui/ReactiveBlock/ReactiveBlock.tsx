@@ -77,7 +77,7 @@ const ReactiveBlock = ({block}: ReactiveBlockProps) => {
                 <LexicalComposer initialConfig={initialConfig}>
                     <RichTextPlugin
                         contentEditable={<ContentEditable className={styles.editable}/>}
-                        placeholder={<div className={styles.placeholder}>Enter some text...</div>}
+                        placeholder={<div className={styles.placeholder}>Start writing...</div>}
                         ErrorBoundary={LexicalErrorBoundary}
                     />
                     <FloatingTextFormatToolbarPlugin/>
