@@ -1,12 +1,24 @@
-import { Database } from "@/lib/types/Database";
+import Link from "next/link";
 import styles from "./ReactiveStack.module.css";
 
-type StackData = Database["public"]["Tables"]["stacks"]["Row"];
+const ReactiveStack = async ({stack, stacks}) => {
 
-const ReactiveStack = ({stack}) => {
     return (
         <div className={styles.stack}>
-            <h1>{stack.name}</h1>
+            {stacks && stacks.length > 0 && (
+                <>
+                    <h2 className={styles.subheader}>Recent stacks</h2>
+                    <ul className={styles.stacks}>
+                        {stacks.map((sibling) => {
+                            if (sibling.id === stack.id) {
+                                return (<li key={sibling.id}><Link className={styles.active} href={`/stacks/${sibling.id}`}>{sibling.name}</Link></li>);
+                            } else {
+                                return (<li key={sibling.id}><Link href={`/stacks/${sibling.id}`}>{sibling.name}</Link></li>);
+                            }
+                        })}
+                    </ul>
+                </>
+            )}
         </div>
     )
 }

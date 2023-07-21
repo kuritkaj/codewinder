@@ -111,7 +111,7 @@ body {
 }
 
 body {
-  background: linear-gradient(to bottom, var(--start-color) 0%, var(--end-color) 40%);
+  background: linear-gradient(to bottom, var(--start-color) 0%, var(--end-color) 90%);
   color: var(--high-contrast-text);
   font-family: "Public Sans Variable", sans-serif;
   font-weight: 400;

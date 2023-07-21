@@ -7,3 +7,8 @@
     flex-direction: column;
     padding: 0.5rem 0;
 }
+
+.placeholder {
+    padding: 1rem 1.5rem;
+    color: var(--low-contrast-text);
+}

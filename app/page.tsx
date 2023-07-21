@@ -6,8 +6,8 @@ import React from "react";
 
 export default async function HomePage() {
     const supabase = createServerComponentClient<Database>({cookies});
-
+    const {data: {session}} = await supabase.auth.getSession();
     const {data: stacks} = await supabase.from("stacks").select();
 
-    return <Stacks stacks={stacks}/>;
+    return <Stacks session={session} stacks={stacks}/>;
 }

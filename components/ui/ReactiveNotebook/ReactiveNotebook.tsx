@@ -6,6 +6,17 @@ import dynamic from "next/dynamic";
 import React, { useEffect, useRef } from "react";
 import styles from "./ReactiveNotebook.module.css";
 
+function getGreeting() {
+    const currentHour = new Date().getHours();
+
+    if (currentHour < 12) {
+        return "Good morning! How can I help?";
+    } else if (currentHour < 18) {
+        return "Good afternoon! What would you like to do?";
+    } else {
+        return "Good evening! Is there anything I can help you with?";
+    }
+}
 
 const ReactiveBlock = dynamic(() => import('@/components/ui/ReactiveBlock'), {
     ssr: false
@@ -43,6 +54,7 @@ const ReactiveNotebook = () => {
 
     return (
         <div ref={notebookRef} className={styles.notebook}>
+            {getBlocks().length > 0 ? (
             <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
                 <SortableContext items={getBlocks().map(block => block.namespace)}>
                     {getBlocks().map((block) => {
@@ -53,6 +65,9 @@ const ReactiveNotebook = () => {
                     })}
                 </SortableContext>
             </DndContext>
+            ) : (
+                <div className={styles.placeholder}>{getGreeting()}</div>
+            )}
         </div>
     );
 }

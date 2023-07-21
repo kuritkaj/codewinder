@@ -1,3 +1,19 @@
-.stack {
+.header {
+    font-size: 1.2rem;
+    color: var(--low-contrast-text);
+}
 
+.stacks {
+    list-style: none;
+}
+.stacks > li {
+    margin-bottom: 0.5rem;
+}
+.active {
+    font-weight: bold;
+}
+
+.subheader {
+    font-size: 1rem;
+    color: var(--low-contrast-text);
 }

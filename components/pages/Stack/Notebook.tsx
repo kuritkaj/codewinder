@@ -2,10 +2,10 @@
 
 import { NotebookProvider } from "@/components/context/NotebookContext";
 import { SettingsProvider } from "@/components/context/SettingsContext";
-import InputPanel from "@/components/ui/InputPanel";
-import SettingsPanel from "@/components/ui/SettingsPanel";
+import InputPanel from "components/panels/InputPanel";
+import SettingsPanel from "components/panels/SettingsPanel";
 import { Database } from "@/lib/types/Database";
-import NotebookPanel from "components/ui/NotebookPanel";
+import NotebookPanel from "components/panels/NotebookPanel";
 import React from "react";
 import styles from "./Notebook.module.css";
 

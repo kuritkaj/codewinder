@@ -4,20 +4,22 @@ import { UserContextProvider } from "@/components/context/UserContext";
 import styles from "@/components/pages/Stacks/Stacks.module.css";
 import Header from "@/components/ui/Header";
 import Search from "@/components/ui/Search/Search";
-import StacksPanel from "@/components/ui/StacksPanel";
+import StacksPanel from "components/panels/StacksPanel";
 
 import { Database } from "@/lib/types/Database";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Session } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import React from "react";
 
 type StackData = Database["public"]["Tables"]["stacks"]["Row"];
 
 type StacksProps = {
+    session?: Session | null;
     stacks?: StackData[] | null;
 }
 
-const Stack = ({stacks}: StacksProps) => {
+const Stack = ({session, stacks}: StacksProps) => {
     const supabase = createClientComponentClient<Database>();
     const router = useRouter();
 
@@ -32,9 +34,9 @@ const Stack = ({stacks}: StacksProps) => {
     }
 
     return (
-        <UserContextProvider supabase={supabase}>
+        <UserContextProvider session={session} supabase={supabase}>
             <div className={styles.fullscreen}>
-                <Header/>
+                <Header user={session?.user}/>
                 <main className={styles.main}>
                     <div className={styles.search}>
                         <Search handleSubmit={onSearch}/>

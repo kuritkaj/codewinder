@@ -34,24 +34,26 @@ const UserContext = createContext<AuthSession>({user: null, session: null})
 
 export type UserContextProviderProps = {
     children: ReactNode;
+    session?: Session | null;
     supabase: SupabaseClient;
 }
 
-export const UserContextProvider = ({children, supabase}: UserContextProviderProps) => {
-    const [session, setSession] = useState<Session | null>(null);
-    const [user, setUser] = useState<User | null>(session?.user || null);
+export const UserContextProvider = ({children, session: init, supabase}: UserContextProviderProps) => {
+    const [session, setSession] = useState<Session | null>(init || null);
+    const [user, setUser] = useState<User | null>(init?.user || null);
 
     useEffect(() => {
         (async () => {
             const {data} = await supabase.auth.getSession();
-            setSession(data.session);
-            setUser(data.session?.user ?? null);
+            if (data?.session?.expires_at !== init?.expires_at) setSession(data.session);
+            if (data?.session?.user?.id !== init?.user?.id) setUser(data.session?.user ?? null);
         })();
 
         const {data: authListener} = supabase.auth.onAuthStateChange(
             async (event, newSession) => {
-                setSession(newSession);
-                setUser(newSession?.user ?? null);
+
+                if (newSession?.expires_at !== init?.expires_at) setSession(newSession);
+                if (newSession?.user?.id !== init?.user?.id) setUser(newSession?.user ?? null);
             }
         );
 

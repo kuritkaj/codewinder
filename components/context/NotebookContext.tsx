@@ -1,5 +1,4 @@
 import { BlockData, PartialBlockData } from "@/lib/types/BlockData";
-import { MessageType } from "@/lib/types/MessageType";
 import React, { createContext, ReactNode, useCallback, useRef, useState } from "react";
 
 type SubscribeFunction = (block: BlockData) => void;
@@ -48,28 +47,12 @@ const defaultImplementation = {
 
 const NotebookContext = createContext<NotebookContextProps>(defaultImplementation);
 
-function getGreeting() {
-    const currentHour = new Date().getHours();
-
-    if (currentHour < 12) {
-        return "Good morning! How can I help?";
-    } else if (currentHour < 18) {
-        return "Good afternoon! What would you like to do?";
-    } else {
-        return "Good evening! Is there anything I can help you with?";
-    }
-}
-
-const initialBlocks: BlockData[] = [
-    {editable: false, markdown: getGreeting(), namespace: Math.random().toString(), type: MessageType.ApiMessage}
-];
-
 type NotebookProviderProps = {
     children: ReactNode;
 }
 
 export function NotebookProvider({children}: NotebookProviderProps) {
-    const [blocks, setBlocks] = useState<BlockData[]>(initialBlocks);
+    const [blocks, setBlocks] = useState<BlockData[]>([]);
     const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
 
     const addBlock = useCallback(

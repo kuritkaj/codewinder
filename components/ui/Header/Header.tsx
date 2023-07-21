@@ -1,13 +1,17 @@
 import { useUser } from "@/components/context/useUser";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./Header.module.css";
 
-const Header = () => {
+type HeaderProps = {
+    user?: User;
+}
+
+const Header = ({user}:HeaderProps) => {
     const router = useRouter();
     const supabase = createClientComponentClient();
-    const {user} = useUser();
 
     const signout = async () => {
         await supabase.auth.signOut();
@@ -17,7 +21,7 @@ const Header = () => {
     return (
         <div className={styles.topnav}>
             <div className={styles.navlogo}>
-                <Link href="/">Codewinder</Link>
+                <Link href="/">Home</Link>
             </div>
             <div className={styles.navlinks}>
                 {user ? (
