@@ -1,4 +1,3 @@
-import { useUser } from "@/components/context/useUser";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/supabase-js";
 import Link from "next/link";
@@ -9,7 +8,7 @@ type HeaderProps = {
     user?: User;
 }
 
-const Header = ({user}:HeaderProps) => {
+const Header = ({user}: HeaderProps) => {
     const router = useRouter();
     const supabase = createClientComponentClient();
 
