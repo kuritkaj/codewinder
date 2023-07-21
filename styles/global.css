@@ -48,7 +48,7 @@
 .dark-theme {
   /** App Backgrounds */
   --start-color: var(--slate-1);
-  --end-color: var(--gray-3);
+  --end-color: var(--gray-2);
   --app-background: var(--slate-2);
 
   /** Element Backgrounds */

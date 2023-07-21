@@ -11,12 +11,27 @@
     justify-content: flex-start;
     align-content: space-between;
     padding: 1rem 2rem 2rem 2rem;
-    gap: 2rem;
+    gap: 1rem;
+}
+
+.stacks {
+    max-width: 300px;
 }
 
 /* Mobile optimization */
 @media (max-width: 600px) {
     .main {
         padding: 1rem;
+    }
+}
+
+/* Tablet optimization */
+@media (max-width: 1024px) {
+    .main {
+        padding: 1rem;
+    }
+
+    .stacks {
+        display: none;
     }
 }

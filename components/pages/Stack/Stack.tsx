@@ -28,7 +28,11 @@ const Stack = ({notebooks, session, stack, stacks}: NotesProps) => {
             <div className={styles.fullscreen}>
                 <Header user={session?.user}/>
                 <main className={styles.main}>
-                    {stack && <StackPanel stack={stack} stacks={stacks}/>}
+                    {stack &&
+                        <div className={styles.stacks}>
+                            <StackPanel stack={stack} stacks={stacks}/>
+                        </div>
+                    }
                     {notebooks && notebooks.length > 0 ?
                         notebooks.map((notebook) => (
                             <div key={notebook.id}>

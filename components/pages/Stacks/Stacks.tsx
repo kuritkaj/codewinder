@@ -24,13 +24,9 @@ const Stack = ({session, stacks}: StacksProps) => {
     const router = useRouter();
 
     const onSearch = async (userInput: string) => {
-        const {error} = await supabase.from("stacks").insert({name: userInput}).select().maybeSingle();
-        if (error) {
-            console.log("Error: ", error);
-            alert(error.message);
-        } else {
-            router.push(`/stacks/new`);
-        }
+        const {data: stack} = await supabase.from("stacks").insert({name: userInput}).select().maybeSingle();
+        if (stack) router.push(`/stacks/${stack.id}`);
+        else router.push(`/stacks/new`);
     }
 
     return (

@@ -30,4 +30,5 @@
     padding: 0.25rem;
     background: var(--translucent-element-background);
     border-bottom: 1px solid var(--element-border);
+    word-wrap: anywhere;
 }

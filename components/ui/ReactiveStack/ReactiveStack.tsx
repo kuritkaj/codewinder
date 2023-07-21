@@ -11,9 +11,17 @@ const ReactiveStack = async ({stack, stacks}) => {
                     <ul className={styles.stacks}>
                         {stacks.map((sibling) => {
                             if (sibling.id === stack.id) {
-                                return (<li key={sibling.id}><Link className={styles.active} href={`/stacks/${sibling.id}`}>{sibling.name}</Link></li>);
+                                return (
+                                    <li key={sibling.id} className={styles.active}>
+                                        {sibling.name}
+                                    </li>
+                                );
                             } else {
-                                return (<li key={sibling.id}><Link href={`/stacks/${sibling.id}`}>{sibling.name}</Link></li>);
+                                return (
+                                    <li key={sibling.id}>
+                                        <Link href={`/stacks/${sibling.id}`}>{sibling.name}</Link>
+                                    </li>
+                                );
                             }
                         })}
                     </ul>

@@ -96,7 +96,7 @@ const InputPanel = () => {
             <InputTextArea
                 userInput={userInput}
                 setUserInput={setUserInput}
-                handleSubmit={async (e) => { await handleSubmit(e, userInput); }}
+                handleSubmit={async (e) => { await handleSubmit(userInput); }}
                 loading={loading}
             />
         </div>
