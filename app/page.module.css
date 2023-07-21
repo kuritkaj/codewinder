@@ -1,0 +1,15 @@
+.fullscreen {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-width: 100vw;
+    align-items: center;
+    justify-content: center;
+}
+
+.login {
+    padding: 1rem;
+}
+.login > * {
+    margin: 0.5rem;
+}

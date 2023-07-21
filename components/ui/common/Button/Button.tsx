@@ -1,9 +1,9 @@
-import React, { forwardRef } from "react";
+import React, { ButtonHTMLAttributes, forwardRef, ForwardRefRenderFunction } from "react";
 import styles from "./Button.module.css";
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
 
-const Button = ({className, children, ...props}: ButtonProps, ref) => {
+const Button: ForwardRefRenderFunction<HTMLButtonElement, ButtonProps> = ({className, children, ...props}: ButtonProps, ref) => {
     return (
         <button ref={ref} className={`${className || ""} ${styles.button}`} {...props}>
             {children}

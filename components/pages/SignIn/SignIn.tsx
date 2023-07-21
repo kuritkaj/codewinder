@@ -5,7 +5,6 @@ import Link from "next/link";
 import styles from "./SignIn.module.css";
 
 const SignIn = () => {
-
     return (
         <div className={styles.center}>
             <div className={styles.navlogo}>

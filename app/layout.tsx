@@ -4,8 +4,6 @@ import { ReactNode } from "react";
 import "../scripts/wdyr";
 import "../styles/global.css";
 
-export const dynamic = "force-dynamic"; // This lets us set the dark mode client side, avoiding hydration errors.
-
 /** https://sreetamdas.com/blog/the-perfect-dark-mode */
 function setInitialColorMode() {
     function getInitialColorMode() {
@@ -59,7 +57,7 @@ function RootLayout({children}: { children: ReactNode }) {
         <html lang="en">
         <body className="light-theme">
         {children}
-        <script dangerouslySetInnerHTML={{__html: blockingSetInitialColorMode}}/>
+        {/*<script dangerouslySetInnerHTML={{__html: blockingSetInitialColorMode}}/>*/}
         </body>
         </html>
     );

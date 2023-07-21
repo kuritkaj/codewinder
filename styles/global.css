@@ -14,7 +14,7 @@
 #root, .light-theme {
   /** App Backgrounds */
   --start-color: var(--slate-5);
-  --end-color: var(--amber-2);
+  --end-color: var(--amber-3);
   --app-background: var(--slate-1);
 
   /** Element Backgrounds */

@@ -18,45 +18,31 @@ const SignInForm = ({providers = ["github"], showEmailAuth = false}: SignInProps
     const supabase = createClientComponentClient();
 
     const handleProviderSignIn = async (provider: Provider) => {
-        const {error} = await supabase.auth.signInWithOAuth({
+        await supabase.auth.signInWithOAuth({
             provider,
             options: {
                 redirectTo: `${location.origin}/auth/callback`,
             },
-        })
-        if (error) {
-            console.log("Error: ", error);
-            alert(error.message);
-        } else {
-            router.push("/");
-        }
+        });
     }
 
     const handleSignUp = async () => {
-        const {error} = await supabase.auth.signUp({
+        await supabase.auth.signUp({
             email,
             password,
             options: {
                 emailRedirectTo: `${location.origin}/auth/callback`,
             },
         });
-        if (error) {
-            console.log("Error: ", error);
-            alert(error.message);
-        } else {
-            router.push("/");
-        }
+        router.refresh();
     }
 
     const handleSignIn = async () => {
-        const {error} = await supabase.auth.signInWithPassword({
+        await supabase.auth.signInWithPassword({
             email,
             password,
         });
-        if (error) {
-            console.log("Error: ", error);
-            alert(error.message);
-        }
+        router.refresh();
     }
 
     return (
@@ -64,7 +50,7 @@ const SignInForm = ({providers = ["github"], showEmailAuth = false}: SignInProps
             {providers && (
                 <div className={styles.providers}>
                     {providers.map((provider) => (
-                        <Button key={provider} className={styles.button} onClick={() => handleProviderSignIn(provider)}>
+                        <Button key={provider} className={styles.button} onClick={async () => await handleProviderSignIn(provider)}>
                             Login with&nbsp;<span className={styles.touppercase}>{provider}</span>
                         </Button>
                     ))}
