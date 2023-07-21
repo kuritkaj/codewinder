@@ -5,7 +5,7 @@
 }
 
 .code {
-    color: var(--code);
+    color: var(--code-text);
     font-size: 1em;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .link {
-    color: var(--link);
+    color: var(--link-text);
 }
 
 .ltr {

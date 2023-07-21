@@ -82,8 +82,8 @@
   --selected: var(--mint-6);
   --not-selected: var(--sky-6);
 
-  --link: var(--sky-11);
-  --code: var(--mint-11);
+  --link-text: var(--sky-11);
+  --code-text: var(--mint-11);
 }
 
 .dark-theme img {

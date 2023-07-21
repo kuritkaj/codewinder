@@ -3,11 +3,30 @@
     color: var(--low-contrast-text);
 }
 
+.link {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.5rem 0;
+}
+.link svg {
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+    height: 1.4rem;
+}
+.link span {
+}
+a.link:hover {
+    color: var(--link-text);
+}
+div.link:hover {
+    cursor: default;
+}
+
 .stacks {
     list-style: none;
 }
 .stacks > li {
-    margin-bottom: 0.5rem;
+    word-wrap: anywhere;
 }
 .active {
     font-weight: bold;

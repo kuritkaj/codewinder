@@ -1,35 +1,11 @@
-.fullscreen {
-    height: 100vh;
-    width: 100vw;
-}
-
-.main {
-    display: flex;
-    flex-direction: row;
-    overflow-x: scroll;
-    height: calc(100vh - 60px);
-    justify-content: flex-start;
-    align-content: space-between;
-    padding: 1rem 2rem 2rem 2rem;
-    gap: 1rem;
-}
-
 .stacks {
+    display: flex;
+    align-items: center;
     max-width: 300px;
-}
-
-/* Mobile optimization */
-@media (max-width: 600px) {
-    .main {
-        padding: 1rem;
-    }
 }
 
 /* Tablet optimization */
 @media (max-width: 1024px) {
-    .main {
-        padding: 1rem;
-    }
 
     .stacks {
         display: none;

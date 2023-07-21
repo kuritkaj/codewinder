@@ -1,6 +1,7 @@
+"use client";
+
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/supabase-js";
-import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./Header.module.css";

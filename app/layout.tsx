@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     icons: ["favicon.ico"],
 }
 
-function RootLayout({children}: { children: ReactNode }) {
+export default function RootLayout({children}: { children: ReactNode }) {
     return (
         <html lang="en">
         <body className="light-theme">
@@ -62,5 +62,3 @@ function RootLayout({children}: { children: ReactNode }) {
         </html>
     );
 }
-
-export default RootLayout;
