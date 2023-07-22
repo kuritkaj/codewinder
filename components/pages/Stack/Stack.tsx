@@ -54,7 +54,7 @@ const Stack = ({notebooks: init, stack, stacks}: NotesProps) => {
             }
             <div className={styles.addnotebook}>
                 <Button className={styles.addbutton} onClick={createNotebook}>
-                    <PlusIcon width={24} height={24}/>
+                    <PlusIcon width={20} height={20}/>
                 </Button>
             </div>
         </>

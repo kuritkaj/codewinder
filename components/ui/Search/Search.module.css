@@ -38,6 +38,6 @@
     max-width: 600px;
 }
 .searchinput:focus {
-    background: var(--hovered-element-background);
     border: 1px solid var(--hovered-element-border);
+    box-shadow: 0 1px 4px var(--element-box-shadow);
 }

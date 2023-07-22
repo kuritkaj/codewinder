@@ -21,7 +21,13 @@ const Stack = ({stacks}: StacksProps) => {
 
     const onSearch = async (userInput: string) => {
         const {data: stack} = await supabase.from("stacks").insert({name: userInput}).select().maybeSingle();
-        if (stack) router.push(`/stacks/${stack.id}`);
+        if (stack) {
+            const {data: notebook} = await supabase.from("notebooks").insert({stack_id: stack.id}).select().maybeSingle();
+            if (notebook) {
+                await supabase.from("stacks").update({id: stack.id, notebooks: [notebook.id]});
+                router.push(`/stacks/${stack.id}`);
+            }
+        }
     }
 
     return (
