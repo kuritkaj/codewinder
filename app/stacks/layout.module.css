@@ -11,12 +11,13 @@
     justify-content: flex-start;
     align-content: space-between;
     padding: 1rem 2rem 2rem 2rem;
-    gap: 1rem;
+    gap: 2rem;
 }
 
 /* Mobile optimization */
 @media (max-width: 600px) {
     .main {
         padding: 1rem;
+        gap: 1rem;
     }
 }

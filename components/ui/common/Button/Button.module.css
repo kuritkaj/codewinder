@@ -9,6 +9,7 @@
     cursor: pointer;
     outline: inherit;
     font-size: 1em;
+    padding: 0.5em;
 }
 .button:hover {
     background-color: var(--hovered-element-background);

@@ -1,7 +1,22 @@
+.addbutton {
+    border-radius: 100%;
+    padding: 8px;
+    background: var(--element-background);
+    border: 1px solid var(--element-border);
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+.addnotebook {
+    margin-top: 4.5rem;
+}
+
 .stacks {
     display: flex;
     align-items: center;
-    max-width: 300px;
+    width: 300px;
+    flex-shrink: 0;
 }
 
 /* Tablet optimization */

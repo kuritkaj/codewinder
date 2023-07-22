@@ -4,6 +4,7 @@
     flex-basis: min(40%, 750px);
     flex-grow: 1;
     max-width: 750px;
+    min-width: 600px;
     height: 100%;
     margin-left: auto;
     margin-right: auto;

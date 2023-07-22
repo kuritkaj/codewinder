@@ -1,23 +1,10 @@
-.apiKeyInput {
-    display: flex;
-    align-items: center;
-}
-
-.apiKeyInput label {
-    margin-right: 10px;
-    font-size: 16px;
-}
-
-.apiKeyInput input {
-    padding: 0.2rem;
-    border: 1px solid var(--element-border);
-    border-radius: 0.3rem;
-    background: var(--app-background);
-    color: var(--high-contrast-text);
-    font-size: 0.8rem;
+.divider {
+    flex-grow: 1;
 }
 
 .panel {
+    display: flex;
+    flex-direction: row;
     position: relative;
     width: 100%;
     margin-bottom: 1rem;
@@ -30,7 +17,15 @@
     font-size: 0.8rem;
 }
 
-.settingslist {
+.settingsleft {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+}
+
+.settingsright {
     display: flex;
     flex-direction: row;
     align-items: center;

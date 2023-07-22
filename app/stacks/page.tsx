@@ -18,5 +18,5 @@ export default async function StacksPage() {
 
     const {data: stacks} = await supabase.from("stacks").select();
 
-    return <Stacks session={session} stacks={stacks}/>;
+    return <Stacks stacks={stacks}/>;
 }

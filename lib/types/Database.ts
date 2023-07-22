@@ -74,30 +74,27 @@ export interface Database {
       }
       notebooks: {
         Row: {
-          contents: Json
+          blocks: Json | null
           created_at: string | null
           id: string
-          name: string
-          owner_id: string
-          stack_id: string | null
+          owner_id: string | null
+          stack_id: string
           updated_at: string | null
         }
         Insert: {
-          contents: Json
+          blocks?: Json | null
           created_at?: string | null
           id?: string
-          name: string
-          owner_id: string
-          stack_id?: string | null
+          owner_id?: string | null
+          stack_id: string
           updated_at?: string | null
         }
         Update: {
-          contents?: Json
+          blocks?: Json | null
           created_at?: string | null
           id?: string
-          name?: string
-          owner_id?: string
-          stack_id?: string | null
+          owner_id?: string | null
+          stack_id?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -106,22 +103,25 @@ export interface Database {
         Row: {
           created_at: string | null
           id: string
-          name: string
+          name: string | null
           notebooks: string[] | null
+          owner_id: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
-          name: string
+          name?: string | null
           notebooks?: string[] | null
+          owner_id?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
-          name?: string
+          name?: string | null
           notebooks?: string[] | null
+          owner_id?: string | null
           updated_at?: string | null
         }
         Relationships: []

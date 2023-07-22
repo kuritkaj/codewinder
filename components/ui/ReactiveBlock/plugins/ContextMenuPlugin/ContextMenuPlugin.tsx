@@ -1,5 +1,6 @@
 import useNamespace from "@/components/context/useNamespace";
 import useNotebook from "@/components/context/useNotebook";
+import Button from "@/components/ui/common/Button";
 import { MessageType } from "@/lib/types/MessageType";
 import * as ContextMenu from "@radix-ui/react-context-menu";
 import { ContextMenuTrigger } from "@radix-ui/react-context-menu";
@@ -35,7 +36,7 @@ const ContextMenuPlugin = () => {
     return (
         <ContextMenu.Root>
             <ContextMenuTrigger className={styles.trigger}>
-                <DotsVerticalIcon width={16} height={16}/>
+                <Button><DotsVerticalIcon width={16} height={16}/></Button>
             </ContextMenuTrigger>
             <ContextMenu.Portal>
                 <ContextMenu.Content className={styles.content}>

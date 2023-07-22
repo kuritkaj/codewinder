@@ -20,7 +20,7 @@
   /** Element Backgrounds */
   --element-background: var(--slate-2);
   --disabled-element-background: var(--slate-3);
-  --hovered-element-background: var(--slate-1);
+  --hovered-element-background: var(--slate-4);
   --element-box-shadow: var(--black-a4);
   --element-border: var(--black-a7);
   --hovered-element-border: var(--slate-8);

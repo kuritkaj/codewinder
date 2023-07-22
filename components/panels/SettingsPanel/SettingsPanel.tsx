@@ -1,14 +1,15 @@
 import useSettings from "@/components/context/useSettings";
-import { ChangeEvent } from "react";
-import styles from "./SettingsPanel.module.css";
+import Button from "@/components/ui/common/Button";
+import { Cross1Icon } from "@radix-ui/react-icons";
 import * as Switch from '@radix-ui/react-switch';
+import styles from "./SettingsPanel.module.css";
 
-const SettingsPanel = () => {
-    const {hasServerKey, localKey, setLocalKey, setUsePower, usePower} = useSettings();
+type SettingsProps = {
+    onDelete: () => void;
+}
 
-    const handleApiKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
-        if (event.target?.value) setLocalKey(event.target.value);
-    };
+const SettingsPanel = ({onDelete}) => {
+    const {setUsePower, usePower} = useSettings();
 
     const handleUsePowerToggle = (checked: boolean) => {
         setUsePower(checked);
@@ -16,7 +17,7 @@ const SettingsPanel = () => {
 
     return (
         <div className={styles.panel}>
-            <div className={styles.settingslist}>
+            <div className={styles.settingsleft}>
                 <div className={styles.switch}>
                     <label className={styles.switchlabel} htmlFor="usePowerToggle">
                         {usePower ? 'Power:' : 'Speed:'}
@@ -29,22 +30,15 @@ const SettingsPanel = () => {
                         checked={usePower}
                         onCheckedChange={handleUsePowerToggle}
                     >
-                        <Switch.Thumb className={styles.switchthumb} />
+                        <Switch.Thumb className={styles.switchthumb}/>
                     </Switch.Root>
                 </div>
-                <div className={styles.divider}/>
-                {!hasServerKey && (
-                    <div className={styles.apiKeyInput}>
-                        <label htmlFor="apiKey">OpenAI API Key:</label>
-                        <input
-                            type="password"
-                            id="apiKey"
-                            name="apiKey"
-                            value={localKey}
-                            onChange={handleApiKeyChange}
-                        />
-                    </div>
-                )}
+            </div>
+            <div className={styles.divider}/>
+            <div className={styles.settingsright}>
+                <Button className={styles.button} onClick={onDelete}>
+                    <Cross1Icon width={16} height={16}/>
+                </Button>
             </div>
         </div>
     );

@@ -25,5 +25,5 @@ export default async function StackPage({params: {id}}: StackPageProps) {
     const {data: stacks} = await supabase.from("stacks").select();
     const {data: notebooks} = await supabase.from("notebooks").select().eq("stack_id", id);
 
-    return <Stack notebooks={notebooks} session={session} stack={stack} stacks={stacks}/>;
+    return <Stack notebooks={notebooks} stack={stack} stacks={stacks}/>;
 }
