@@ -35,4 +35,5 @@ div.link:hover {
 .subheader {
     font-size: 1rem;
     color: var(--low-contrast-text);
+    border-bottom: 1px solid var(--subtle-element-border);
 }

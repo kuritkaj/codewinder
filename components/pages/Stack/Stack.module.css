@@ -36,7 +36,7 @@
 }
 
 /* Tablet optimization */
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
     .notebooks {
         justify-content: center;
     }
