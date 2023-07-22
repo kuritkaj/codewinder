@@ -11,9 +11,6 @@
     color: var(--low-contrast-text);
     cursor: pointer;
 }
-.searchbutton:hover {
-    outline: 1px solid var(--solid-border);
-}
 
 .searchcontainer {
     position: relative;

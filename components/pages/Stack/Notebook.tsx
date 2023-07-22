@@ -36,7 +36,7 @@ const Notebook = ({notebook, onDelete}: NoteProps) => {
             <div className={styles.panels}>
                 <SettingsPanel onDelete={handleDelete}/>
                 <NotebookProvider init={blocks} onChange={handleSave}>
-                    <NotebookPanel/>
+                    <div className={styles.notebook}><NotebookPanel/></div>
                     <InputPanel/>
                 </NotebookProvider>
             </div>

@@ -5,10 +5,10 @@
 .generate {
     position: absolute;
     top: calc(50%);
-    right: 1.5rem;
+    right: 1rem;
     width: 2em;
     height: 2em;
-    transform: translate(0.25em, -50%);
+    transform: translate(0.5rem, -50%);
     background: none;
     border: none;
     color: var(--high-contrast-text);
@@ -42,7 +42,7 @@
     position: absolute;
     top: calc(50%);
     transform: translate(0, -50%);
-    right: 1.5rem;
+    right: 1rem;
     width: 200px;
     height: 1px;
 }
@@ -70,7 +70,7 @@
     position: relative;
     width: 100%;
     resize: none;
-    padding: 1rem 1.5rem;
+    padding: 1rem;
     margin: 0;
     line-height: 1.5;
     outline: none;

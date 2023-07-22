@@ -36,7 +36,7 @@ const SettingsPanel = ({onDelete}: SettingsProps) => {
             </div>
             <div className={styles.divider}/>
             <div className={styles.settingsright}>
-                <Button className={styles.button} onClick={onDelete}>
+                <Button className={styles.deletebutton} onClick={onDelete}>
                     <Cross1Icon width={16} height={16}/>
                 </Button>
             </div>

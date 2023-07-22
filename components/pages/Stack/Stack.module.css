@@ -2,14 +2,23 @@
     border-radius: 100%;
     padding: 6px;
     background: var(--app-background);
-    border: 1px solid var(--element-border);
+    outline: 1px solid var(--element-border);
     width: 32px;
     height: 32px;
     flex-shrink: 0;
+    cursor: pointer;
 }
 
 .addnotebook {
     margin-top: 4.5rem;
+}
+
+.notebooks {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-grow: 1;
+    gap: 2rem;
 }
 
 .stacks {
@@ -20,7 +29,11 @@
 }
 
 /* Tablet optimization */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+
+    .notebooks {
+        justify-content: center;
+    }
 
     .stacks {
         display: none;

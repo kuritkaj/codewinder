@@ -7,7 +7,7 @@ import Button from "@/components/ui/common/Button";
 import { Database } from "@/lib/types/Database";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import React from "react";
+import React, { useState } from "react";
 
 type NotebookData = Database["public"]["Tables"]["notebooks"]["Row"];
 type StackData = Database["public"]["Tables"]["stacks"]["Row"];
@@ -20,7 +20,7 @@ type NotesProps = {
 
 const Stack = ({notebooks: init, stack, stacks}: NotesProps) => {
     const supabase = createClientComponentClient<Database>();
-    const [notebooks, setNotebooks] = React.useState<NotebookData[]>(init || []);
+    const [notebooks, setNotebooks] = useState<NotebookData[]>(init || []);
 
     const createNotebook = async () => {
         if (stack) {
@@ -45,17 +45,15 @@ const Stack = ({notebooks: init, stack, stacks}: NotesProps) => {
             <div className={styles.stacks}>
                 <StackPanel stack={stack} stacks={stacks}/>
             </div>
-            {notebooks && notebooks.length > 0 &&
-                notebooks.map((notebook) => (
-                    <div key={notebook.id}>
-                        <Notebook notebook={notebook} onDelete={deleteNotebook}/>
-                    </div>)
-                )
-            }
-            <div className={styles.addnotebook}>
-                <Button className={styles.addbutton} onClick={createNotebook}>
-                    <PlusIcon width={20} height={20}/>
-                </Button>
+            <div className={styles.notebooks}>
+                {notebooks && notebooks.length > 0 && notebooks.map((notebook) => (
+                    <Notebook key={notebook.id} notebook={notebook} onDelete={deleteNotebook}/>
+                ))}
+                <div className={styles.addnotebook}>
+                    <Button className={styles.addbutton} onClick={createNotebook}>
+                        <PlusIcon width={20} height={20}/>
+                    </Button>
+                </div>
             </div>
         </>
     ) : "Stack not found.";

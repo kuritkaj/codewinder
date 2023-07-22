@@ -1,11 +1,12 @@
 .panels {
     display: flex;
     flex-direction: column;
-    flex-basis: min(40%, 750px);
-    flex-grow: 1;
-    max-width: 750px;
-    min-width: 600px;
+    flex-basis: 700px;
+    max-width: 700px;
     height: 100%;
-    margin-left: auto;
-    margin-right: auto;
+    gap: 1rem;
+}
+
+.notebook {
+    flex-grow: 1;
 }

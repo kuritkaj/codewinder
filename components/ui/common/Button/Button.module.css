@@ -6,11 +6,12 @@
     border: none;
     border-radius: 5px;
     font: inherit;
-    cursor: pointer;
+    cursor: inherit;
     outline: inherit;
     font-size: 1em;
     padding: 0.5em;
 }
 .button:hover {
     background-color: var(--hovered-element-background);
+    outline: 1px solid var(--hovered-element-border);
 }
