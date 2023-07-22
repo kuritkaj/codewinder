@@ -28,13 +28,12 @@
     outline: none;
     color: inherit;
     font-size: 1.2rem;
-    background: var(--app-background);
-    border: 1px solid var(--element-border);
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
     border-radius: 0.5rem;
-    box-shadow: 0 1px 4px var(--element-box-shadow);
+    box-shadow: 0 1px 4px var(--card-box-shadow);
     max-width: 600px;
 }
 .searchinput:focus {
-    border: 1px solid var(--hovered-element-border);
-    box-shadow: 0 1px 4px var(--element-box-shadow);
+    border: 1px solid var(--card-focus-border);
 }

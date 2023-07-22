@@ -5,6 +5,7 @@
     min-width: 100vw;
     align-items: center;
     justify-content: center;
+    font-family: monospace;
 }
 
 .login {
@@ -13,3 +14,44 @@
 .login > * {
     margin: 0.5rem;
 }
+
+.typewriter {
+    overflow: hidden; /* Hide the overflow to create the typing effect */
+    white-space: nowrap; /* Keep the text in one line */
+    font-size: 1.2rem; /* Adjust the font size as needed */
+    font-family: monospace; /* Use a monospace font for a typewriter feel */
+    padding-right: 0.5rem;
+    margin: 0 0 1rem 0;
+}
+
+.typetext {
+    display: inline-block;
+    border-right: 0.1rem solid transparent;
+    overflow: hidden; /* Hide the overflowing characters */
+    animation: typing 3s steps(40), blink-caret 0.5s step-end 15; /* Adjust timing as needed */
+    white-space: nowrap; /* Keep the text in one line */
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes blink-caret {
+    from, to {
+        border-color: transparent;
+    }
+    50% {
+        border-right: 0.1rem solid #000;
+    }
+}
+
+
+
+
+
+

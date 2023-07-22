@@ -1,9 +1,9 @@
 .panel {
     position: relative;
-    background: var(--app-background);
-    border: 1px solid var(--element-border);
+    background: var(--card-background);
+    border: 1px solid var(--card-focus-border);
     border-radius: 0.5rem;
-    box-shadow: 0 1px 4px var(--element-box-shadow);
+    box-shadow: 0 1px 4px var(--card-box-shadow);
     color: var(--high-contrast-text);
 }
 
