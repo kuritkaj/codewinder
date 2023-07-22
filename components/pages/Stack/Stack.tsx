@@ -36,10 +36,10 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
         if (stack) {
             const {data: notebook} = await supabase.from("notebooks").insert({stack_id: stack.id}).select().maybeSingle();
             if (notebook) {
-                const newOrder = [...notebooks, notebook];
+                const newOrder = [...notebooks || [], notebook];
                 await supabase.from("stacks").update({notebooks: newOrder.map(n => n.id)}).eq("id", stack.id);
                 router.refresh();
-                router.replace(`/stacks/${stack.id}#${notebook.id}`, {shallow: true});
+                router.replace(`/stacks/${stack.id}#${notebook.id}`);
             }
         }
     };
@@ -47,7 +47,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
     const deleteNotebook = async (notebook) => {
         if (notebook && stack) {
             await supabase.from("notebooks").delete().eq("id", notebook.id);
-            const newOrder = [...notebooks, notebook];
+            const newOrder = notebooks?.splice(notebooks.findIndex(n => n.id === notebook.id), 1) || []
             await supabase.from("stacks").update({notebooks: newOrder.map(n => n.id)}).eq("id", stack.id);
             router.refresh();
         }

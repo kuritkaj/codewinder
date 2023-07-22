@@ -1,10 +1,10 @@
 import { BlockData, PartialBlockData } from "@/lib/types/BlockData";
 import { debounce } from "@/lib/util/debounce";
-import React, { createContext, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 type SubscribeFunction = (block: BlockData) => void;
 
-interface NotebookContextProps {
+type NotebookContextProps = {
     addBlock: (addition: BlockData, namespace?: string, before?: boolean) => void;
     appendToBlock: (partial: PartialBlockData) => void;
     deleteBlock: (namespace: string) => void;
@@ -54,19 +54,19 @@ type NotebookProviderProps = {
     onChange?: (blocks: BlockData[]) => void
 }
 
+const saveNotebook = debounce((blocks: BlockData[], onChange: (blocks: BlockData[]) => void) => {
+    if (onChange) onChange(blocks);
+    console.log('Notebook changed', blocks);
+}, 3000) as (blocks: BlockData[], onChange: (blocks: BlockData[]) => void) => void;
+
 export function NotebookProvider({children, init, onChange}: NotebookProviderProps) {
     const [blocks, setBlocks] = useState<BlockData[]>(init || []);
     const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
 
-    const debouncedOnChange = useMemo(() => {
-        return debounce(() => {
-            if (onChange) onChange(blocks)
-        }, 1000);
-    }, [onChange, blocks]);
-
+    // This useEffect hook will be triggered whenever blocks changes.
     useEffect(() => {
-        debouncedOnChange();
-    }, [blocks, debouncedOnChange]);
+        if (onChange) saveNotebook(blocks, onChange);
+    }, [blocks, onChange]);
 
     const addBlock = useCallback(
         (addition: BlockData, namespace?: string, before: boolean = false) => {

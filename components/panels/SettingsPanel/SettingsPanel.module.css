@@ -53,9 +53,8 @@
     all: unset;
     width: 42px;
     height: 25px;
-    background-color: var(--subtle-element-background);
+    background-color: var(--selected-element-background);
     border-radius: 9999px;
-    border-color: var(--subtle-element-border);
     position: relative;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     cursor: pointer;
@@ -72,7 +71,7 @@
     width: 21px;
     height: 21px;
     background-color: var(--app-background);
-    border-radius: 9999px;
+    border-radius: 100%;
     transition: transform 100ms;
     transform: translateX(2px);
     will-change: transform;
