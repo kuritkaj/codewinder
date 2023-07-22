@@ -8,7 +8,7 @@ type SettingsProps = {
     onDelete: () => void;
 }
 
-const SettingsPanel = ({onDelete}) => {
+const SettingsPanel = ({onDelete}: SettingsProps) => {
     const {setUsePower, usePower} = useSettings();
 
     const handleUsePowerToggle = (checked: boolean) => {

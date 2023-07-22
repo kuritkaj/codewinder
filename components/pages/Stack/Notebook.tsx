@@ -3,11 +3,11 @@
 import { NotebookProvider } from "@/components/context/NotebookContext";
 import { SettingsProvider } from "@/components/context/SettingsContext";
 import { BlockData } from "@/lib/types/BlockData";
+import { Database } from "@/lib/types/Database";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import InputPanel from "components/panels/InputPanel";
-import SettingsPanel from "components/panels/SettingsPanel";
-import { Database, Json } from "@/lib/types/Database";
 import NotebookPanel from "components/panels/NotebookPanel";
+import SettingsPanel from "components/panels/SettingsPanel";
 import React from "react";
 import styles from "./Notebook.module.css";
 
