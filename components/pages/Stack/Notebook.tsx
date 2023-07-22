@@ -27,8 +27,8 @@ const Notebook = ({notebook, onDelete}: NoteProps) => {
     }
 
     const handleSave = async (blocks: BlockData[]) => {
-        const json = JSON.stringify(blocks);
-        await supabase.from("notebooks").update({blocks: json}).eq("id", notebook.id);
+        console.log("Saving...", blocks);
+        await supabase.from("notebooks").update({blocks}).eq("id", notebook.id);
     }
 
     return (

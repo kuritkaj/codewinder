@@ -1,6 +1,6 @@
 import { BlockData, PartialBlockData } from "@/lib/types/BlockData";
 import { debounce } from "@/lib/util/debounce";
-import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import React, { createContext, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type SubscribeFunction = (block: BlockData) => void;
 
@@ -58,9 +58,13 @@ export function NotebookProvider({children, init, onChange}: NotebookProviderPro
     const [blocks, setBlocks] = useState<BlockData[]>(init || []);
     const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
 
+    const debouncedOnChange = useMemo(() => {
+        if (onChange) return debounce(onChange, 1000);
+    }, [onChange]);
+
     useEffect(() => {
-        debounce(onChange, 500);
-    }, [blocks, onChange]);
+        if (debouncedOnChange) debouncedOnChange(blocks);
+    }, [blocks, debouncedOnChange]);
 
     const addBlock = useCallback(
         (addition: BlockData, namespace?: string, before: boolean = false) => {
