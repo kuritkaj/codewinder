@@ -16,7 +16,7 @@ export default async function StacksPage() {
         redirect("/");
     }
 
-    const {data: stacks} = await supabase.from("stacks").select();
+    const stacks = await supabase.from("stacks").select();
 
-    return <Stacks stacks={stacks}/>;
+    return <Stacks stacks={stacks.data}/>;
 }

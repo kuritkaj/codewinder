@@ -1,3 +1,5 @@
+"use client";
+
 import Button from "components/ui/common/Button";
 import styles from "@/components/ui/Search/Search.module.css";
 import { PaperPlaneIcon } from "@radix-ui/react-icons";

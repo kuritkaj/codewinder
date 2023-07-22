@@ -28,9 +28,15 @@
     flex-shrink: 0;
 }
 
+/* Mobile optimization */
+@media (max-width: 600px) {
+    .notebooks {
+        gap: 1rem;
+    }
+}
+
 /* Tablet optimization */
 @media (max-width: 1200px) {
-
     .notebooks {
         justify-content: center;
     }

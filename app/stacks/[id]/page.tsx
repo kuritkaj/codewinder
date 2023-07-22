@@ -21,9 +21,11 @@ export default async function StackPage({params: {id}}: StackPageProps) {
         redirect("/");
     }
 
-    const {data: stack} = await supabase.from("stacks").select().eq("id", id).maybeSingle();
-    const {data: stacks} = await supabase.from("stacks").select();
-    const {data: notebooks} = await supabase.from("notebooks").select().eq("stack_id", id);
+    const [stack, stacks, notebooks] = await Promise.all([
+        supabase.from("stacks").select().eq("id", id).maybeSingle(),
+        supabase.from("stacks").select(),
+        supabase.from("notebooks").select().eq("stack_id", id).order("created_at", {ascending: true}),
+    ]);
 
-    return <Stack notebooks={notebooks} stack={stack} stacks={stacks}/>;
+    return <Stack notebooks={notebooks.data} stack={stack.data} stacks={stacks.data}/>;
 }

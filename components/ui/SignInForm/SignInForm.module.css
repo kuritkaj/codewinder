@@ -12,6 +12,7 @@
     font-weight: 500;
     height: 35px;
     width: 100%;
+    cursor: pointer;
 }
 .button:hover {
     background-color: var(--hovered-element-background);

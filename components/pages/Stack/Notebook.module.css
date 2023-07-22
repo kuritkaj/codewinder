@@ -7,6 +7,21 @@
     gap: 1rem;
 }
 
-.notebook {
-    flex-grow: 1;
+@media (min-width: calc(700px + 4rem + 1px)) {
+    .panels {
+        min-width: 700px;
+    }
+}
+
+@media (max-width: calc(700px + 4rem)) {
+    .panels {
+        min-width: calc(100vw - 4rem);
+    }
+}
+
+/* Mobile optimization */
+@media (max-width: 600px) {
+    .panels {
+        min-width: calc(100vw - 2rem);
+    }
 }

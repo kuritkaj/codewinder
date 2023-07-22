@@ -7,7 +7,7 @@ import Button from "@/components/ui/common/Button";
 import { Database } from "@/lib/types/Database";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 type NotebookData = Database["public"]["Tables"]["notebooks"]["Row"];
 type StackData = Database["public"]["Tables"]["stacks"]["Row"];
@@ -22,7 +22,7 @@ const Stack = ({notebooks: init, stack, stacks}: NotesProps) => {
     const supabase = createClientComponentClient<Database>();
     const [notebooks, setNotebooks] = useState<NotebookData[]>(init || []);
 
-    const createNotebook = async () => {
+    const createNotebook = useCallback(async () => {
         if (stack) {
             const {data: notebook} = await supabase.from("notebooks").insert({stack_id: stack.id});
             if (notebook) {
@@ -30,15 +30,15 @@ const Stack = ({notebooks: init, stack, stacks}: NotesProps) => {
                 await supabase.from("stacks").update({id: stack.id, notebooks: notebooks.map(n => n.id)});
             }
         }
-    }
+    }, [stack, supabase, notebooks]);
 
-    const deleteNotebook = async (notebook) => {
+    const deleteNotebook = useCallback(async (notebook) => {
         if (notebook && stack) {
             await supabase.from("notebooks").delete().eq("id", notebook.id);
             setNotebooks(prevNotebooks => prevNotebooks.filter(n => n.id !== notebook.id));
             await supabase.from("stacks").update({id: stack.id, notebooks: notebooks.map(n => n.id)});
         }
-    }
+    }, [notebooks, stack, supabase]);
 
     return stack ? (
         <>
@@ -47,7 +47,7 @@ const Stack = ({notebooks: init, stack, stacks}: NotesProps) => {
             </div>
             <div className={styles.notebooks}>
                 {notebooks && notebooks.length > 0 && notebooks.map((notebook) => (
-                    <Notebook key={notebook.id} notebook={notebook} onDelete={deleteNotebook}/>
+                    <a key={notebook.id} href={`#${notebook.id}`}><Notebook notebook={notebook} onDelete={deleteNotebook}/></a>
                 ))}
                 <div className={styles.addnotebook}>
                     <Button className={styles.addbutton} onClick={createNotebook}>
