@@ -3,7 +3,7 @@
 import { NotebookProvider } from "@/components/context/NotebookContext";
 import { SettingsProvider } from "@/components/context/SettingsContext";
 import { BlockData } from "@/lib/types/BlockData";
-import { Database } from "@/lib/types/Database";
+import { Database, Json } from "@/lib/types/Database";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import InputPanel from "components/panels/InputPanel";
 import NotebookPanel from "components/panels/NotebookPanel";
@@ -27,8 +27,8 @@ const Notebook = ({notebook, onDelete}: NoteProps) => {
     }
 
     const handleSave = async (blocks: BlockData[]) => {
-        console.log("Saving...", blocks);
-        await supabase.from("notebooks").update({blocks}).eq("id", notebook.id);
+        const json = blocks as unknown as Json[];
+        await supabase.from("notebooks").update({blocks: json}).eq("id", notebook.id);
     }
 
     return (

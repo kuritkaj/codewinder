@@ -59,11 +59,11 @@ export function NotebookProvider({children, init, onChange}: NotebookProviderPro
     const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
 
     const debouncedOnChange = useMemo(() => {
-        if (onChange) return debounce(onChange, 1000);
-    }, [onChange]);
+        if (onChange) return debounce(() => onChange(blocks), 1000);
+    }, [onChange, blocks]);
 
     useEffect(() => {
-        if (debouncedOnChange) debouncedOnChange(blocks);
+        if (debouncedOnChange) debouncedOnChange();
     }, [blocks, debouncedOnChange]);
 
     const addBlock = useCallback(
