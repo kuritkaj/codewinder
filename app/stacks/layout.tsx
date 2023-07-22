@@ -3,7 +3,7 @@ import { Database } from "@/lib/types/Database";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import React, { ReactNode } from "react";
-import styles from "./Layout.module.css";
+import styles from "./layout.module.css";
 
 export const dynamic = "force-dynamic"; // Workaround for NextJS bug https://github.com/vercel/next.js/issues/49373
 
