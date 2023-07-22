@@ -7,7 +7,8 @@ import Button from "@/components/ui/common/Button";
 import { Database } from "@/lib/types/Database";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import React, { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useLayoutEffect } from "react";
 
 type NotebookData = Database["public"]["Tables"]["notebooks"]["Row"];
 type StackData = Database["public"]["Tables"]["stacks"]["Row"];
@@ -18,27 +19,39 @@ type NotesProps = {
     stacks?: StackData[] | null;
 }
 
-const Stack = ({notebooks: init, stack, stacks}: NotesProps) => {
+const Stack = ({notebooks, stack, stacks}: NotesProps) => {
     const supabase = createClientComponentClient<Database>();
-    const [notebooks, setNotebooks] = useState<NotebookData[]>(init || []);
+    const router = useRouter();
 
-    const createNotebook = useCallback(async () => {
+    useLayoutEffect(() => {
         if (stack) {
-            const {data: notebook} = await supabase.from("notebooks").insert({stack_id: stack.id});
-            if (notebook) {
-                setNotebooks(prevNotebooks => [...prevNotebooks, notebook]);
-                await supabase.from("stacks").update({id: stack.id, notebooks: notebooks.map(n => n.id)});
+            const anchorElement = document.getElementById(stack.id);
+            if (anchorElement) {
+                anchorElement.scrollIntoView({ behavior: "smooth", inline: "center" });
             }
         }
-    }, [stack, supabase, notebooks]);
+    }, [stack]);
 
-    const deleteNotebook = useCallback(async (notebook) => {
+    const createNotebook = async () => {
+        if (stack) {
+            const {data: notebook} = await supabase.from("notebooks").insert({stack_id: stack.id}).select().maybeSingle();
+            if (notebook) {
+                const newOrder = [...notebooks, notebook];
+                await supabase.from("stacks").update({notebooks: newOrder.map(n => n.id)}).eq("id", stack.id);
+                router.refresh();
+                router.replace(`/stacks/${stack.id}#${notebook.id}`, {shallow: true});
+            }
+        }
+    };
+
+    const deleteNotebook = async (notebook) => {
         if (notebook && stack) {
             await supabase.from("notebooks").delete().eq("id", notebook.id);
-            setNotebooks(prevNotebooks => prevNotebooks.filter(n => n.id !== notebook.id));
-            await supabase.from("stacks").update({id: stack.id, notebooks: notebooks.map(n => n.id)});
+            const newOrder = [...notebooks, notebook];
+            await supabase.from("stacks").update({notebooks: newOrder.map(n => n.id)}).eq("id", stack.id);
+            router.refresh();
         }
-    }, [notebooks, stack, supabase]);
+    };
 
     return stack ? (
         <>
@@ -47,13 +60,15 @@ const Stack = ({notebooks: init, stack, stacks}: NotesProps) => {
             </div>
             <div className={styles.notebooks}>
                 {notebooks && notebooks.length > 0 && notebooks.map((notebook) => (
-                    <a key={notebook.id} href={`#${notebook.id}`}><Notebook notebook={notebook} onDelete={deleteNotebook}/></a>
+                    <div key={notebook.id} id={notebook.id}><Notebook notebook={notebook} onDelete={deleteNotebook}/></div>
                 ))}
-                <div className={styles.addnotebook}>
-                    <Button className={styles.addbutton} onClick={createNotebook}>
-                        <PlusIcon width={20} height={20}/>
-                    </Button>
-                </div>
+                {(!notebooks || notebooks.length === 0) && (
+                    <div className={styles.addnotebook}>
+                        <Button className={styles.addbutton} onClick={createNotebook}>
+                            <PlusIcon width={20} height={20}/>
+                        </Button>
+                    </div>
+                )}
             </div>
         </>
     ) : "Stack not found.";

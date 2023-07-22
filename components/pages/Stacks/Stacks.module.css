@@ -9,6 +9,7 @@
     display: flex;
     align-items: center;
     max-width: 300px;
+    flex-shrink: 0;
 }
 
 /* Tablet optimization */
