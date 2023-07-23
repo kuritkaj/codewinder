@@ -14,7 +14,7 @@ const Header = ({user}: HeaderProps) => {
             <div className={styles.navlogo}/>
             <div className={styles.navlinks}>
                 {user ? (
-                    <Link href="/signout">
+                    <Link href="#" prefetch={false}>
                         Sign out
                     </Link>
                 ) : (
