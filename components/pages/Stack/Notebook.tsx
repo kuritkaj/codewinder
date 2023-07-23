@@ -40,7 +40,7 @@ const Notebook = ({notebook, onDelete, stack}: NotebookProps) => {
                 <NotebookProvider init={blocks} onChange={handleSave}>
                     <NotebookPanel/>
                     <InputPanel defaultInput={
-                        !blocks || blocks.length == 0 ? stack?.name || "" : ""
+                        !blocks || blocks.length === 0 ? stack?.name || "" : ""
                     }/>
                 </NotebookProvider>
             </div>
