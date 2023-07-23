@@ -24,7 +24,7 @@ const Stack = ({stacks}: StacksProps) => {
         if (stack) {
             const {data: notebook} = await supabase.from("notebooks").insert({stack_id: stack.id}).select().maybeSingle();
             if (notebook) {
-                await supabase.from("stacks").update({id: stack.id, notebooks: [notebook.id]});
+                await supabase.from("stacks").update({id: stack.id, notebooks: [notebook.id]}).eq("id", stack.id);
                 router.push(`/stacks/${stack.id}`);
             }
         }
