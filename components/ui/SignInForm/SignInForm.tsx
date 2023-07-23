@@ -22,7 +22,7 @@ const SignInForm = ({providers = ["github"], showEmailAuth = false}: SignInProps
         await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: `https://www.codewinder.com/auth/callback`,
             },
         });
     }
