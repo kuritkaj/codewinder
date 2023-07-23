@@ -18,11 +18,11 @@ const SignInForm = ({providers = ["github"], showEmailAuth = false}: SignInProps
     const supabase = createClientComponentClient();
 
     const handleProviderSignIn = async (provider: Provider) => {
-        console.log("handleProviderSignIn", `${window.location.origin}`);
+        console.log("handleProviderSignIn", `${location.origin}`);
         await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `https://www.codewinder.com/auth/callback`,
+                redirectTo: `${location.origin}/auth/callback`,
             },
         });
     }
@@ -32,7 +32,7 @@ const SignInForm = ({providers = ["github"], showEmailAuth = false}: SignInProps
             email,
             password,
             options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback`,
+                emailRedirectTo: `${location.origin}/auth/callback`,
             },
         });
         router.refresh();
