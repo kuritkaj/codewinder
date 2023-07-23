@@ -57,7 +57,7 @@ type NotebookProviderProps = {
 const saveNotebook = debounce((blocks: BlockData[], onChange: (blocks: BlockData[]) => void) => {
     if (onChange) onChange(blocks);
     console.log('Notebook changed', blocks);
-}, 3000) as (blocks: BlockData[], onChange: (blocks: BlockData[]) => void) => void;
+}, 1000) as (blocks: BlockData[], onChange: (blocks: BlockData[]) => void) => void;
 
 export function NotebookProvider({children, init, onChange}: NotebookProviderProps) {
     const [blocks, setBlocks] = useState<BlockData[]>(init || []);
