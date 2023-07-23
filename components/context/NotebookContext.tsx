@@ -56,15 +56,21 @@ type NotebookProviderProps = {
 
 const saveNotebook = debounce((blocks: BlockData[], onChange: (blocks: BlockData[]) => void) => {
     if (onChange) onChange(blocks);
-    console.log('Notebook changed', blocks);
 }, 1000) as (blocks: BlockData[], onChange: (blocks: BlockData[]) => void) => void;
 
 export function NotebookProvider({children, init, onChange}: NotebookProviderProps) {
     const [blocks, setBlocks] = useState<BlockData[]>(init || []);
+    const isFirstRender = useRef(true);
     const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
 
     // This useEffect hook will be triggered whenever blocks changes.
     useEffect(() => {
+        // Skip the first render to avoid saving to the notebook when first viewed.
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
         if (onChange) saveNotebook(blocks, onChange);
     }, [blocks, onChange]);
 
