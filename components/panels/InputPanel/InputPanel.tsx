@@ -7,10 +7,14 @@ import { MessageType } from "@/lib/types/MessageType";
 import { useState } from "react";
 import styles from "./InputPanel.module.css";
 
-const InputPanel = () => {
+type InputPanelProps = {
+    defaultInput?: string;
+}
+
+const InputPanel = ({defaultInput = ""}: InputPanelProps) => {
     const [loading, setLoading] = useState(false);
     const {usePower} = useSettings();
-    const [userInput, setUserInput] = useState("");
+    const [userInput, setUserInput] = useState(defaultInput);
     const {addBlock, appendToBlock, getContents, replaceBlock} = useNotebook();
     const {hasServerKey, localKey} = useSettings();
 
@@ -96,7 +100,7 @@ const InputPanel = () => {
             <InputTextArea
                 userInput={userInput}
                 setUserInput={setUserInput}
-                handleSubmit={async (e) => { await handleSubmit(userInput); }}
+                handleSubmit={async () => { await handleSubmit(userInput) }}
                 loading={loading}
             />
         </div>

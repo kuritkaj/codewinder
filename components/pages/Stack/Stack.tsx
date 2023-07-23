@@ -60,7 +60,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
             </div>
             <div className={styles.notebooks}>
                 {notebooks && notebooks.length > 0 && notebooks.map((notebook) => (
-                    <div key={notebook.id} id={notebook.id}><Notebook notebook={notebook} onDelete={deleteNotebook}/></div>
+                    <div key={notebook.id} id={notebook.id}><Notebook notebook={notebook} onDelete={deleteNotebook} stack={stack}/></div>
                 ))}
                 {(!notebooks || notebooks.length === 0) && (
                     <div className={styles.addnotebook}>

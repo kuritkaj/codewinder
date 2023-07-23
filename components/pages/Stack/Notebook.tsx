@@ -12,18 +12,20 @@ import React from "react";
 import styles from "./Notebook.module.css";
 
 type NotebookData = Database["public"]["Tables"]["notebooks"]["Row"];
+type StackData = Database["public"]["Tables"]["stacks"]["Row"];
 
-type NoteProps = {
+type NotebookProps = {
+    stack?: StackData | null;
     notebook: NotebookData;
-    onDelete: (notebook: NotebookData) => void;
+    onDelete?: (notebook: NotebookData) => void;
 }
 
-const Notebook = ({notebook, onDelete}: NoteProps) => {
+const Notebook = ({notebook, onDelete, stack}: NotebookProps) => {
     const blocks = notebook.blocks as unknown as BlockData[];
     const supabase = createClientComponentClient<Database>();
 
     const handleDelete = async () => {
-        onDelete(notebook);
+        if (onDelete) onDelete(notebook);
     }
 
     const handleSave = async (blocks: BlockData[]) => {
@@ -31,17 +33,19 @@ const Notebook = ({notebook, onDelete}: NoteProps) => {
         await supabase.from("notebooks").update({blocks: json}).eq("id", notebook.id);
     }
 
-    return (
+    return (notebook ? (
         <SettingsProvider>
             <div className={styles.panels}>
                 <SettingsPanel onDelete={handleDelete}/>
                 <NotebookProvider init={blocks} onChange={handleSave}>
                     <NotebookPanel/>
-                    <InputPanel/>
+                    <InputPanel defaultInput={
+                        !blocks || blocks.length == 0 ? stack?.name : ""
+                    }/>
                 </NotebookProvider>
             </div>
         </SettingsProvider>
-    );
+    ) : "No notebook provided");
 }
 
 export default Notebook;
