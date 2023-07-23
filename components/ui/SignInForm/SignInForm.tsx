@@ -18,7 +18,6 @@ const SignInForm = ({providers = ["github"], showEmailAuth = false}: SignInProps
     const supabase = createClientComponentClient();
 
     const handleProviderSignIn = async (provider: Provider) => {
-        console.log("handleProviderSignIn", `${location.origin}`);
         await supabase.auth.signInWithOAuth({
             provider,
             options: {

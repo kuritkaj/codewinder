@@ -8,6 +8,7 @@ import type { Database } from "@/lib/types/Database";
 export const dynamic = "force-dynamic"; // Workaround for NextJS bug https://github.com/vercel/next.js/issues/49373
 
 export async function GET(request: NextRequest) {
+    const SITE_URL = process.env.SITE_URL;
     const requestUrl = new URL(request.url);
     const code = requestUrl.searchParams.get("code");
 
@@ -17,5 +18,5 @@ export async function GET(request: NextRequest) {
     }
 
     // URL to redirect to after sign in process completes
-    return NextResponse.redirect(`${requestUrl.origin}/stacks`);
+    return NextResponse.redirect(`${SITE_URL || requestUrl.origin}/stacks`);
 }
