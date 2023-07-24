@@ -21,6 +21,11 @@ export default async function StackPage({params: {id}}: StackPageProps) {
         redirect("/");
     }
 
+    if (!id) {
+        // Handle the case where 'id' is not defined
+        redirect("/stacks");
+    }
+
     const [stack, stacks, notebooks] = await Promise.all([
         supabase.from("stacks").select().eq("id", id).maybeSingle(),
         supabase.from("stacks").select(),
