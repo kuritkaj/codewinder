@@ -12,7 +12,11 @@ const ReactiveStack = async ({stack, stacks}) => {
                     <ul className={styles.stacks}>
                         <li>
                             <Link className={styles.link} href="/stacks">
-                                <PlusCircledIcon width={16} height={16}/>
+                                {stack ? (
+                                    <PlusCircledIcon width={16} height={16}/>
+                                ) : (
+                                    <ArrowRightIcon width={16} height={16}/>
+                                )}
                                 <span>New stack</span>
                             </Link>
                         </li>
