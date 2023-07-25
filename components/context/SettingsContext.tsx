@@ -1,27 +1,21 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
 import Cookies from "js-cookie";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 interface Settings {
     availableTools: string[];
-    hasServerKey: boolean;
-    localKey: string;
     selectedTools: string[];
     usePower: boolean;
 }
 
 interface SettingsContextProps extends Settings {
-    setLocalKey: (apiKey: string) => void;
     setSelectedTools: (selectedTools: string[]) => void;
     setUsePower: (usePower: boolean) => void;
 }
 
 const defaultSettings = {
     availableTools: [],
-    hasServerKey: true,
-    localKey: "",
     selectedTools: [],
     usePower: false,
-    setLocalKey: () => { throw new Error('Method not implemented.') },
     setSelectedTools: () => { throw new Error('Method not implemented.') },
     setUsePower: () => { throw new Error('Method not implemented.') },
 };
@@ -45,23 +39,7 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
                 usePower: JSON.parse(usePowerCookie),
             }));
         }
-
-        fetch('/api/keycheck')
-        .then(response => response.json())
-        .then(data => {
-            setCurrentSettings((state) => ({
-                ...state,
-                hasServerKey: data.hasOpenAIApiKey,
-            }));
-        });
     }, []);
-
-    const setLocalKey = (localKey: string) => {
-        setCurrentSettings((state) => ({
-            ...state,
-            localKey,
-        }));
-    };
 
     const setSelectedTools = (selectedTools: string[]) => {
         setCurrentSettings((state) => ({
@@ -80,7 +58,7 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
 
     return (
         <SettingsContext.Provider
-            value={{ ...currentSettings, setLocalKey, setSelectedTools, setUsePower }}
+            value={{...currentSettings, setSelectedTools, setUsePower}}
         >
             {children}
         </SettingsContext.Provider>

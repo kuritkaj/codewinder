@@ -19,7 +19,6 @@ type StreamControl = {
  */
 export const streamIntelligence = async ({
     context = [],
-    localKey,
     objective,
     onClose,
     onError,
@@ -44,7 +43,6 @@ export const streamIntelligence = async ({
             },
             signal: abortController.signal,
             body: JSON.stringify({
-                localKey,
                 objective,
                 context,
                 usePower,

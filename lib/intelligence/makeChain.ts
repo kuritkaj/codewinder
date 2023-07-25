@@ -14,12 +14,11 @@ import { StructuredTool } from "langchain/tools";
 
 type makeChainOptions = {
     callbacks: Callbacks;
-    localKey?: string;
     usePower?: boolean
 }
 
-export const makeChain = async ({callbacks, localKey = undefined, usePower = false}: makeChainOptions): Promise<ReActExecutor> => {
-    const openAiApiKey = localKey || process.env.OPENAI_API_KEY;
+export const makeChain = async ({callbacks, usePower = false}: makeChainOptions): Promise<ReActExecutor> => {
+    const openAiApiKey = process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
         throw new Error("OpenAI API Key not set.");
     }

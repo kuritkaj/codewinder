@@ -16,21 +16,10 @@ const InputPanel = ({defaultInput = ""}: InputPanelProps) => {
     const {usePower} = useSettings();
     const [userInput, setUserInput] = useState(defaultInput);
     const {addBlock, appendToBlock, getContents, replaceBlock} = useNotebook();
-    const {hasServerKey, localKey} = useSettings();
 
     const handleSubmit = async (input: string) => {
         const objective = input.trim();
         if (objective === "") {
-            return;
-        }
-
-        if (!hasServerKey && !localKey) {
-            addBlock({
-                editable: false,
-                markdown: "You must set an OpenAI API key.",
-                namespace: Math.random().toString(),
-                type: MessageType.ApiMessage
-            });
             return;
         }
 
@@ -79,7 +68,6 @@ const InputPanel = ({defaultInput = ""}: InputPanelProps) => {
         const namespace = Math.random().toString();
         await streamIntelligence({
             context,
-            localKey,
             objective,
             onClose,
             onError: (error) => {

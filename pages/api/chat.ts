@@ -8,16 +8,15 @@ import { NextApiHandler } from "next";
 
 type ServiceOptions = {
     context?: [string, string][];
-    localKey?: string;
     objective: string;
     usePower?: boolean;
 }
 
 const Service: NextApiHandler = async (req, res) => {
     // context should be an array of "[message, type]" pairs, where type is "apimessage" or "usermessage"
-    const {context, localKey, objective, usePower}: ServiceOptions = await req.body;
+    const {context, objective, usePower}: ServiceOptions = await req.body;
 
-    const openAiApiKey = localKey || process.env.OPENAI_API_KEY;
+    const openAiApiKey = process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
         throw new Error("OpenAI API Key not set.");
     }
@@ -34,7 +33,7 @@ const Service: NextApiHandler = async (req, res) => {
         await moderation.run(objective);
 
         const chain = await makeChain({
-            callbacks: [handlers], localKey, usePower
+            callbacks: [handlers], usePower
         });
 
         handlers.sendData("Thinking...").then();
