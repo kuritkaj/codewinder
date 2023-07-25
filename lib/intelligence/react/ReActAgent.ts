@@ -144,7 +144,7 @@ export class ReActAgent extends BaseSingleActionAgent {
     }
 
     public async plan(steps: AgentStep[], inputs: ChainValues, callbackManager?: CallbackManager): Promise<AgentAction | AgentFinish> {
-        const memories = await this.constructMemories(inputs, steps);
+        const memories = this.store.isDurable() ? await this.constructMemories(inputs, steps) : [];
         const thoughts = await this.constructScratchPad(steps);
         const newInputs = {
             ...inputs,
@@ -183,14 +183,15 @@ export class ReActAgent extends BaseSingleActionAgent {
             const formattedPlan = _returnValues.output;
             const formattedSteps = _steps.map(step => `{"action": "${step.action.tool}", "action_input": "${JSON.stringify(step.action.toolInput)}"}`).join(",\n");
 
-            const condenser = MemoryCondenser.makeChain({model: this.llmChain.llm});
-
-            await condenser.predict({
-                actions: formattedSteps,
-                response: formattedPlan
-            }).then(async (condensedMemory) => {
-                await this.store.storeTexts([condensedMemory]);
-            });
+            if (this.store.isDurable()) {
+                const condenser = MemoryCondenser.makeChain({model: this.llmChain.llm});
+                await condenser.predict({
+                    actions: formattedSteps,
+                    response: formattedPlan
+                }).then(async (condensedMemory) => {
+                    await this.store.storeTexts([condensedMemory]);
+                });
+            }
         }
 
         return super.prepareForOutput(_returnValues, _steps);

@@ -34,8 +34,7 @@ export class MemoryStore {
         const supabaseUrl = process.env.SUPABASE_URL;
 
         if (typeof supabaseApiKey === 'string' && supabaseApiKey.length > 0 &&
-            typeof supabaseUrl === 'string' && supabaseUrl.length > 0)
-        {
+            typeof supabaseUrl === 'string' && supabaseUrl.length > 0) {
             const client = createClient(supabaseUrl, supabaseApiKey, {
                 auth: {
                     persistSession: false
@@ -52,6 +51,10 @@ export class MemoryStore {
             console.log("No Supabase API Key or URL found.");
             return this.makeTransientStore(index, embeddings);
         }
+    }
+
+    public isDurable(): boolean {
+        return this.memory instanceof SupabaseVectorStore;
     }
 
     public static async makeTransientStore(index: string, embeddings: OpenAIEmbeddings) {
