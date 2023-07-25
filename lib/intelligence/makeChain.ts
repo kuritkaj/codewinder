@@ -8,7 +8,6 @@ import { PlanAndSolve } from "@/lib/intelligence/tools/PlanAndSolve";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { WebSearch } from "@/lib/intelligence/tools/WebSearch";
 import { Callbacks } from "langchain/callbacks";
-import { BaseChain, OpenAIModerationChain, SimpleSequentialChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { StructuredTool } from "langchain/tools";
@@ -19,7 +18,7 @@ type makeChainOptions = {
     usePower?: boolean
 }
 
-export const makeChain = async ({callbacks, localKey = undefined, usePower = false}: makeChainOptions): Promise<BaseChain> => {
+export const makeChain = async ({callbacks, localKey = undefined, usePower = false}: makeChainOptions): Promise<ReActExecutor> => {
     const openAiApiKey = localKey || process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
         throw new Error("OpenAI API Key not set.");
@@ -111,22 +110,10 @@ export const makeChain = async ({callbacks, localKey = undefined, usePower = fal
         tools: [...tools, ...toolkit],
         verbose: true,
     });
-    const executor = ReActExecutor.fromAgentAndTools({
+    return ReActExecutor.fromAgentAndTools({
         agent,
         callbacks,
         tools: [...tools, ...toolkit],
-        verbose: true,
-    });
-
-    const moderation = new OpenAIModerationChain({
-        openAIApiKey: openAiApiKey,
-        // If set to true, the call will throw an error when the moderation chain detects violating content.
-        // If set to false, violating content will return "Text was found that violates OpenAI's content policy."
-        throwError: true,
-    });
-
-    return new SimpleSequentialChain({
-        chains: [moderation, executor],
         verbose: true,
     });
 }
