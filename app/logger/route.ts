@@ -1,6 +1,6 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     console.log("Logger: ", request.json());
-    return new Response("OK", {status: 204});
+    return NextResponse.json({logged: true});
 }
