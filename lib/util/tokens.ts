@@ -1,12 +1,12 @@
+import { encodingForModel } from "js-tiktoken";
 import { TiktokenModel } from "js-tiktoken/lite";
 import { BaseLanguageModel } from "langchain/base_language";
-import { encodingForModel } from "js-tiktoken";
 
-export const getModelName = (model: BaseLanguageModel): string => {
+export function getModelName(model: BaseLanguageModel): string {
     return model._identifyingParams()["model_name"];
 }
 
-export const getModelNameForTiktoken = (model: BaseLanguageModel): TiktokenModel => {
+export function getModelNameForTiktoken(model: BaseLanguageModel): TiktokenModel {
     const modelName = getModelName(model);
 
     if (modelName.startsWith("gpt-3.5-turbo-16k")) {
@@ -26,17 +26,17 @@ export const getModelNameForTiktoken = (model: BaseLanguageModel): TiktokenModel
     }
 
     return modelName as TiktokenModel;
-};
+}
 
 interface CalculateMaxTokenProps {
     prompt: string;
     model: BaseLanguageModel;
 }
 
-const calculateMaxTokens = async ({
+async function calculateMaxTokens({
     prompt,
     model,
-}: CalculateMaxTokenProps) => {
+}: CalculateMaxTokenProps) {
     const tiktokenName = getModelNameForTiktoken(model);
 
     // fallback to approximate calculation if tiktoken is not available
@@ -51,25 +51,25 @@ const calculateMaxTokens = async ({
 
     const maxTokens = getModelContextSize(model);
     return maxTokens - numTokens;
-};
+}
 
-export const calculateRemainingTokens = async ({prompt, model}: { prompt: string, model: BaseLanguageModel }): Promise<number> => {
+export async function calculateRemainingTokens({prompt, model}: { prompt: string, model: BaseLanguageModel }): Promise<number> {
     return await calculateMaxTokens({
         prompt,
         model
     });
 }
 
-export const getEmbeddingContextSize = (modelName?: string): number => {
+export function getEmbeddingContextSize(modelName?: string): number {
     switch (modelName) {
         case "text-embedding-ada-002":
             return 8191;
         default:
             return 2046;
     }
-};
+}
 
-export const getModelContextSize = (model: BaseLanguageModel): number => {
+export function getModelContextSize(model: BaseLanguageModel): number {
     switch (getModelNameForTiktoken(model)) {
         case "gpt-3.5-turbo-16k":
             return 16384;
@@ -94,4 +94,4 @@ export const getModelContextSize = (model: BaseLanguageModel): number => {
         default:
             return 4097;
     }
-};
+}

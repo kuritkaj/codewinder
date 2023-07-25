@@ -1,6 +1,6 @@
 import { AIStreamCallbacks, createCallbacksTransformer } from "ai";
 
-export function Langchainstream(callbacks?: AIStreamCallbacks) {
+export function LangchainStream(callbacks?: AIStreamCallbacks) {
     const stream = new TransformStream();
     const writer = stream.writable.getWriter();
 

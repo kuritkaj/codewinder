@@ -1,4 +1,6 @@
 import { Database } from "@/lib/types/Database";
+import { isValidUuid } from "@/lib/util/isValidUuid";
+import { logError } from "@/lib/util/logger";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import Stack from "components/pages/Stack";
 import { cookies } from "next/headers";
@@ -21,8 +23,9 @@ export default async function StackPage({params: {id}}: StackPageProps) {
         redirect("/");
     }
 
-    if (!id) {
-        // Handle the case where 'id' is not defined
+    if (!id || !isValidUuid(id)) {
+        // Handle the case where 'id' is not valid
+        logError("Invalid 'id' parameter", {id});
         redirect("/stacks");
     }
 

@@ -3,8 +3,7 @@
 import { NotebookProvider } from "@/components/context/NotebookContext";
 import { SettingsProvider } from "@/components/context/SettingsContext";
 import { BlockData } from "@/lib/types/BlockData";
-import { Database, Json } from "@/lib/types/Database";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/lib/types/Database";
 import InputPanel from "components/panels/InputPanel";
 import NotebookPanel from "components/panels/NotebookPanel";
 import SettingsPanel from "components/panels/SettingsPanel";
@@ -18,19 +17,18 @@ type NotebookProps = {
     stack?: StackData | null;
     notebook: NotebookData;
     onDelete?: (notebook: NotebookData) => void;
+    onSave?: (notebook: NotebookData, blocks: BlockData[]) => void;
 }
 
-const Notebook = ({notebook, onDelete, stack}: NotebookProps) => {
+const Notebook = ({notebook, onDelete, onSave, stack}: NotebookProps) => {
     const blocks = notebook.blocks as unknown as BlockData[];
-    const supabase = createClientComponentClient<Database>();
 
     const handleDelete = async () => {
         if (onDelete) onDelete(notebook);
     }
 
     const handleSave = async (blocks: BlockData[]) => {
-        const json = blocks as unknown as Json[];
-        await supabase.from("notebooks").update({blocks: json}).eq("id", notebook.id);
+        if (onSave) onSave(notebook, blocks);
     }
 
     return (notebook ? (
