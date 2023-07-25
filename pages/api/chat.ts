@@ -1,7 +1,7 @@
 // Based on: https://github.com/sullivan-sean/chat-langchainjs/blob/main/pages/api/chat-stream.ts
 
 import { makeChain } from "@/lib/intelligence/makeChain";
-import { LangchainStream } from "@/lib/util/langchainStream";
+import { LangchainStream } from "@/lib/util/LangchainStream";
 import { streamToResponse } from "ai";
 import { OpenAIModerationChain } from "langchain/chains";
 import { NextApiHandler } from "next";
