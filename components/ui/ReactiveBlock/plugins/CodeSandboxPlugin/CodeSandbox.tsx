@@ -63,7 +63,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                 recompileDelay: 1000,
             }}
             template={language as SandpackPredefinedTemplate}
-            theme="auto"
+            theme="light"
         >
             <CodeSandboxLayout className={styles.layout}>
                 <SandpackCodeEditor
