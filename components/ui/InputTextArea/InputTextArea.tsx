@@ -1,5 +1,5 @@
-import Button from "components/ui/common/Button";
 import { PaperPlaneIcon } from "@radix-ui/react-icons";
+import Button from "components/ui/common/Button";
 import React, { useEffect, useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import styles from "./InputTextArea.module.css";
@@ -66,7 +66,7 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                     className={styles.generate}
                     disabled={loading}
                     onClick={async () => {
-                        handleSubmit(userInput);
+                        await handleSubmit(userInput);
                     }}
                 >
                     <PaperPlaneIcon width={16} height={16}/>

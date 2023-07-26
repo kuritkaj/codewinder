@@ -50,7 +50,7 @@ export const UserContextProvider = ({children, session: init, supabase}: UserCon
         })();
 
         const {data: authListener} = supabase.auth.onAuthStateChange(
-            async (event, newSession) => {
+            (event, newSession) => {
 
                 if (newSession?.expires_at !== init?.expires_at) setSession(newSession);
                 if (newSession?.user?.id !== init?.user?.id) setUser(newSession?.user ?? null);

@@ -2,8 +2,7 @@ import { ArrowRightIcon, PlusCircledIcon, StackIcon } from "@radix-ui/react-icon
 import Link from "next/link";
 import styles from "./ReactiveStack.module.css";
 
-const ReactiveStack = async ({stack, stacks}) => {
-
+const ReactiveStack = ({stack, stacks}) => {
     return (
         <div className={styles.stack}>
             {stacks && stacks.length > 0 && (

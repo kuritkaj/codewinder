@@ -23,11 +23,11 @@ type NotebookProps = {
 const Notebook = ({notebook, onDelete, onSave, stack}: NotebookProps) => {
     const blocks = notebook.blocks as unknown as BlockData[];
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
         if (onDelete) onDelete(notebook);
     }
 
-    const handleSave = async (blocks: BlockData[]) => {
+    const handleSave = (blocks: BlockData[]) => {
         if (onSave) onSave(notebook, blocks);
     }
 

@@ -48,7 +48,7 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
         }));
     };
 
-    const setUsePower = async (usePower: boolean) => {
+    const setUsePower = (usePower: boolean) => {
         setCurrentSettings((state) => ({
             ...state,
             usePower,
