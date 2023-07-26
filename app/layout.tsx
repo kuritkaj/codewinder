@@ -1,8 +1,8 @@
 import "@fontsource-variable/public-sans";
 import { Metadata } from "next";
 import { ReactNode } from "react";
-import "../scripts/wdyr";
-import "../styles/global.css";
+import "./global.css";
+import "./wdyr";
 
 /** https://sreetamdas.com/blog/the-perfect-dark-mode */
 function setInitialColorMode() {
@@ -48,8 +48,6 @@ const blockingSetInitialColorMode = `(function() {
 export const metadata: Metadata = {
     title: "Codewinder",
     description: "Your intelligent personal assistant",
-    viewport: "width=device-width, initial-scale=1",
-    icons: ["/favicon.ico"],
 }
 
 export default function RootLayout({children}: { children: ReactNode }) {

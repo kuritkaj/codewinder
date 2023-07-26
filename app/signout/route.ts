@@ -10,11 +10,11 @@ export async function GET(req: NextRequest) {
 
     // Check if we have a session
     const {
-        data: { session },
-    } = await supabase.auth.getSession()
+        data: {session},
+    } = await supabase.auth.getSession();
 
     if (session) {
-        await supabase.auth.signOut()
+        await supabase.auth.signOut();
     }
 
     return NextResponse.redirect(new URL('/', SITE_URL || req.url), {
