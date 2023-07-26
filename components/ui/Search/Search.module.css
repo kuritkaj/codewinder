@@ -9,7 +9,6 @@
     background: none;
     border: none;
     color: var(--low-contrast-text);
-    cursor: pointer;
 }
 
 .searchcontainer {

@@ -54,7 +54,6 @@
     top: 1rem;
     right: 1.5rem;
     border-radius: 5px;
-    cursor: context-menu;
 }
 .trigger:hover {
     background-color: var(--hovered-element-background);

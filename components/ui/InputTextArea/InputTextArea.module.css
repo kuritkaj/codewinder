@@ -12,7 +12,6 @@
     background: none;
     border: none;
     color: var(--high-contrast-text);
-    cursor: pointer;
 }
 
 .generate svg {
