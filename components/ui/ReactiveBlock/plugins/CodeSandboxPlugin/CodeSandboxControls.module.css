@@ -1,16 +1,20 @@
 .controls {
     display: flex;
-    padding: 1rem 8px;
-    color: snow;
+    padding: 0.5rem;
+    color: var(--high-contrast-text);
     justify-content: space-between;
 }
 
 .copy {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
     flex-grow: 1;
-    text-align: right;
 }
 
 .language {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
     flex-grow: 1;
-    text-align: left;
 }

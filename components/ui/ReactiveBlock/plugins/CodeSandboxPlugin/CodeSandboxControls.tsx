@@ -1,16 +1,17 @@
 import Button from "@/components/ui/common/Button";
 import CopyButton from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/ui/CopyButton";
 import { useSandpack } from "@codesandbox/sandpack-react";
-import { AllSidesIcon } from "@radix-ui/react-icons";
+import { DragHandleHorizontalIcon, PlayIcon } from "@radix-ui/react-icons";
 import styles from "./CodeSandboxControls.module.css";
 
 export type CodeSandboxControlsProps = {
     className?: string;
     language?: string;
+    toggleConsole: () => void;
     togglePreview: () => void;
 }
 
-const CodeSandboxControls = ({className, language, togglePreview}: CodeSandboxControlsProps) => {
+const CodeSandboxControls = ({className, language, toggleConsole, togglePreview}: CodeSandboxControlsProps) => {
     const {sandpack} = useSandpack();
 
     return (
@@ -18,7 +19,10 @@ const CodeSandboxControls = ({className, language, togglePreview}: CodeSandboxCo
             <div className={styles.language}>({language} - {sandpack.environment})</div>
             <div className={styles.toggles}>
                 <Button onClick={togglePreview}>
-                    <AllSidesIcon width={16} height={16}/>
+                    <PlayIcon width={16} height={16}/>
+                </Button>
+                <Button onClick={toggleConsole}>
+                    <DragHandleHorizontalIcon width={16} height={16}/>
                 </Button>
             </div>
             <div className={styles.copy}>

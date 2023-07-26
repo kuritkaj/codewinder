@@ -15,8 +15,42 @@ import {
 } from "@codesandbox/sandpack-react";
 import { $convertToMarkdownString } from "@lexical/markdown";
 import { LexicalEditor } from "lexical";
-import React, { memo, useLayoutEffect, useState } from "react";
+import React, { memo, useEffect, useLayoutEffect, useState } from "react";
 import styles from "./CodeSandbox.module.css";
+
+const CSS = `  
+body {
+    font-family: sans-serif;
+    -webkit-font-smoothing: auto;
+    -moz-font-smoothing: auto;
+    -moz-osx-font-smoothing: grayscale;
+    font-smoothing: auto;
+    text-rendering: optimizeLegibility;
+    font-smooth: always;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+h1 {
+    font-size: 1.5rem;
+}
+`;
+
+const HTML = `
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Parcel Sandbox</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+
+    <body>
+        <div id="app"></div>
+    </body>
+</html>
+`;
 
 export type CodeSandboxProps = {
     code: string;
@@ -30,7 +64,15 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
     const {getBlock, replaceBlock} = useNotebook();
     const [code, setCode] = useState<string>(init);
     const [readonly, setReadonly] = useState<boolean>(false);
-    const [showPreview, setShowPreview] = useState<boolean>(true);
+    const [showConsole, setShowConsole] = useState<boolean>(false);
+    const [showPreview, setShowPreview] = useState<boolean>(false);
+    const [theme, setTheme] = useState<"dark" | "light">("light");
+
+    useEffect(() => {
+        // Read the value of the CSS custom property from the root element
+        const colorMode = getComputedStyle(document.documentElement).getPropertyValue('--initial-color-mode');
+        setTheme(colorMode === "dark" ? "dark" : "light");
+    }, []);
 
     useLayoutEffect(() => {
         // Slight delay to let the codesandbox register an editable editor, which can then be made readonly if needed.
@@ -40,7 +82,11 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
         });
     }, [editor]);
 
-    function togglePreview() {
+    const toggleConsole = () => {
+        setShowConsole(!showConsole);
+    }
+
+    const togglePreview = () => {
         setShowPreview(!showPreview);
     }
 
@@ -57,13 +103,21 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                     code,
                     active: true,
                 },
+                "/styles.css": {
+                    code: CSS,
+                    hidden: true,
+                },
+                "/index.html": {
+                    code: HTML,
+                    hidden: true,
+                },
             }}
             options={{
                 recompileMode: "delayed",
                 recompileDelay: 1000,
             }}
             template={language as SandpackPredefinedTemplate}
-            theme="light"
+            theme={theme}
         >
             <CodeSandboxLayout className={styles.layout}>
                 <SandpackCodeEditor
@@ -98,6 +152,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                 <CodeSandboxControls
                     className={styles.controls}
                     language={language}
+                    toggleConsole={toggleConsole}
                     togglePreview={togglePreview}
                 />
                 <SandpackPreview
@@ -108,7 +163,8 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                 />
                 <SandpackConsole
                     className={styles.console}
-                    maxMessageCount={1}
+                    hidden={!showConsole}
+                    maxMessageCount={10}
                     resetOnPreviewRestart={true}
                 />
             </CodeSandboxLayout>
