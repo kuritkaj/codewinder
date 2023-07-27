@@ -19,7 +19,7 @@ const ReactiveStack = ({onDelete, stack, stacks}: ReactiveStackProps) => {
     }
 
     return (
-        <div className={styles.stack}>
+        <div className={styles.stackcontainer}>
             {stacks && stacks.length > 0 && (
                 <>
                     <h2 className={styles.subheader}>Recent stacks</h2>

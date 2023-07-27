@@ -4,6 +4,7 @@ export function logError(err, extra = {}) {
     console.log("Logger: ", err?.message || err, extra);
     // don't call if on server.
     if (typeof window !== 'undefined') {
+        alert(err?.message || err);
         fetch("/api/logger", {
             method: "POST",
             credentials: "same-origin",
