@@ -1,9 +1,9 @@
 .draggable {
     position: absolute;
-    transform: translate(-50%, -0.25em);
+    transform: translate(-50%, -50%);
     width: 2em;
     height: 2em;
-    top: 1rem;
+    top: 12px;
     left: 1.5rem;
     cursor: grab;
 }

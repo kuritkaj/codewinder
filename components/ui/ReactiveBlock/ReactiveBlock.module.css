@@ -12,15 +12,16 @@
 }
 
 .editable {
+    min-height: 1.6em;
     font-size: 1rem;
     outline: none;
-    margin: 1rem 5rem 1rem 3rem;
+    margin: 0 5rem 0 3rem;
     pointer-events: fill;
 }
 
 .placeholder {
     position: absolute;
-    padding: 1rem 3rem;
+    padding-left: 3rem;
     top: 50%;
     line-height: 1.6;
     transform: translate(0, -50%);
