@@ -1,6 +1,7 @@
 import Button from "@/components/ui/common/Button";
+import DropdownMenu from "@/components/ui/common/DropDownMenu/DropDownMenu";
 import { Database } from "@/lib/types/Database";
-import { ArrowRightIcon, PlusCircledIcon, StackIcon, TrashIcon } from "@radix-ui/react-icons";
+import { ArrowRightIcon, DotsVerticalIcon, PlusCircledIcon, StackIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import styles from "./ReactiveStack.module.css";
 
@@ -14,8 +15,22 @@ type ReactiveStackProps = {
 
 const ReactiveStack = ({onDelete, stack, stacks}: ReactiveStackProps) => {
 
-    const handleDelete = (target) => {
+    const handleOnDelete = (target) => {
         if (onDelete) onDelete(target);
+    }
+
+    const createMenuItems = (onDelete) => {
+        return [
+            {
+                label: "Delete",
+                subItems: [
+                    {
+                        label: "Are you sure?",
+                        onSelect: onDelete
+                    }
+                ]
+            }
+        ];
     }
 
     return (
@@ -42,9 +57,11 @@ const ReactiveStack = ({onDelete, stack, stacks}: ReactiveStackProps) => {
                                             <ArrowRightIcon width={16} height={16}/>
                                             <span>{sibling.name}</span>
                                         </div>
-                                        <Button className={styles.delete} onClick={() => handleDelete(sibling)}>
-                                            <TrashIcon width={16} height={16}/>
-                                        </Button>
+                                        <DropdownMenu menuItems={createMenuItems(() => handleOnDelete(sibling))}>
+                                            <Button id={sibling.id + "trigger"} className={styles.contextmenubutton}>
+                                                <DotsVerticalIcon width={16} height={16}/>
+                                            </Button>
+                                        </DropdownMenu>
                                     </li>
                                 );
                             } else {
@@ -54,9 +71,11 @@ const ReactiveStack = ({onDelete, stack, stacks}: ReactiveStackProps) => {
                                             <StackIcon width={16} height={16}/>
                                             <span>{sibling.name}</span>
                                         </Link>
-                                        <Button className={styles.delete} onClick={() => handleDelete(sibling)}>
-                                            <TrashIcon width={16} height={16}/>
-                                        </Button>
+                                        <DropdownMenu menuItems={createMenuItems(() => handleOnDelete(sibling))}>
+                                            <Button id={sibling.id + "trigger"} className={styles.contextmenubutton}>
+                                                <DotsVerticalIcon width={16} height={16}/>
+                                            </Button>
+                                        </DropdownMenu>
                                     </li>
                                 );
                             }

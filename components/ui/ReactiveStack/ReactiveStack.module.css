@@ -5,7 +5,7 @@
     text-overflow: ellipsis;
 }
 
-.delete {
+.contextmenubutton {
     position: absolute;
     right: 0;
     top: 0;

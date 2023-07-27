@@ -1,9 +1,9 @@
 import useNamespace from "@/components/context/useNamespace";
 import useNotebook from "@/components/context/useNotebook";
 import Button from "@/components/ui/common/Button";
+import DropdownMenu from "@/components/ui/common/DropDownMenu";
 import { MessageType } from "@/lib/types/MessageType";
-import * as DropDownMenu from "@radix-ui/react-dropdown-menu";
-import { ChevronRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
+import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import styles from "./ContextMenuPlugin.module.css";
 
 const ContextMenuPlugin = () => {
@@ -32,47 +32,30 @@ const ContextMenuPlugin = () => {
         }, namespace, false);
     }
 
+    const menuItems = [
+        {
+            label: "Insert above",
+            onSelect: handleOnInsertAbove
+        },
+        {
+            label: "Insert below",
+            onSelect: handleOnInsertBelow
+        },
+        {
+            label: "Delete",
+            subItems: [
+                {
+                    label: "Are you sure?",
+                    onSelect: handleOnDelete
+                }
+            ]
+        }
+    ];
+
     return (
-        <DropDownMenu.Root>
-            <DropDownMenu.Trigger asChild>
-                <Button className={styles.trigger}><DotsVerticalIcon width={16} height={16}/></Button>
-            </DropDownMenu.Trigger>
-            <DropDownMenu.Portal>
-                <DropDownMenu.Content className={styles.content}>
-                    <DropDownMenu.Sub>
-                        <DropDownMenu.Item
-                            className={styles.menuitem}
-                            onSelect={handleOnInsertAbove}
-                        >
-                            Insert above
-                        </DropDownMenu.Item>
-                        <DropDownMenu.Item
-                            className={styles.menuitem}
-                            onSelect={handleOnInsertBelow}
-                        >
-                            Insert below
-                        </DropDownMenu.Item>
-                        <DropDownMenu.SubTrigger className={styles.subtrigger}>
-                            Delete <ChevronRightIcon className={styles.rightslot} width={16} height={16}/>
-                        </DropDownMenu.SubTrigger>
-                        <DropDownMenu.Portal>
-                            <DropDownMenu.SubContent
-                                className={styles.subcontent}
-                                sideOffset={10}
-                                alignOffset={-4}
-                            >
-                                <DropDownMenu.Item
-                                    className={styles.menuitem}
-                                    onSelect={handleOnDelete}
-                                >
-                                    Are you sure?
-                                </DropDownMenu.Item>
-                            </DropDownMenu.SubContent>
-                        </DropDownMenu.Portal>
-                    </DropDownMenu.Sub>
-                </DropDownMenu.Content>
-            </DropDownMenu.Portal>
-        </DropDownMenu.Root>
+        <DropdownMenu menuItems={menuItems}>
+            <Button className={styles.contextmenubutton}><DotsVerticalIcon width={16} height={16}/></Button>
+        </DropdownMenu>
     );
 }
 
