@@ -130,3 +130,6 @@ dist
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# Default ignored files
+.idea

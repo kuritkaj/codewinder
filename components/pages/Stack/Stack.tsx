@@ -58,6 +58,18 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
         }
     };
 
+    const deleteStack = async (target) => {
+        if (stack) {
+            const {error: e1} = await supabase.from("stacks").delete().eq("id", target.id);
+            if (e1) logError(e1.message, e1);
+            if (target.id === stack.id) {
+                router.replace("/stacks");
+            } else {
+                router.refresh();
+            }
+        }
+    }
+
     const saveNotebook = async (notebook, blocks) => {
         if (notebook && stack) {
             const json = blocks as unknown as Json[];
@@ -69,7 +81,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
     return stack ? (
         <>
             <div className={styles.stacks}>
-                <StackPanel stack={stack} stacks={stacks}/>
+                <StackPanel onDelete={deleteStack} stack={stack} stacks={stacks}/>
             </div>
             <div className={styles.notebooks}>
                 {notebooks && notebooks.length > 0 && notebooks.map((notebook) => (

@@ -23,8 +23,8 @@
 .stacks {
     display: flex;
     align-items: center;
-    max-width: 300px;
-    flex-shrink: 0;
+    max-width: 250px;
+    width: 100%;
 }
 
 /* Mobile optimization */

@@ -5,14 +5,15 @@ import styles from "./StackPanel.module.css";
 type StackData = Database["public"]["Tables"]["stacks"]["Row"];
 
 type StackPanelProps = {
+    onDelete?: (stack: StackData) => void;
     stack?: StackData | null;
     stacks?: StackData[] | null;
 }
 
-const StackPanel = ({stack, stacks}: StackPanelProps) => {
+const StackPanel = ({onDelete, stack, stacks}: StackPanelProps) => {
     return (
         <div className={styles.panel}>
-            <ReactiveStack stack={stack} stacks={stacks}/>
+            <ReactiveStack onDelete={onDelete} stack={stack} stacks={stacks}/>
         </div>
     );
 }
