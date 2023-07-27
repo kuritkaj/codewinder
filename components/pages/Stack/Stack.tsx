@@ -63,6 +63,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
             const {error: e1} = await supabase.from("stacks").delete().eq("id", target.id);
             if (e1) logError(e1.message, e1);
             if (target.id === stack.id) {
+                router.refresh();
                 router.replace("/stacks");
             } else {
                 router.refresh();
