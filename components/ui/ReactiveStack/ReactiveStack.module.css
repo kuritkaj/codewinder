@@ -1,5 +1,8 @@
 .activeitem, .listitem {
     position: relative;
+    max-height: 5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .delete {
