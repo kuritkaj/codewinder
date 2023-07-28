@@ -1,4 +1,3 @@
-import { SupabaseVectorStore } from "@/lib/intelligence/vectorstores/SupabaseVectorStore";
 import { Metadata } from "@/lib/types/Document";
 import { getEmbeddingContextSize } from "@/lib/util/tokens";
 import { createClient } from "@supabase/supabase-js";
@@ -6,6 +5,7 @@ import { VectorStore } from "langchain/dist/vectorstores/base";
 import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { RecursiveCharacterTextSplitter, TextSplitter, TokenTextSplitter } from "langchain/text_splitter";
+import { SupabaseVectorStore } from "langchain/vectorstores";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 
 export class MemoryStore {
@@ -53,13 +53,13 @@ export class MemoryStore {
         }
     }
 
-    public isDurable(): boolean {
-        return this.memory instanceof SupabaseVectorStore;
-    }
-
     public static async makeTransientStore(index: string, embeddings: OpenAIEmbeddings) {
         const memory = await new MemoryVectorStore(embeddings);
         return new MemoryStore(memory, index);
+    }
+
+    public isDurable(): boolean {
+        return this.memory instanceof SupabaseVectorStore;
     }
 
     public async retrieve(query: string, k?: number, filter?: VectorStore["FilterType"] | undefined): Promise<Document[]> {
