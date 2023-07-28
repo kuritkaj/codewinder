@@ -59,7 +59,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
     };
 
     const deleteStack = async (target) => {
-        if (stack) {
+        if (target && stack) {
             const {error: e1} = await supabase.from("stacks").delete().eq("id", target.id);
             if (e1) logError(e1.message, e1);
             if (target.id === stack.id) {

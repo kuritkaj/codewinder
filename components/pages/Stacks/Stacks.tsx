@@ -20,7 +20,7 @@ const Stack = ({stacks}: StacksProps) => {
     const supabase = createClientComponentClient<Database>();
     const router = useRouter();
 
-    const onSearch = async (userInput: string) => {
+    const createStack = async (userInput: string) => {
         const {data: stack, error: e1} = await supabase.from("stacks").insert({name: userInput}).select().maybeSingle();
         if (e1) logError(e1.message, e1);
         if (stack) {
@@ -40,7 +40,7 @@ const Stack = ({stacks}: StacksProps) => {
                 <StackPanel stacks={stacks}/>
             </div>
             <div className={styles.search}>
-                <Search handleSubmit={onSearch}/>
+                <Search handleSubmit={createStack}/>
             </div>
         </>
     );

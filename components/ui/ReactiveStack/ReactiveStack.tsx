@@ -15,7 +15,7 @@ type ReactiveStackProps = {
 
 const ReactiveStack = ({onDelete, stack, stacks}: ReactiveStackProps) => {
 
-    const handleOnDelete = (target) => {
+    const handleDelete = (target) => {
         if (onDelete) onDelete(target);
     }
 
@@ -57,7 +57,7 @@ const ReactiveStack = ({onDelete, stack, stacks}: ReactiveStackProps) => {
                                             <ArrowRightIcon width={16} height={16}/>
                                             <span>{sibling.name}</span>
                                         </div>
-                                        <DropdownMenu menuItems={createMenuItems(() => handleOnDelete(sibling))}>
+                                        <DropdownMenu menuItems={createMenuItems(() => handleDelete(sibling))}>
                                             <Button id={sibling.id + "trigger"} className={styles.contextmenubutton}>
                                                 <DotsVerticalIcon width={16} height={16}/>
                                             </Button>
@@ -71,7 +71,7 @@ const ReactiveStack = ({onDelete, stack, stacks}: ReactiveStackProps) => {
                                             <StackIcon width={16} height={16}/>
                                             <span>{sibling.name}</span>
                                         </Link>
-                                        <DropdownMenu menuItems={createMenuItems(() => handleOnDelete(sibling))}>
+                                        <DropdownMenu menuItems={createMenuItems(() => handleDelete(sibling))}>
                                             <Button id={sibling.id + "trigger"} className={styles.contextmenubutton}>
                                                 <DotsVerticalIcon width={16} height={16}/>
                                             </Button>

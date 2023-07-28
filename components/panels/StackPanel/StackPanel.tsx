@@ -11,9 +11,14 @@ type StackPanelProps = {
 }
 
 const StackPanel = ({onDelete, stack, stacks}: StackPanelProps) => {
+
+    const handleDelete = () => {
+        if (onDelete && stack) onDelete(stack);
+    }
+
     return (
         <div className={styles.panel}>
-            <ReactiveStack onDelete={onDelete} stack={stack} stacks={stacks}/>
+            <ReactiveStack onDelete={handleDelete} stack={stack} stacks={stacks}/>
         </div>
     );
 }
