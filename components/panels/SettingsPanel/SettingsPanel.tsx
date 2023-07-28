@@ -1,6 +1,7 @@
 import useSettings from "@/components/context/useSettings";
 import Button from "@/components/ui/common/Button";
-import { Cross1Icon } from "@radix-ui/react-icons";
+import DropdownMenu from "@/components/ui/common/DropDownMenu/DropDownMenu";
+import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import styles from "./SettingsPanel.module.css";
 
 type SettingsProps = {
@@ -10,9 +11,25 @@ type SettingsProps = {
 const SettingsPanel = ({onDelete}: SettingsProps) => {
     const {setUsePower, usePower} = useSettings();
 
+    const handleOnDelete = () => {
+        if (onDelete) onDelete();
+    }
+
     const handleUsePowerToggle = (checked: boolean) => {
         setUsePower(checked);
     };
+
+    const menuItems = [
+        {
+            label: "Delete",
+            subItems: [
+                {
+                    label: "Are you sure?",
+                    onSelect: handleOnDelete
+                }
+            ]
+        }
+    ];
 
     return (
         <div className={styles.panel}>
@@ -35,9 +52,11 @@ const SettingsPanel = ({onDelete}: SettingsProps) => {
             </div>
             <div className={styles.divider}/>
             <div className={styles.settingsright}>
-                <Button className={styles.deletebutton} onClick={onDelete}>
-                    <Cross1Icon width={16} height={16}/>
-                </Button>
+                <DropdownMenu menuItems={menuItems}>
+                    <Button className={styles.contextmenubutton}>
+                        <DotsVerticalIcon width={16} height={16}/>
+                    </Button>
+                </DropdownMenu>
             </div>
         </div>
     );
