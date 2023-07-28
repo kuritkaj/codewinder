@@ -29,7 +29,7 @@ const StackPanel = ({onDelete, stack, stacks}: StackPanelProps) => {
         ];
     }
 
-    const handleDelete = () => {
+    const handleDelete = (stack) => {
         if (onDelete && stack) onDelete(stack);
     }
 
