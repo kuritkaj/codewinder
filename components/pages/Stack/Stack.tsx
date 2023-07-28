@@ -90,13 +90,11 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
                         <Notebook notebook={notebook} onDelete={deleteNotebook} onSave={saveNotebook} stack={stack}/>
                     </div>
                 ))}
-                {(!notebooks || notebooks.length === 0) && (
-                    <div className={styles.addnotebook}>
-                        <Button className={styles.addbutton} onClick={createNotebook}>
-                            <PlusIcon width={20} height={20}/>
-                        </Button>
-                    </div>
-                )}
+                <div className={styles.addnotebook}>
+                    <Button className={styles.addbutton} onClick={createNotebook}>
+                        <PlusIcon width={20} height={20}/>
+                    </Button>
+                </div>
             </div>
         </>
     ) : "Stack not found.";

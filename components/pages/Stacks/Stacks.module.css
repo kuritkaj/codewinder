@@ -10,6 +10,7 @@
     align-items: center;
     max-width: 250px;
     width: 100%;
+    flex-shrink: 0;
 }
 
 /* Tablet optimization */
