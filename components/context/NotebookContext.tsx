@@ -64,7 +64,6 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const saveBlocks = useCallback(
         debounce((newBlocks, onChange) => {
-            console.log("Saving blocks", newBlocks);
             onChange(newBlocks);
         }, 1000) as (newBlocks: BlockData[], onChange: (newBlocks: BlockData[]) => void) => void, []);
 
@@ -76,7 +75,6 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
             isFirstRender.current = false;
             return;
         }
-        console.log("Saving blocks to notebook", blocks);
 
         if (onChange) saveBlocks(blocks, onChange);
         // eslint-disable-next-line react-hooks/exhaustive-deps
