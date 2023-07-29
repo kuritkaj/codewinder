@@ -64,8 +64,9 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const saveBlocks = useCallback(
         debounce((newBlocks, onChange) => {
+            console.log("Saving blocks...", newBlocks);
             onChange(newBlocks);
-        }, 1000) as (newBlocks: BlockData[], onChange: (newBlocks: BlockData[]) => void) => void, []);
+        }, 500) as (newBlocks: BlockData[], onChange: (newBlocks: BlockData[]) => void) => void, []);
 
     // This useEffect hook will be triggered whenever blocks changes.
     useEffect(() => {
@@ -123,15 +124,13 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
 
     const getBlock = useCallback((namespace: string) => {
         return blocks.find(block => block.namespace === namespace);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // This avoids unnecessary re-renders in notebooks and blocks
+    }, [blocks]); // This avoids unnecessary re-renders in notebooks and blocks
 
     const getContents = useCallback(() => {
         return blocks.map(block => {
             return [block.markdown, block.type];
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // This avoids unnecessary re-renders in notebooks and blocks
+    }, [blocks]);
 
     const moveBlock = useCallback((source: string, destination: string) => {
         setBlocks(prevBlocks => {
