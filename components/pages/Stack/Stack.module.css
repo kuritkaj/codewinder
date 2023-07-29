@@ -12,6 +12,15 @@
     margin-top: 4.5rem;
 }
 
+.notebook {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 750px;
+    max-width: 750px;
+    height: 100%;
+    gap: 1rem;
+}
+
 .notebooks {
     display: flex;
     flex-direction: row;
@@ -30,8 +39,24 @@
 
 /* Mobile optimization */
 @media (max-width: 600px) {
+    .notebook {
+        min-width: calc(100vw - 2rem);
+    }
+
     .notebooks {
         gap: 1rem;
+    }
+}
+
+@media (max-width: calc(750px + 4rem)) {
+    .notebook {
+        min-width: calc(100vw - 4rem);
+    }
+}
+
+@media (min-width: calc(750px + 4rem + 1px)) {
+    .notebook {
+        min-width: 750px;
     }
 }
 

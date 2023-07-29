@@ -1,4 +1,5 @@
 import { NamespaceProvider } from "@/components/context/NamespaceContext";
+import useNotebook from "@/components/context/useNotebook";
 import { theme } from "@/components/ui/ReactiveBlock/content/theme";
 import { CodeSandboxNode } from "@/components/ui/ReactiveBlock/plugins/CodeSandboxPlugin/CodeSandboxNode";
 import CollapsiblePlugin from "@/components/ui/ReactiveBlock/plugins/CollapsiblePlugin";
@@ -12,6 +13,7 @@ import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/pl
 import StreamingPlugin from "@/components/ui/ReactiveBlock/plugins/StreamingPlugin";
 import ToggleEditablePlugin from "@/components/ui/ReactiveBlock/plugins/ToggleEditablePlugin";
 import { BlockData } from "@/lib/types/BlockData";
+import { NotebookData } from "@/lib/types/DatabaseData";
 import { useSortable } from "@dnd-kit/sortable";
 
 import { CSS } from '@dnd-kit/utilities';
@@ -46,15 +48,24 @@ const EDITOR_NODES = [
 
 export type ReactiveBlockProps = {
     block: BlockData;
+    notebook: NotebookData;
 }
 
-const ReactiveBlock = ({block}: ReactiveBlockProps) => {
+const ReactiveBlock = ({block, notebook}: ReactiveBlockProps) => {
+    const {getBlock} = useNotebook();
+
     const {
         attributes,
         setNodeRef,
         transform,
         transition,
-    } = useSortable({id: block.namespace});
+    } = useSortable({
+        id: block.namespace,
+        data: {
+            block: () => getBlock(block.namespace),
+            notebook,
+        },
+    });
 
     const style = {
         transform: CSS.Transform.toString(transform),

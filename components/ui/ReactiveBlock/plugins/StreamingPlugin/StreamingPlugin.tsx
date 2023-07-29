@@ -21,15 +21,13 @@ const StreamingPlugin = () => {
     useEffect(() => {
         const block = getBlock(namespace);
         if (block) updateEditor(editor, block.markdown);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // only update on the initial render
+    }, [editor, getBlock, namespace]); // only update on the initial render
 
     useEffect(() => {
         return subscribeToBlock(namespace, (newBlock) => {
             updateEditor(editor, newBlock.markdown);
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // only subscribe on the initial render
+    }, [editor, namespace, subscribeToBlock]); // only subscribe on the initial render
 
     useLayoutEffect(() => {
         return editor.registerUpdateListener(({
@@ -53,8 +51,7 @@ const StreamingPlugin = () => {
                 }, true);
             });
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // only register on the initial render
+    }, [editor, getBlock, namespace, replaceBlock]); // only register on the initial render
 
     return null;
 }

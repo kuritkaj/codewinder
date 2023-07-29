@@ -1,18 +1,22 @@
 "use client";
 
-import Notebook from "@/components/pages/Stack/Notebook";
+import { NotebookProvider } from "@/components/context/NotebookContext";
+import { SettingsProvider } from "@/components/context/SettingsContext";
 import styles from "@/components/pages/Stack/Stack.module.css";
+import InputPanel from "@/components/panels/InputPanel";
+import NotebookPanel from "@/components/panels/NotebookPanel";
+import SettingsPanel from "@/components/panels/SettingsPanel";
 import StackPanel from "@/components/panels/StackPanel";
 import Button from "@/components/ui/common/Button";
+import { BlockData } from "@/lib/types/BlockData";
 import { Database, Json } from "@/lib/types/Database";
+import { NotebookData, StackData } from "@/lib/types/DatabaseData";
 import { logError } from "@/lib/util/logger";
-import { PlusIcon } from "@radix-ui/react-icons";
+import { closestCenter, DndContext, DragOverlay } from "@dnd-kit/core";
+import { DragHandleDots2Icon, PlusIcon } from "@radix-ui/react-icons";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import React, { useLayoutEffect } from "react";
-
-type NotebookData = Database["public"]["Tables"]["notebooks"]["Row"];
-type StackData = Database["public"]["Tables"]["stacks"]["Row"];
 
 type NotesProps = {
     notebooks?: NotebookData[] | null;
@@ -28,7 +32,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
         if (stack) {
             const anchorElement = document.getElementById(stack.id);
             if (anchorElement) {
-                anchorElement.scrollIntoView({ behavior: "smooth", inline: "center" });
+                anchorElement.scrollIntoView({behavior: "smooth", inline: "center"});
             }
         }
     }, [stack]);
@@ -85,11 +89,28 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
                 <StackPanel onDelete={deleteStack} stack={stack} stacks={stacks}/>
             </div>
             <div className={styles.notebooks}>
-                {notebooks && notebooks.length > 0 && notebooks.map((notebook) => (
-                    <div key={notebook.id} id={notebook.id}>
-                        <Notebook notebook={notebook} onDelete={deleteNotebook} onSave={saveNotebook} stack={stack}/>
-                    </div>
-                ))}
+                <DndContext id={stack.id} collisionDetection={closestCenter}>
+                    <DragOverlay dropAnimation={null}>
+                        <DragHandleDots2Icon width={16} height={16}/>
+                    </DragOverlay>
+                    {notebooks && notebooks.length > 0 && notebooks.map((notebook) => {
+                        const blocks = notebook.blocks as unknown as BlockData[];
+                        return (
+                            <div key={notebook.id} className={styles.notebook}>
+                                <SettingsProvider>
+                                    <SettingsPanel notebook={notebook} onDelete={() => deleteNotebook(notebook)}/>
+                                    <NotebookProvider initBlocks={blocks} notebook={notebook}
+                                                      onChange={(newBlocks) => saveNotebook(notebook, newBlocks)}>
+                                        <NotebookPanel/>
+                                        <InputPanel defaultInput={
+                                            !blocks || blocks.length === 0 ? stack?.name || "" : ""
+                                        }/>
+                                    </NotebookProvider>
+                                </SettingsProvider>
+                            </div>
+                        );
+                    })}
+                </DndContext>
                 <div className={styles.addnotebook}>
                     <Button className={styles.addbutton} onClick={createNotebook}>
                         <PlusIcon width={20} height={20}/>

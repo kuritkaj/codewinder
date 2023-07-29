@@ -1,14 +1,16 @@
 import useSettings from "@/components/context/useSettings";
 import Button from "@/components/ui/common/Button";
 import DropdownMenu from "@/components/ui/common/DropDownMenu/DropDownMenu";
+import { NotebookData } from "@/lib/types/DatabaseData";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import styles from "./SettingsPanel.module.css";
 
 type SettingsProps = {
+    notebook: NotebookData;
     onDelete: () => void;
 }
 
-const SettingsPanel = ({onDelete}: SettingsProps) => {
+const SettingsPanel = ({notebook, onDelete}: SettingsProps) => {
     const {setUsePower, usePower} = useSettings();
 
     const handleOnDelete = () => {
@@ -53,7 +55,7 @@ const SettingsPanel = ({onDelete}: SettingsProps) => {
             <div className={styles.divider}/>
             <div className={styles.settingsright}>
                 <DropdownMenu menuItems={menuItems}>
-                    <Button className={styles.contextmenubutton}>
+                    <Button id={notebook.id + "trigger"} className={styles.contextmenubutton}>
                         <DotsVerticalIcon width={16} height={16}/>
                     </Button>
                 </DropdownMenu>

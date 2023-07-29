@@ -1,11 +1,9 @@
 import Button from "@/components/ui/common/Button/Button";
 import DropdownMenu from "@/components/ui/common/DropDownMenu/DropDownMenu";
-import { Database } from "@/lib/types/Database";
+import { StackData } from "@/lib/types/DatabaseData";
 import { ArrowRightIcon, DotsVerticalIcon, PlusCircledIcon, StackIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import styles from "./StackPanel.module.css";
-
-type StackData = Database["public"]["Tables"]["stacks"]["Row"];
 
 type StackPanelProps = {
     onDelete?: (stack: StackData) => void;

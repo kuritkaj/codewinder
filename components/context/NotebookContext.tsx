@@ -1,4 +1,5 @@
 import { BlockData, PartialBlockData } from "@/lib/types/BlockData";
+import { NotebookData } from "@/lib/types/DatabaseData";
 import { debounce } from "@/lib/util/debounce";
 import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
@@ -7,11 +8,12 @@ type SubscribeFunction = (block: BlockData) => void;
 type NotebookContextProps = {
     addBlock: (addition: BlockData, namespace?: string, before?: boolean) => void;
     appendToBlock: (partial: PartialBlockData) => void;
-    deleteBlock: (namespace: string) => void;
+    blocks: BlockData[];
     getBlock: (namespace: string) => BlockData | undefined;
-    getBlocks: () => BlockData[];
     getContents: () => string[][];
     moveBlock: (source: string, destination: string) => void;
+    notebook: NotebookData;
+    removeBlock: (namespace: string) => void;
     replaceBlock: (replacement: BlockData, silent?: boolean) => void;
     subscribeToBlock: (namespace: string, callback: SubscribeFunction) => void;
 }
@@ -23,19 +25,18 @@ const defaultImplementation = {
     appendToBlock: () => {
         throw new Error('Method not implemented.')
     },
-    deleteBlock: () => {
-        throw new Error('Method not implemented.')
-    },
+    blocks: [],
     getBlock: () => {
-        throw new Error('Method not implemented.')
-    },
-    getBlocks: () => {
         throw new Error('Method not implemented.')
     },
     getContents: () => {
         throw new Error('Method not implemented.')
     },
     moveBlock: () => {
+        throw new Error('Method not implemented.')
+    },
+    notebook: {} as unknown as NotebookData,
+    removeBlock: () => {
         throw new Error('Method not implemented.')
     },
     replaceBlock: () => {
@@ -50,51 +51,57 @@ const NotebookContext = createContext<NotebookContextProps>(defaultImplementatio
 
 type NotebookProviderProps = {
     children: ReactNode;
-    init?: BlockData[];
-    onChange?: (blocks: BlockData[]) => void
+    initBlocks?: BlockData[];
+    notebook: NotebookData;
+    onChange?: (newBlocks: BlockData[]) => void
 }
 
-const saveNotebook = debounce((blocks: BlockData[], onChange: (blocks: BlockData[]) => void) => {
-    if (onChange) onChange(blocks);
-}, 1000) as (blocks: BlockData[], onChange: (blocks: BlockData[]) => void) => void;
-
-export function NotebookProvider({children, init, onChange}: NotebookProviderProps) {
-    const [blocks, setBlocks] = useState<BlockData[]>(init || []);
+export function NotebookProvider({children, initBlocks, notebook, onChange}: NotebookProviderProps) {
+    const [blocks, setBlocks] = useState<BlockData[]>(initBlocks || []);
     const isFirstRender = useRef(true);
     const subscriptions = useRef<Record<string, SubscribeFunction[]>>({});
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const saveBlocks = useCallback(
+        debounce((newBlocks, onChange) => {
+            console.log("Saving blocks", newBlocks);
+            onChange(newBlocks);
+        }, 1000) as (newBlocks: BlockData[], onChange: (newBlocks: BlockData[]) => void) => void, []);
 
     // This useEffect hook will be triggered whenever blocks changes.
     useEffect(() => {
         // Skip the first render to avoid saving to the notebook when first viewed.
+        // Note to dev: this will save in dev because of double render in strict mode.
         if (isFirstRender.current) {
             isFirstRender.current = false;
             return;
         }
+        console.log("Saving blocks to notebook", blocks);
 
-        if (onChange) saveNotebook(blocks, onChange);
-    }, [blocks, onChange]);
+        if (onChange) saveBlocks(blocks, onChange);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [blocks]);
 
-    const addBlock = useCallback(
-        (addition: BlockData, namespace?: string, before: boolean = false) => {
-            setBlocks(prevBlocks => {
-                let newBlocks = [...prevBlocks];
-                if (namespace) {
-                    const index = newBlocks.findIndex(block => block.namespace === namespace);
-                    if (index !== -1) {
-                        if (before) {
-                            newBlocks.splice(index, 0, addition); // Insert before the block
-                        } else {
-                            newBlocks.splice(index + 1, 0, addition); // Insert after the block
-                        }
-                        return newBlocks;
+    const addBlock = useCallback((addition: BlockData, namespace?: string, before: boolean = false) => {
+        setBlocks(prevBlocks => {
+            let newBlocks = [...prevBlocks];
+            if (namespace) {
+                const index = newBlocks.findIndex(block => block.namespace === namespace);
+                if (index !== -1) {
+                    if (before) {
+                        newBlocks.splice(index, 0, addition); // Insert before the block
+                    } else {
+                        newBlocks.splice(index + 1, 0, addition); // Insert after the block
                     }
+                    return newBlocks;
                 }
+            }
 
-                // If the namespace is not provided or not found, simply append the new block to the end
-                newBlocks.push(addition);
-                return newBlocks;
-            });
-        }, []);
+            // If the namespace is not provided or not found, simply append the new block to the end
+            newBlocks.push(addition);
+            return newBlocks;
+        });
+    }, []);
 
     const appendToBlock = useCallback((partial: PartialBlockData) => {
         if (!partial.markdown) return;
@@ -116,23 +123,17 @@ export function NotebookProvider({children, init, onChange}: NotebookProviderPro
         });
     }, []);
 
-    const deleteBlock = useCallback((namespace: string) => {
-        setBlocks(prevBlocks => prevBlocks.filter(block => block.namespace !== namespace));
-    }, []);
-
     const getBlock = useCallback((namespace: string) => {
         return blocks.find(block => block.namespace === namespace);
-    }, [blocks]);
-
-    const getBlocks = useCallback(() => {
-        return blocks;
-    }, [blocks]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // This avoids unnecessary re-renders in notebooks and blocks
 
     const getContents = useCallback(() => {
         return blocks.map(block => {
             return [block.markdown, block.type];
         });
-    }, [blocks]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // This avoids unnecessary re-renders in notebooks and blocks
 
     const moveBlock = useCallback((source: string, destination: string) => {
         setBlocks(prevBlocks => {
@@ -146,6 +147,10 @@ export function NotebookProvider({children, init, onChange}: NotebookProviderPro
 
             return newBlocks;
         });
+    }, []);
+
+    const removeBlock = useCallback((namespace: string) => {
+        setBlocks(prevBlocks => prevBlocks.filter(block => block.namespace !== namespace));
     }, []);
 
     const replaceBlock = useCallback((replacement: BlockData, silent = false) => {
@@ -187,7 +192,7 @@ export function NotebookProvider({children, init, onChange}: NotebookProviderPro
 
     return (
         <NotebookContext.Provider value={{
-            addBlock, appendToBlock, deleteBlock, getBlock, getBlocks, getContents, moveBlock, replaceBlock, subscribeToBlock
+            addBlock, appendToBlock, blocks, getBlock, getContents, moveBlock, notebook, removeBlock, replaceBlock, subscribeToBlock
         }}>
             {children}
         </NotebookContext.Provider>

@@ -6,4 +6,5 @@
     top: 12px;
     left: 1.5rem;
     cursor: grab;
+    touch-action: none;
 }

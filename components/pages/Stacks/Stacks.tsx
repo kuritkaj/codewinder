@@ -5,12 +5,11 @@ import StackPanel from "@/components/panels/StackPanel";
 import Search from "@/components/ui/Search/Search";
 
 import { Database } from "@/lib/types/Database";
+import { StackData } from "@/lib/types/DatabaseData";
 import { logError } from "@/lib/util/logger";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import React from "react";
-
-type StackData = Database["public"]["Tables"]["stacks"]["Row"];
 
 type StacksProps = {
     stacks?: StackData[] | null;

@@ -10,7 +10,9 @@ const DragDropPlugin = () => {
     const {
         listeners,
         setActivatorNodeRef,
-    } = useSortable({id: namespace});
+    } = useSortable({
+        id: namespace
+    });
 
     return (
         <Button

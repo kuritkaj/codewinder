@@ -4,6 +4,7 @@ import InputTextArea from "@/components/ui/InputTextArea";
 import { streamIntelligence } from "@/lib/intelligence/streamIntelligence";
 import { PartialBlockData } from "@/lib/types/BlockData";
 import { MessageType } from "@/lib/types/MessageType";
+import { generateRandomString } from "@/lib/util/random";
 import { useState } from "react";
 import styles from "./InputPanel.module.css";
 
@@ -28,7 +29,7 @@ const InputPanel = ({defaultInput = ""}: InputPanelProps) => {
         addBlock({
             editable: false,
             markdown: objective,
-            namespace: Math.random().toString(),
+            namespace: generateRandomString(10),
             type: MessageType.UserMessage
         });
 
