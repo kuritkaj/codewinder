@@ -65,7 +65,7 @@ const InputPanel = ({defaultInput = ""}: InputPanelProps) => {
         }
 
         const context = getContents();
-        const namespace = Math.random().toString();
+        const namespace = generateRandomString(10);
         await streamIntelligence({
             context,
             objective,

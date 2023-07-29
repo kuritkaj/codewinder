@@ -62,7 +62,7 @@ const ReactiveBlock = ({block, notebook}: ReactiveBlockProps) => {
     } = useSortable({
         id: block.namespace,
         data: {
-            block: () => getBlock(block.namespace),
+            block: getBlock,
             notebook,
         },
     });

@@ -1,5 +1,6 @@
 import useNotebook from "@/components/context/useNotebook";
 import ReactiveBlock from "@/components/ui/ReactiveBlock";
+import { BlockData } from "@/lib/types/BlockData";
 import { useDndMonitor, useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import React, { useEffect, useRef, useState } from "react";
@@ -21,53 +22,52 @@ const ReactiveNotebook = () => {
     const scrollableRef = useRef<HTMLDivElement>(null);
     const hasUserScrolledUp = useRef(false);
 
-    const {addBlock, blocks, moveBlock, notebook, removeBlock} = useNotebook();
-    const [clonedBlocks, setClonedBlocks] = useState([...blocks]);
+    const {addBlock, blocks, moveBlock, notebook, removeBlock, resetBlocks} = useNotebook();
+    const [clonedBlocks, setClonedBlocks] = useState<BlockData[]>([...blocks]);
 
     const handleDragCancel = () => {
-        setClonedBlocks([...blocks]);
+        resetBlocks(clonedBlocks);
     }
 
     const handleDragEnd = (event) => {
-        console.log("Drag end", event);
         const {active, over} = event;
+        console.log("Drag end", event);
 
         if (!active || !over || active.id === over.id) return;
 
-        const isActiveNotebook = active.data.current.notebook.id === notebook.id;
-        const isOverNotebook = over.data.current.notebook.id === notebook.id;
+        const isActiveNotebook = clonedBlocks.findIndex(block => block.namespace === active.id) !== -1;
+        const isOverNotebook = clonedBlocks.findIndex(block => block.namespace === over.id) !== -1;
 
         if (isActiveNotebook && isOverNotebook) {
             console.log("Moving block", active.id, "to", over.id);
             moveBlock(active.id, over.id);
-        } else if (isActiveNotebook) {
-            console.log("Removing block", active.id);
-            removeBlock(active.id);
-        } else if (isOverNotebook) {
-            console.log("Adding block", active.id, "to", over.id);
-            addBlock(active.data.current.block());
         }
+        // if (isActiveNotebook && !isOverNotebook) {
+        //     console.log("Removing block", active.id);
+        //     removeBlock(active.id);
+        // }
+        // if (!isActiveNotebook && isOverNotebook) {
+        //     console.log("Adding block", active.id, "to", over.id);
+        //     addBlock(active.data.current.block, over.id);
+        // }
     }
 
     const handleOnDragOver = (event) => {
-        console.log("Drag over", event);
         const {active, over} = event;
+        console.log("Drag over", event);
 
         if (!active || !over || active.id === over.id) return;
 
         const isActiveNotebook = active.data.current.notebook.id === notebook.id;
         const isOverNotebook = over.data.current.notebook.id === notebook.id;
 
-        if (isActiveNotebook && isOverNotebook) {
-            console.log("Moving block", active.id, "to", over.id);
-            // do nothing
-        } else if (isActiveNotebook) {
-            console.log("Removing block", active.id);
-            const index = clonedBlocks.findIndex(block => block.namespace === active.id);
-            clonedBlocks.splice(index, 1);
-        } else if (isOverNotebook) {
-            console.log("Adding block", active.id, "to", over.id);
-            clonedBlocks.push(active.data.current.block());
+        if (isActiveNotebook && !isOverNotebook) {
+            console.log("Drag removing block", active.id);
+            removeBlock(active.id);
+        }
+        if (!isActiveNotebook && isOverNotebook) {
+            console.log("Drag adding block", active.id, "to", over.id);
+            addBlock(active.data.current.block(active.id), over.id);
         }
     }
 

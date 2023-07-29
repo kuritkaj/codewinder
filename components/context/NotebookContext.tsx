@@ -15,6 +15,7 @@ type NotebookContextProps = {
     notebook: NotebookData;
     removeBlock: (namespace: string) => void;
     replaceBlock: (replacement: BlockData, silent?: boolean) => void;
+    resetBlocks: (blocks: BlockData[]) => void;
     subscribeToBlock: (namespace: string, callback: SubscribeFunction) => void;
 }
 
@@ -40,6 +41,9 @@ const defaultImplementation = {
         throw new Error('Method not implemented.')
     },
     replaceBlock: () => {
+        throw new Error('Method not implemented.')
+    },
+    resetBlocks: () => {
         throw new Error('Method not implemented.')
     },
     subscribeToBlock: () => {
@@ -82,6 +86,8 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
     }, [blocks]);
 
     const addBlock = useCallback((addition: BlockData, namespace?: string, before: boolean = false) => {
+        if (!addition) return;
+
         setBlocks(prevBlocks => {
             let newBlocks = [...prevBlocks];
             if (namespace) {
@@ -103,7 +109,7 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
     }, []);
 
     const appendToBlock = useCallback((partial: PartialBlockData) => {
-        if (!partial.markdown) return;
+        if (!partial || !partial.markdown) return;
 
         setBlocks(prevBlocks => {
             const newBlocks = prevBlocks.map(block =>
@@ -172,7 +178,13 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
         });
     }, []);
 
+    const resetBlocks = useCallback((newBlocks: BlockData[] = []) => {
+        setBlocks(newBlocks);
+    }, []);
+
     const subscribeToBlock = useCallback((namespace: string, callback: SubscribeFunction) => {
+        if (!namespace || !callback) return;
+
         subscriptions.current = {
             ...subscriptions.current,
             [namespace]: [...(subscriptions.current[namespace] || []), callback]
@@ -189,7 +201,7 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
 
     return (
         <NotebookContext.Provider value={{
-            addBlock, appendToBlock, blocks, getBlock, getContents, moveBlock, notebook, removeBlock, replaceBlock, subscribeToBlock
+            addBlock, appendToBlock, blocks, getBlock, getContents, moveBlock, notebook, removeBlock, replaceBlock, resetBlocks, subscribeToBlock
         }}>
             {children}
         </NotebookContext.Provider>
