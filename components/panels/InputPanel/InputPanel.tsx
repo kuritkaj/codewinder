@@ -25,6 +25,7 @@ const InputPanel = ({defaultInput = ""}: InputPanelProps) => {
         }
 
         setUserInput("");
+        setLoading(true);
 
         addBlock({
             editable: false,
@@ -32,8 +33,6 @@ const InputPanel = ({defaultInput = ""}: InputPanelProps) => {
             namespace: generateRandomString(10),
             type: MessageType.UserMessage
         });
-
-        setLoading(true);
 
         const onClose = () => {
             setLoading(false);
