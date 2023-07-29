@@ -31,42 +31,35 @@ const ReactiveNotebook = () => {
 
     const handleDragEnd = (event) => {
         const {active, over} = event;
-        console.log("Drag end", event);
-
         if (!active || !over || active.id === over.id) return;
 
         const isActiveNotebook = clonedBlocks.findIndex(block => block.namespace === active.id) !== -1;
         const isOverNotebook = clonedBlocks.findIndex(block => block.namespace === over.id) !== -1;
 
+        // The block did originate from this notebook and is being moved within it
         if (isActiveNotebook && isOverNotebook) {
-            console.log("Moving block", active.id, "to", over.id);
             moveBlock(active.id, over.id);
         }
-        // if (isActiveNotebook && !isOverNotebook) {
-        //     console.log("Removing block", active.id);
-        //     removeBlock(active.id);
-        // }
-        // if (!isActiveNotebook && isOverNotebook) {
-        //     console.log("Adding block", active.id, "to", over.id);
-        //     addBlock(active.data.current.block, over.id);
-        // }
     }
 
     const handleOnDragOver = (event) => {
         const {active, over} = event;
-        console.log("Drag over", event);
-
         if (!active || !over || active.id === over.id) return;
 
         const isActiveNotebook = active.data.current.notebook.id === notebook.id;
         const isOverNotebook = over.data.current.notebook.id === notebook.id;
+        const otherContainer = clonedBlocks.findIndex(block => block.namespace === active.id) !== -1;
 
+        // The block did not originate from this notebook, but is being moved within it
+        if (otherContainer && isActiveNotebook && isOverNotebook) {
+            moveBlock(active.id, over.id);
+        }
+        // The block originated from this notebook, but is being dragged away
         if (isActiveNotebook && !isOverNotebook) {
-            console.log("Drag removing block", active.id);
             removeBlock(active.id);
         }
+        // The block did not originate from this notebook, but is being dragged into it
         if (!isActiveNotebook && isOverNotebook) {
-            console.log("Drag adding block", active.id, "to", over.id);
             addBlock(active.data.current.block(active.id), over.id);
         }
     }
@@ -109,7 +102,7 @@ const ReactiveNotebook = () => {
     return (
         <SortableContext
             id={notebook.id}
-            items={clonedBlocks.map(block => block.namespace)}
+            items={blocks.map(block => block.namespace)}
             strategy={verticalListSortingStrategy}
         >
             <div ref={setNodeRef} className={styles.dropzone}>

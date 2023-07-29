@@ -70,7 +70,7 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
         debounce((newBlocks, onChange) => {
             console.log("Saving blocks...", newBlocks);
             onChange(newBlocks);
-        }, 500) as (newBlocks: BlockData[], onChange: (newBlocks: BlockData[]) => void) => void, []);
+        }, 750) as (newBlocks: BlockData[], onChange: (newBlocks: BlockData[]) => void) => void, []);
 
     // This useEffect hook will be triggered whenever blocks changes.
     useEffect(() => {
