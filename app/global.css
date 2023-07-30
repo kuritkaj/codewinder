@@ -30,9 +30,9 @@
   --hovered-element-border: var(--amber-8);
 
   /** Subtle element backgrounds */
-  --selected-element-background: var(--amber-5);
-  --subtle-element-background: var(--amber-6);
-  --subtle-element-border: var(--slate-6);
+  --selected-element-background: var(--amber-6);
+  --subtle-element-background: var(--amber-5);
+  --subtle-element-border: var(--black-a7);
   --subtle-element-box-shadow: var(--black-a6);
 
   /** Special elements */

@@ -1,0 +1,101 @@
+.overlay {
+    background-color: var(--black-a9);
+    position: fixed;
+    inset: 0;
+    animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.content {
+    background-color: var(--card-background);
+    border-radius: 6px;
+    box-shadow: var(--card-box-shadow) 0 10px 38px -10px, var(--card-box-shadow) 0 10px 20px -15px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    max-width: 450px;
+    max-height: 85vh;
+    padding: 25px;
+    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.content:focus {
+    outline: none;
+}
+
+.title {
+    margin: 0;
+    font-weight: 500;
+    color: var(--low-contrast-text);
+    font-size: 1.1em;
+}
+
+.description {
+    margin: 10px 0 20px;
+    color: var(--low-contrast-text);
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+.closebutton {
+    padding: 6px;
+    flex-shrink: 0;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.fieldset {
+    all: unset;
+    display: flex;
+    gap: 1.4rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.label {
+    font-size: 15px;
+    color: var(--low-contrast-text);
+    width: 90px;
+    text-align: right;
+}
+
+.input {
+    all: unset;
+    width: 100%;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    padding: 0 10px;
+    font-size: 0.9em;
+    line-height: 1.5rem;
+    color: var(--high-contrast-text);
+    box-shadow: 0 0 0 1px var(--element-box-shadow);
+}
+
+.savebutton {
+    box-shadow: 0 0 0 1px var(--element-box-shadow);
+}
+
+@keyframes overlayShow {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes contentShow {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}

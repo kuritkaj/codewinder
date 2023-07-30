@@ -3,36 +3,31 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { ReactNode } from "react";
 import styles from "./DropDownMenu.module.css";
 
-interface MenuItem {
-    label: string;
+export type MenuItem = {
+    asChild?: boolean;
+    label: string | ReactNode;
     onSelect?: () => void;
     subItems?: MenuItem[];
 }
 
 type DropDownMenuProps = {
-    children: ReactNode;
+    children?: ReactNode;
     menuItems: MenuItem[];
 }
 
 const DropDownMenu = ({children, menuItems}: DropDownMenuProps) => {
     return (
         <DD.Root>
-            <DD.Trigger asChild>
-                {children}
-            </DD.Trigger>
+            {children && (
+                <DD.Trigger asChild>
+                    {children}
+                </DD.Trigger>
+            )}
             <DD.Portal>
                 <DD.Content className={styles.content}>
                     {menuItems.map((item, index) => (
                         <DD.Sub key={index}>
-                            {item.onSelect && (
-                                <DD.Item
-                                    className={styles.menuitem}
-                                    onSelect={item.onSelect}
-                                >
-                                    {item.label}
-                                </DD.Item>
-                            )}
-                            {item.subItems && (
+                            {item.subItems ? (
                                 <>
                                     <DD.SubTrigger className={styles.subtrigger}>
                                         {item.label} <ChevronRightIcon className={styles.rightslot} width={16} height={16}/>
@@ -55,6 +50,14 @@ const DropDownMenu = ({children, menuItems}: DropDownMenuProps) => {
                                         </DD.SubContent>
                                     </DD.Portal>
                                 </>
+                            ) : (
+                                <DD.Item
+                                    className={styles.menuitem}
+                                    onSelect={item.onSelect}
+                                    asChild={item.asChild}
+                                >
+                                    {item.label}
+                                </DD.Item>
                             )}
                         </DD.Sub>
                     ))}
@@ -67,44 +70,3 @@ const DropDownMenu = ({children, menuItems}: DropDownMenuProps) => {
 }
 
 export default DropDownMenu;
-
-// <DropDownMenu.Root>
-//     <DropDownMenu.Trigger asChild>
-//         <Button className={styles.trigger}><DotsVerticalIcon width={16} height={16}/></Button>
-//     </DropDownMenu.Trigger>
-//     <DropDownMenu.Portal>
-//         <DropDownMenu.Content className={styles.content}>
-//             <DropDownMenu.Sub>
-//                 <DropDownMenu.Item
-//                     className={styles.menuitem}
-//                     onSelect={handleOnInsertAbove}
-//                 >
-//                     Insert above
-//                 </DropDownMenu.Item>
-//                 <DropDownMenu.Item
-//                     className={styles.menuitem}
-//                     onSelect={handleOnInsertBelow}
-//                 >
-//                     Insert below
-//                 </DropDownMenu.Item>
-//                 <DropDownMenu.SubTrigger className={styles.subtrigger}>
-//                     Delete <ChevronRightIcon className={styles.rightslot} width={16} height={16}/>
-//                 </DropDownMenu.SubTrigger>
-//                 <DropDownMenu.Portal>
-//                     <DropDownMenu.SubContent
-//                         className={styles.subcontent}
-//                         sideOffset={10}
-//                         alignOffset={-4}
-//                     >
-//                         <DropDownMenu.Item
-//                             className={styles.menuitem}
-//                             onSelect={handleOnDelete}
-//                         >
-//                             Are you sure?
-//                         </DropDownMenu.Item>
-//                     </DropDownMenu.SubContent>
-//                 </DropDownMenu.Portal>
-//             </DropDownMenu.Sub>
-//         </DropDownMenu.Content>
-//     </DropDownMenu.Portal>
-// </DropDownMenu.Root>

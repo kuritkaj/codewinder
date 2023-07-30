@@ -75,6 +75,14 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
         }
     }
 
+    const renameStack = async (target, newName) => {
+        if (target && stack) {
+            const {error: e1} = await supabase.from("stacks").update({name: newName}).eq("id", target.id);
+            if (e1) logError(e1.message, e1);
+            router.refresh();
+        }
+    }
+
     const saveNotebook = async (notebook, blocks) => {
         if (notebook && stack) {
             const json = blocks as unknown as Json[];
@@ -86,7 +94,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
     return stack ? (
         <>
             <div className={styles.stacks}>
-                <StackPanel onDelete={deleteStack} stack={stack} stacks={stacks}/>
+                <StackPanel onDelete={deleteStack} onRename={renameStack} stack={stack} stacks={stacks}/>
             </div>
             <div className={styles.notebooks}>
                 <DndContext id={stack.id} collisionDetection={closestCenter}>
