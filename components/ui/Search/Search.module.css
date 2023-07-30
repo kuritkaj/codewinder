@@ -14,14 +14,15 @@
 .searchcontainer {
     position: relative;
     width: 100%;
-    max-width: 600px;
+    max-width: calc(600px + 3.5rem);
 }
 
 .searchinput {
+    all: unset;
     position: relative;
     width: 100%;
     resize: none;
-    padding: 1rem 2.5rem 1rem 1.5rem;
+    padding: 1rem 2.5rem 1rem 1rem;
     margin: 0;
     line-height: 1.5;
     outline: none;

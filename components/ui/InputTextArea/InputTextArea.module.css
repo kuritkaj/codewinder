@@ -66,6 +66,7 @@
 }
 
 .textarea {
+    all: unset;
     position: relative;
     width: 100%;
     resize: none;
