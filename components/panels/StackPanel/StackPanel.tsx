@@ -21,7 +21,9 @@ const StackPanel = ({onDelete, onRename, stack, stacks}: StackPanelProps) => {
     const createMenuItems = (targetStack) => {
         const menuItems: MenuItem[] = [];
         if (onRename) menuItems.push({label: "Rename", onSelect: () => openDialog(targetStack)});
-        if (onDelete) menuItems.push({label: "Delete", onSelect: () => handleDelete(targetStack)});
+        if (onDelete) menuItems.push({
+            label: "Delete", subItems: [{label: "Are you sure?", onSelect: () => handleDelete(targetStack)}]
+        });
         return menuItems;
     }
 
