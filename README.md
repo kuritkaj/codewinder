@@ -11,7 +11,7 @@ See the wiki for more detail and discussion.
 
 The server requires the following environment variables:
 - OPENAI_API_KEY - which can be found [here](https://platform.openai.com/account/api-keys).
-  (Notebook: you must have GPT4 access; GPT3.5 is not sufficient for a reliable agent.)
+  (Notebook: you must have GPT4 access; GPT4 is used for writing code)
 
 And optionally the following environment variables:
 - ZAPIER_NLA_API_KEY - which can be found [here](https://nla.zapier.com/docs/).
@@ -20,8 +20,9 @@ And optionally the following environment variables:
 - SUPABASE_API_KEY - which can be found [here](https://app.supabase.io/).
 
 Stack: 
+
 * without the Bing Search key, the search will use the Web Browser tool for searches, which is less efficient.
-* without the Supabase key, in-memory vectorstore is used to store memories in a local directory named .cache.
+* without the Supabase key, in-memory vectorstore is used and memories are not persisted between requests.
 * the Zapier NLA key is amazing! read more here: https://blog.langchain.dev/langchain-zapier-nla/
 
 ### Running the Server
@@ -48,6 +49,7 @@ With a few modest additions, most of this repo is based on the following repos:
 ### Supabase Setup
 
 Run this script to setup the supabase database:
+(This needs to be updated now with the latest release of stacks and notebooks).
 
 ```sql
 -- Enable the pgvector extension to work with embedding vectors

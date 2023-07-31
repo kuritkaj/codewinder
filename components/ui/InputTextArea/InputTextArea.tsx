@@ -1,3 +1,4 @@
+import Progress from "@/components/ui/common/Progress";
 import { PaperPlaneIcon } from "@radix-ui/react-icons";
 import Button from "components/ui/common/Button";
 import React, { useEffect, useRef } from "react";
@@ -17,6 +18,7 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
     handleSubmit,
     loading
 }) => {
+    const isSubmitting = useRef(false);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
     // Focus on text field on load
@@ -26,12 +28,14 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
 
     // Prevent blank submissions and allow for multiline input
     const handleEnter = async (e: any) => {
-        if (loading) return;
+        if (isSubmitting.current) return;
 
         if (e.key === "Enter" && userInput) {
             if (!e.shiftKey && userInput) {
                 e.preventDefault();
+                isSubmitting.current = true;
                 await handleSubmit(userInput);
+                isSubmitting.current = false;
             }
         } else if (e.key === "Enter") {
             e.preventDefault();
@@ -55,18 +59,16 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                 onChange={e => setUserInput(e.target.value)}
             />
             {loading ? (
-                <div className={styles.loading} aria-busy="true" aria-describedby="progress">
-                    <div id="progress" className={styles.progress}>
-                        <div className={styles.indicator}></div>
-                    </div>
-                </div>
+                <Progress width={200}/>
             ) : (
                 <Button
                     aria-label="Chat with AI"
                     className={styles.generate}
                     disabled={loading}
                     onClick={async () => {
+                        isSubmitting.current = true;
                         await handleSubmit(userInput);
+                        isSubmitting.current = false;
                     }}
                 >
                     <PaperPlaneIcon width={16} height={16}/>
