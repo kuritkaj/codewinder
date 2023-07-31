@@ -2,12 +2,12 @@ import Header from "@/components/ui/Header";
 import { Database } from "@/lib/types/Database";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import React, { ReactNode } from "react";
+import React from "react";
 import styles from "./layout.module.css";
 
 export const dynamic = "force-dynamic"; // Workaround for NextJS bug https://github.com/vercel/next.js/issues/49373
 
-export default async function StackLayout({children}: { children: ReactNode }) {
+export default async function StackLayout({children}) {
     const supabase = createServerComponentClient<Database>({cookies});
     const {data: {session}} = await supabase.auth.getSession();
 

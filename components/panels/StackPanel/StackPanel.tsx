@@ -65,39 +65,29 @@ const StackPanel = ({onDelete, onRename, stack, stacks}: StackPanelProps) => {
                                     </Link>
                                 </li>
                                 {stacks.map((sibling) => {
-                                    if (sibling.id === stack?.id) {
-                                        return (
-                                            <li key={sibling.id} className={styles.activeitem}>
+                                    const active = sibling.id === stack?.id
+                                    return (
+                                        <li key={sibling.id} className={active ? styles.activeitem : styles.listitem}>
+                                            {active ? (
                                                 <div className={styles.link}>
                                                     <ArrowRightIcon width={16} height={16}/>
                                                     <span>{sibling.name}</span>
                                                 </div>
-                                                <DropdownMenu menuItems={
-                                                    createMenuItems(sibling)
-                                                }>
-                                                    <Button id={sibling.id + "trigger"} className={styles.contextmenubutton}>
-                                                        <DotsVerticalIcon width={16} height={16}/>
-                                                    </Button>
-                                                </DropdownMenu>
-                                            </li>
-                                        );
-                                    } else {
-                                        return (
-                                            <li key={sibling.id} className={styles.listitem}>
+                                            ) : (
                                                 <Link className={styles.link} href={`/stacks/${sibling.id}`}>
                                                     <StackIcon width={16} height={16}/>
                                                     <span>{sibling.name}</span>
                                                 </Link>
-                                                <DropdownMenu menuItems={
-                                                    createMenuItems(sibling)
-                                                }>
-                                                    <Button id={sibling.id + "trigger"} className={styles.contextmenubutton}>
-                                                        <DotsVerticalIcon width={16} height={16}/>
-                                                    </Button>
-                                                </DropdownMenu>
-                                            </li>
-                                        );
-                                    }
+                                            )}
+                                            <DropdownMenu menuItems={
+                                                createMenuItems(sibling)
+                                            }>
+                                                <Button id={sibling.id + "trigger"} className={styles.contextmenubutton}>
+                                                    <DotsVerticalIcon width={16} height={16}/>
+                                                </Button>
+                                            </DropdownMenu>
+                                        </li>
+                                    );
                                 })}
                             </ul>
                         </>

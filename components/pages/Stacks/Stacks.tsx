@@ -33,10 +33,26 @@ const Stack = ({stacks}: StacksProps) => {
         }
     }
 
+    const deleteStack = async (target) => {
+        if (target) {
+            const {error: e1} = await supabase.from("stacks").delete().eq("id", target.id);
+            if (e1) logError(e1.message, e1);
+            router.refresh();
+        }
+    }
+
+    const renameStack = async (target, newName) => {
+        if (target) {
+            const {error: e1} = await supabase.from("stacks").update({name: newName}).eq("id", target.id);
+            if (e1) logError(e1.message, e1);
+            router.refresh();
+        }
+    }
+
     return (
         <>
             <div className={styles.stacks}>
-                <StackPanel stacks={stacks}/>
+                <StackPanel onDelete={deleteStack} onRename={renameStack} stacks={stacks}/>
             </div>
             <div className={styles.search}>
                 <Search handleSubmit={createStack}/>
