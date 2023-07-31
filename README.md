@@ -5,8 +5,6 @@ a multistep agent which provides a way for the chat to break down an action into
 and short-term memory for coordination between steps of a multi-step action.
 
 ## Overview
-![codewinder overview.png](./lib/intelligence/react/codewinder-overview.png)
-
 See the wiki for more detail and discussion.
 
 ## Getting Started
