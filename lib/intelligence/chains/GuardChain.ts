@@ -24,7 +24,7 @@ export class GuardChain extends LLMChain {
         });
 
         if (remainingTokens < 0) {
-            return {[this.outputKey]: "Your input exceeds the maximum number of tokens for this model."}
+            return {[this.outputKey]: `Your input exceeds the maximum number of tokens for this model by ${remainingTokens * -1}.`}
         } else {
             return super.call(values, callbacks);
         }

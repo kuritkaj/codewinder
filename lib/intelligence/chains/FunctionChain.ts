@@ -1,9 +1,10 @@
 // Copied from langchain/src/chains/openai_functions/index.ts.
 
+import { calculateRemainingTokens } from "@/lib/util/tokens";
 import { CallbackManagerForChainRun } from "langchain/callbacks";
 import { LLMChain, LLMChainInput } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { BaseMessage, ChainValues } from "langchain/schema";
+import { AIMessage, BaseMessage, ChainValues } from "langchain/schema";
 import { StructuredTool, Tool } from "langchain/tools";
 
 export interface FunctionChainInput extends LLMChainInput<BaseMessage, ChatOpenAI> {
@@ -46,12 +47,23 @@ export class FunctionChain extends LLMChain<BaseMessage, ChatOpenAI> {
             arguments: "",
         });
 
-        const message = await this.llm.predictMessages(
-            messages,
-            valuesForLLM,
-            runManager?.getChild()
-        );
+        const prompt = await this.prompt.format(values);
 
-        return {[this.outputKey]: message};
+        const remainingTokens = await calculateRemainingTokens({
+            prompt,
+            model: this.llm
+        });
+
+        if (remainingTokens < 0) {
+            return {[this.outputKey]: new AIMessage(`Your input exceeds the maximum number of tokens for this model by ${remainingTokens * -1}.`)}
+        } else {
+            const message = await this.llm.predictMessages(
+                messages,
+                valuesForLLM,
+                runManager?.getChild()
+            );
+
+            return {[this.outputKey]: message};
+        }
     }
 }
