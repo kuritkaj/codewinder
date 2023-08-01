@@ -22,7 +22,7 @@ import {
 import { $isParagraphNode, $isTextNode, LexicalNode } from "lexical";
 
 // Very primitive table setup
-const TABLE_ROW_REG_EXP = /^\|(.+)\|\s?$/; // was: /^(?:\|)(.+)(?:\|)\s?$/;
+const TABLE_ROW_REG_EXP = /^\|(.+)\|\s?$/;
 const TABLE_ROW_DIVIDER_REG_EXP = /^(\| ?:?-*:? ?)+\|\s?$/;
 
 export const TABLE: ElementTransformer = {
