@@ -1,12 +1,13 @@
-import { BlockData, PartialBlockData } from "@/lib/types/BlockData";
+import { BlockData, PartialBlockData, PersistableBlockData } from "@/lib/types/BlockData";
 import { NotebookData } from "@/lib/types/DatabaseData";
 import { debounce } from "@/lib/util/debounce";
+import { generateRandomString } from "@/lib/util/random";
 import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 type SubscribeFunction = (block: BlockData) => void;
 
 type NotebookContextProps = {
-    addBlock: (addition: BlockData, namespace?: string, before?: boolean) => void;
+    addBlock: (addition: PersistableBlockData, namespace?: string, before?: boolean) => void;
     appendToBlock: (partial: PartialBlockData) => void;
     blocks: BlockData[];
     getBlock: (namespace: string) => BlockData | undefined;
@@ -85,8 +86,15 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [blocks]);
 
-    const addBlock = useCallback((addition: BlockData, namespace?: string, before: boolean = false) => {
+    // This is to support clearing the blocks when the notebook changes.
+    useEffect(() => {
+        setBlocks(initBlocks || []);
+    }, [initBlocks]);
+
+    const addBlock = useCallback((addition: PersistableBlockData, namespace?: string, before: boolean = false) => {
         if (!addition) return;
+
+        if (!addition?.namespace) addition.namespace = generateRandomString(10);
 
         setBlocks(prevBlocks => {
             let newBlocks = [...prevBlocks];
@@ -94,16 +102,16 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
                 const index = newBlocks.findIndex(block => block.namespace === namespace);
                 if (index !== -1) {
                     if (before) {
-                        newBlocks.splice(index, 0, addition); // Insert before the block
+                        newBlocks.splice(index, 0, addition as BlockData); // Insert before the block
                     } else {
-                        newBlocks.splice(index + 1, 0, addition); // Insert after the block
+                        newBlocks.splice(index + 1, 0, addition as BlockData); // Insert after the block
                     }
                     return newBlocks;
                 }
             }
 
             // If the namespace is not provided or not found, simply append the new block to the end
-            newBlocks.push(addition);
+            newBlocks.push(addition as BlockData);
             return newBlocks;
         });
     }, []);

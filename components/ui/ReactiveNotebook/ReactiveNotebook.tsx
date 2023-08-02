@@ -1,6 +1,7 @@
 import useNotebook from "@/components/context/useNotebook";
 import ReactiveBlock from "@/components/ui/ReactiveBlock";
 import { BlockData } from "@/lib/types/BlockData";
+import { MessageType } from "@/lib/types/MessageType";
 import { useDndMonitor, useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import React, { useEffect, useRef, useState } from "react";
@@ -24,6 +25,14 @@ const ReactiveNotebook = () => {
 
     const {addBlock, blocks, moveBlock, notebook, removeBlock, resetBlocks} = useNotebook();
     const [clonedBlocks, setClonedBlocks] = useState<BlockData[]>([...blocks]);
+
+    const handleAddDefaultBlock = () => {
+        addBlock({
+            editable: true,
+            markdown: "",
+            type: MessageType.UserMessage
+        });
+    }
 
     const handleDragCancel = () => {
         resetBlocks(clonedBlocks);
@@ -116,7 +125,8 @@ const ReactiveNotebook = () => {
                             />;
                         })
                     ) : (
-                        <div className={styles.placeholder}>{getGreeting()}</div>
+                        <div className={styles.placeholder}>{getGreeting()} <a className={styles.initblock} onClick={handleAddDefaultBlock}>Start
+                            writing</a></div>
                     )}
                 </div>
             </div>

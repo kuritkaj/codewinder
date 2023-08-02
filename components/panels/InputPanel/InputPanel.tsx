@@ -30,7 +30,6 @@ const InputPanel = ({defaultInput = ""}: InputPanelProps) => {
         addBlock({
             editable: false,
             markdown: objective,
-            namespace: generateRandomString(10),
             type: MessageType.UserMessage
         });
 

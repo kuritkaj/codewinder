@@ -37,6 +37,14 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
         }
     }, [stack]);
 
+    const clearNotebook = async (notebook) => {
+        if (notebook && stack) {
+            const {error: e1} = await supabase.from("notebooks").update({blocks: []}).eq("id", notebook.id);
+            if (e1) logError(e1.message, e1);
+            router.refresh();
+        }
+    }
+
     const createNotebook = async () => {
         if (stack) {
             const {data: notebook, error: e1} = await supabase.from("notebooks").insert({stack_id: stack.id}).select().maybeSingle();
@@ -106,9 +114,16 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
                         return (
                             <div key={notebook.id} className={styles.notebook}>
                                 <SettingsProvider>
-                                    <SettingsPanel notebook={notebook} onDelete={() => deleteNotebook(notebook)}/>
-                                    <NotebookProvider initBlocks={blocks} notebook={notebook}
-                                                      onChange={(newBlocks) => saveNotebook(notebook, newBlocks)}>
+                                    <NotebookProvider
+                                        initBlocks={blocks}
+                                        notebook={notebook}
+                                        onChange={(newBlocks) => saveNotebook(notebook, newBlocks)}
+                                    >
+                                        <SettingsPanel
+                                            notebook={notebook}
+                                            onClear={() => clearNotebook(notebook)}
+                                            onDelete={() => deleteNotebook(notebook)}
+                                        />
                                         <NotebookPanel/>
                                         <InputPanel defaultInput={
                                             !blocks || blocks.length === 0 ? stack?.name || "" : ""

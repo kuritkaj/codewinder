@@ -3,7 +3,6 @@ import useNotebook from "@/components/context/useNotebook";
 import Button from "@/components/ui/common/Button";
 import DropdownMenu from "@/components/ui/common/DropDownMenu";
 import { MessageType } from "@/lib/types/MessageType";
-import { generateRandomString } from "@/lib/util/random";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import styles from "./ContextMenuPlugin.module.css";
 
@@ -19,7 +18,6 @@ const ContextMenuPlugin = () => {
         addBlock({
             editable: true,
             markdown: "",
-            namespace: generateRandomString(10),
             type: MessageType.UserMessage
         }, namespace, true);
     }
@@ -28,7 +26,6 @@ const ContextMenuPlugin = () => {
         addBlock({
             editable: true,
             markdown: "",
-            namespace: generateRandomString(10),
             type: MessageType.UserMessage
         }, namespace, false);
     }

@@ -7,11 +7,16 @@ import styles from "./SettingsPanel.module.css";
 
 type SettingsProps = {
     notebook: NotebookData;
+    onClear: () => void;
     onDelete: () => void;
 }
 
-const SettingsPanel = ({notebook, onDelete}: SettingsProps) => {
+const SettingsPanel = ({notebook, onClear, onDelete}: SettingsProps) => {
     const {setUsePower, usePower} = useSettings();
+
+    const handleOnClear = () => {
+        if (onClear) onClear();
+    }
 
     const handleOnDelete = () => {
         if (onDelete) onDelete();
@@ -23,11 +28,15 @@ const SettingsPanel = ({notebook, onDelete}: SettingsProps) => {
 
     const menuItems = [
         {
+            label: "Clear notebook",
+            onSelect: onClear,
+        },
+        {
             label: "Delete notebook",
             subItems: [
                 {
                     label: "Are you sure?",
-                    onSelect: handleOnDelete
+                    onSelect: handleOnDelete,
                 }
             ]
         }
