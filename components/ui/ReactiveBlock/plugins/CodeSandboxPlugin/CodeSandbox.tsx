@@ -152,6 +152,8 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
                 <CodeSandboxControls
                     className={styles.controls}
                     language={language}
+                    showConsole={showConsole}
+                    showPreview={showPreview}
                     toggleConsole={toggleConsole}
                     togglePreview={togglePreview}
                 />
