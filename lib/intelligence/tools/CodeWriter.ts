@@ -22,7 +22,7 @@ This is the code specification (use natural language to describe the requirement
 
 You have access to the following libraries (which must be imported as modules):
 ${ CodeSandboxDependencies.map((dep) => {
-        return `- ${dep}`;
+        return `- ${dep[0]}`;
     }).join("\n") }
 
 Notes:

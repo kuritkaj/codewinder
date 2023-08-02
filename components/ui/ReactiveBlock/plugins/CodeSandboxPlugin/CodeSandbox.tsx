@@ -94,7 +94,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
         <SandpackProvider
             customSetup={{
                 dependencies: CodeSandboxDependencies.reduce((acc, dep) => {
-                    acc[dep] = "latest";
+                    acc[dep[0]] = dep[1];
                     return acc;
                 }, {}),
             }}
@@ -115,6 +115,7 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
             options={{
                 recompileMode: "delayed",
                 recompileDelay: 1000,
+                bundlerTimeOut: 10000,
             }}
             template={language as SandpackPredefinedTemplate}
             theme={theme}

@@ -2,7 +2,7 @@ export const CodeSandboxDependencies = [
     // "analytics-node",
     // "axios",
     // "brain.js",
-    "chart.js",
+    ["chart.js", "latest"],
     // "exceljs",
     // "jest",
     // "joi",
