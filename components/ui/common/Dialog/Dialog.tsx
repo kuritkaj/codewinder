@@ -40,6 +40,16 @@ const Dialog = ({fields, children, open: controlled = false, onClose, onSave, ti
         setOpen(controlled);
     }, [controlled]);
 
+    // Prevent blank submissions and allow for multiline input
+    const handleEnter = async (e: any) => {
+        if (e.key === "Enter") {
+            if (!e.shiftKey) {
+                handleSave();
+                if (onClose) onClose();
+            }
+        }
+    };
+
     const handleInputChange = (id: string, value: string) => {
         setFieldValues(prev => ({
             ...prev,
@@ -78,6 +88,7 @@ const Dialog = ({fields, children, open: controlled = false, onClose, onSave, ti
                             <TextareaAutosize
                                 className={styles.input}
                                 id={field.id}
+                                onKeyDown={handleEnter}
                                 value={fieldValues[field.id]}
                                 minRows={1}
                                 maxRows={3}
