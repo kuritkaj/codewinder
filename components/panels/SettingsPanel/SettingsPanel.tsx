@@ -23,7 +23,7 @@ const SettingsPanel = ({notebook, onDelete}: SettingsProps) => {
 
     const menuItems = [
         {
-            label: "Delete",
+            label: "Delete notebook",
             subItems: [
                 {
                     label: "Are you sure?",

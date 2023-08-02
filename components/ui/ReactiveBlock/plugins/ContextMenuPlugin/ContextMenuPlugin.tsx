@@ -35,15 +35,15 @@ const ContextMenuPlugin = () => {
 
     const menuItems = [
         {
-            label: "Insert above",
+            label: "Insert block above",
             onSelect: handleOnInsertAbove
         },
         {
-            label: "Insert below",
+            label: "Insert block below",
             onSelect: handleOnInsertBelow
         },
         {
-            label: "Delete",
+            label: "Delete block",
             subItems: [
                 {
                     label: "Are you sure?",
