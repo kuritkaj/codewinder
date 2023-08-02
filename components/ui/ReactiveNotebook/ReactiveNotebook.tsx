@@ -126,7 +126,7 @@ const ReactiveNotebook = () => {
                         })
                     ) : (
                         <div className={styles.placeholder}>{getGreeting()} <a className={styles.initblock} onClick={handleAddDefaultBlock}>Start
-                            writing</a></div>
+                            writing...</a></div>
                     )}
                 </div>
             </div>
