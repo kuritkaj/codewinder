@@ -7,11 +7,11 @@ import React, { createContext, ReactNode, useCallback, useEffect, useRef, useSta
 type SubscribeFunction = (block: BlockData) => void;
 
 type NotebookContextProps = {
-    addBlock: (addition: PersistableBlockData, namespace?: string, before?: boolean) => void;
+    addBlock: (addition: PersistableBlockData, target?: string, before?: boolean) => void;
     appendToBlock: (partial: PartialBlockData) => void;
     blocks: BlockData[];
-    getBlock: (namespace: string) => BlockData | undefined;
-    getContents: () => string[][];
+    getBlock: (target: string) => BlockData | undefined;
+    getContents: (until?: string) => string[][];
     moveBlock: (source: string, destination: string) => void;
     notebook: NotebookData;
     removeBlock: (namespace: string) => void;
@@ -91,15 +91,15 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
         setBlocks(initBlocks || []);
     }, [initBlocks]);
 
-    const addBlock = useCallback((addition: PersistableBlockData, namespace?: string, before: boolean = false) => {
+    const addBlock = useCallback((addition: PersistableBlockData, target?: string, before: boolean = false) => {
         if (!addition) return;
 
         if (!addition?.namespace) addition.namespace = generateRandomString(10);
 
         setBlocks(prevBlocks => {
             let newBlocks = [...prevBlocks];
-            if (namespace) {
-                const index = newBlocks.findIndex(block => block.namespace === namespace);
+            if (target) {
+                const index = newBlocks.findIndex(block => block.namespace === target);
                 if (index !== -1) {
                     if (before) {
                         newBlocks.splice(index, 0, addition as BlockData); // Insert before the block
@@ -140,8 +140,10 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
         return blocks.find(block => block.namespace === namespace);
     }, [blocks]); // This avoids unnecessary re-renders in notebooks and blocks
 
-    const getContents = useCallback(() => {
-        return blocks.map(block => {
+    const getContents = useCallback((until?: string) => {
+        const index = until ? blocks.findIndex(block => block.namespace === until) : -1;
+        let subBlocks = index !== -1 ? blocks.slice(0, index) : blocks;
+        return subBlocks.map(block => {
             return [block.markdown, block.type];
         });
     }, [blocks]);

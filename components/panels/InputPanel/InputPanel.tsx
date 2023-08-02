@@ -70,13 +70,13 @@ const InputPanel = ({defaultInput = ""}: InputPanelProps) => {
             objective,
             onClose,
             onError: (error) => {
-                onError({markdown: error.message, namespace})
+                onError({markdown: error.message, namespace});
             },
             onOpen: () => {
-                onOpen({markdown: "", namespace})
+                onOpen({markdown: "", namespace});
             },
             onMessage: (message) => {
-                onMessage({markdown: message, namespace})
+                onMessage({markdown: message, namespace});
             },
             usePower
         });
