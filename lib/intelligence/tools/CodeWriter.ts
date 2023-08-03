@@ -47,7 +47,6 @@ your task is to reply with a code block with one of the following languages:
 - html or xml or svg or mathml or ssml or atom or rss
 - javascript or js
 - markdown
-- react or jsx or tsx
 - typescript or ts
 `;
 
