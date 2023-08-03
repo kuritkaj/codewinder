@@ -42,7 +42,7 @@ document.getElementById("app").innerHTML = "<h1>Hello world</h1>";
 \`\`\`
 
 Now, based on the natural language description, 
-your task is to reply with a code block with one of the following languages:
+your task is to reply with a code block to run a web browser with one of the following languages:
 - css
 - html or xml or svg or mathml or ssml or atom or rss
 - javascript or js
