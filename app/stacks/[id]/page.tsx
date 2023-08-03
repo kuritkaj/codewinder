@@ -6,7 +6,7 @@ import Stack from "components/pages/Stack";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic"; // Workaround for NextJS bug https://github.com/vercel/next.js/issues/49373
+export const dynamic = "force-dynamic";
 
 type StackPageProps = {
     params: {
