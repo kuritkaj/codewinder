@@ -31,7 +31,7 @@ export default async function StackPage({params: {id}}: StackPageProps) {
 
     const [stack, stacks, notebooks] = await Promise.all([
         supabase.from("stacks").select().eq("id", id).maybeSingle(),
-        supabase.from("stacks").select(),
+        supabase.from("stacks").select().order("created_at", {ascending: true}),
         supabase.from("notebooks").select().eq("stack_id", id).order("created_at", {ascending: true}),
     ]);
 
