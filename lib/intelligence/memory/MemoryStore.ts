@@ -1,12 +1,12 @@
 import { Metadata } from "@/lib/types/Document";
 import { getEmbeddingContextSize } from "@/lib/util/tokens";
-import { createClient } from "@supabase/supabase-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 import { VectorStore } from "langchain/dist/vectorstores/base";
 import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { RecursiveCharacterTextSplitter, TextSplitter, TokenTextSplitter } from "langchain/text_splitter";
-import { SupabaseVectorStore } from "langchain/vectorstores";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 
 export class MemoryStore {
     private readonly index: string;
@@ -29,19 +29,10 @@ export class MemoryStore {
         });
     }
 
-    public static async makeDurableStore(index: string, embeddings: OpenAIEmbeddings) {
-        const supabaseApiKey = process.env.SUPABASE_API_KEY;
-        const supabaseUrl = process.env.SUPABASE_URL;
-
-        if (typeof supabaseApiKey === 'string' && supabaseApiKey.length > 0 &&
-            typeof supabaseUrl === 'string' && supabaseUrl.length > 0) {
-            const client = createClient(supabaseUrl, supabaseApiKey, {
-                auth: {
-                    persistSession: false
-                },
-            });
+    public static async makeDurableStore(index: string, embeddings: OpenAIEmbeddings, supabase?: SupabaseClient) {
+        if (supabase) {
             const vectorStore = await SupabaseVectorStore.fromExistingIndex(embeddings, {
-                client,
+                client: supabase,
                 tableName: index,
                 queryName: `match_${index}`,
             });

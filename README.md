@@ -52,26 +52,71 @@ Run this script to setup the supabase database:
 (This needs to be updated now with the latest release of stacks and notebooks).
 
 ```sql
+-- Create stack table
+create table stacks
+(
+    id         uuid                     default gen_random_uuid() not null
+        primary key,
+    created_at timestamp with time zone default now(),
+    updated_at timestamp with time zone default now(),
+    owner_id   uuid                     default auth.uid(),
+    name       text,
+    notebooks  uuid[]
+);
+
+create policy "Enable all access for owners" on stacks
+    as permissive
+    for all
+    to authenticated
+    using (auth.uid() = owner_id);
+    
+-- Create notebook table
+create table notebooks
+(
+    id         uuid                     default gen_random_uuid() not null
+        constraint notes_pkey
+        primary key,
+    created_at timestamp with time zone default now(),
+    updated_at timestamp with time zone default now(),
+    owner_id   uuid                     default auth.uid(),
+    stack_id   uuid                                               not null,
+    blocks     jsonb
+);
+
+create policy "Enable all access for owners" on notebooks
+    as permissive
+    for all
+    to authenticated
+    using (auth.uid() = owner_id);
+
 -- Enable the pgvector extension to work with embedding vectors
 create extension vector;
 
 -- Create a table to store your memories
 create table memories (
-  id bigserial primary key,
-  content text, -- corresponds to Langchain's Document.pageContent
-  metadata jsonb, -- corresponds to Langchain's Document.metadata
-  embedding vector(1536) -- 1536 works for OpenAI embeddings, change if needed
+  id           bigserial primary key,
+  owner_id     uuid                     default auth.uid(),
+  content      text,                    -- corresponds to Langchain's Document.pageContent
+  metadata     jsonb,                   -- corresponds to Langchain's Document.metadata
+  embedding    vector(1536)             -- 1536 works for OpenAI embeddings, change if needed
 );
+
+create policy "Enable all access for owners" on memories
+    as permissive
+    for all
+    to authenticated
+    using (auth.uid() = owner_id);
 
 -- Create a function to search for memories
 create function match_memories (
   query_embedding vector(1536),
-  match_count int
+  match_count int,
+  filter jsonb DEFAULT '{}'
 ) returns table (
-  id bigint,
-  content text,
-  metadata jsonb,
-  similarity float
+  id           bigint,
+  content      text,
+  metadata     jsonb,
+  similarity   float
 )
 language plpgsql
 as $$
@@ -84,6 +129,7 @@ begin
     metadata,
     1 - (memories.embedding <=> query_embedding) as similarity
   from memories
+  where metadata @> filter
   order by memories.embedding <=> query_embedding
   limit match_count;
 end;
@@ -91,21 +137,29 @@ $$;
 
 -- Create a table to store your documents
 create table knowledge (
-  id bigserial primary key,
-  content text, -- corresponds to Langchain's Document.pageContent
-  metadata jsonb, -- corresponds to Langchain's Document.metadata
-  embedding vector(1536) -- 1536 works for OpenAI embeddings, change if needed
+  id           bigserial primary key,
+  owner_id     uuid                     default auth.uid(),
+  content      text,                    -- corresponds to Langchain's Document.pageContent
+  metadata     jsonb,                   -- corresponds to Langchain's Document.metadata
+  embedding    vector(1536)             -- 1536 works for OpenAI embeddings, change if needed
 );
+
+create policy "Enable all access for owners" on knowledge
+    as permissive
+    for all
+    to authenticated
+    using (auth.uid() = owner_id);
 
 -- Create a function to search for knowledge
 create function match_knowledge (
   query_embedding vector(1536),
-  match_count int
+  match_count int,
+  filter jsonb DEFAULT '{}'
 ) returns table (
   id bigint,
-  content text,
-  metadata jsonb,
-  similarity float
+  content      text,
+  metadata     jsonb,
+  similarity   float
 )
 language plpgsql
 as $$
@@ -118,6 +172,7 @@ begin
     metadata,
     1 - (knowledge.embedding <=> query_embedding) as similarity
   from knowledge
+  where metadata @> filter
   order by knowledge.embedding <=> query_embedding
   limit match_count;
 end;
@@ -125,16 +180,24 @@ $$;
 
 -- Create a table to store your code/functions
 create table code (
-  id bigserial primary key,
-  content text, -- corresponds to Langchain's Document.pageContent
-  metadata jsonb, -- corresponds to Langchain's Document.metadata
-  embedding vector(1536) -- 1536 works for OpenAI embeddings, change if needed
+  id           bigserial primary key,
+  owner_id     uuid                     default auth.uid(),
+  content      text,                    -- corresponds to Langchain's Document.pageContent
+  metadata     jsonb,                   -- corresponds to Langchain's Document.metadata
+  embedding    vector(1536)             -- 1536 works for OpenAI embeddings, change if needed
 );
+
+create policy "Enable all access for owners" on code
+    as permissive
+    for all
+    to authenticated
+    using (auth.uid() = owner_id);
 
 -- Create a function to search for code
 create function match_code (
   query_embedding vector(1536),
-  match_count int
+  match_count int,
+  filter jsonb DEFAULT '{}'
 ) returns table (
   id bigint,
   content text,
@@ -152,6 +215,7 @@ begin
     metadata,
     1 - (code.embedding <=> query_embedding) as similarity
   from code
+  where metadata @> filter
   order by code.embedding <=> query_embedding
   limit match_count;
 end;

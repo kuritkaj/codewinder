@@ -1,7 +1,7 @@
 // Modified from: https://github.com/hwchase17/langchainjs/blob/main/langchain/src/tools/webbrowser.ts
 
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 import { BaseLanguageModel } from "langchain/base_language";
 import { CallbackManagerForToolRun } from "langchain/callbacks";
 import { Embeddings } from "langchain/embeddings";
@@ -9,7 +9,7 @@ import { StringPromptValue } from "langchain/prompts";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { StructuredTool, ToolParams } from "langchain/tools";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import PDFParse from "pdf-parse";
+import * as pdf from "pdf-parse/lib/pdf.js/v1.10.100/build/pdf.js";
 import { z } from "zod";
 
 export const NAME = "browser";
@@ -50,17 +50,10 @@ const getContent = async (
 };
 
 async function getPdf(content: Blob): Promise<{ text: string, title: string }> {
-    const parsePdf = async (): Promise<ArrayBuffer> => {
-        try {
-            return await content.arrayBuffer();
-        } catch (error) {
-            throw new Error("Failed to read Blob as ArrayBuffer.");
-        }
-    };
-
     try {
-        const buffer = await parsePdf();
-        const pdfData = await PDFParse(Buffer.from(buffer));
+        const arrayBuffer = await content.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const pdfData = await pdf(buffer);
         const pdfExtract = pdfData.text;
         const pdfTitle = pdfData.info.Title || "Untitled";
 

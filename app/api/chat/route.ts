@@ -1,10 +1,11 @@
-// Based on: https://github.com/sullivan-sean/chat-langchainjs/blob/main/pages/api/chat-stream.ts
-
 import { makeChain } from "@/lib/intelligence/makeChain";
+import { Database } from "@/lib/types/Database";
 import { LangchainStream } from "@/lib/util/LangchainStream";
-import { streamToResponse } from "ai";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { StreamingTextResponse } from "ai";
 import { OpenAIModerationChain } from "langchain/chains";
-import { NextApiHandler } from "next";
+import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
 
 type ServiceOptions = {
     context?: [string, string][];
@@ -12,9 +13,10 @@ type ServiceOptions = {
     usePower?: boolean;
 }
 
-const Service: NextApiHandler = async (req, res) => {
+export async function POST(request: NextRequest) {
     // context should be an array of "[message, type]" pairs, where type is "apimessage" or "usermessage"
-    const {context, objective, usePower}: ServiceOptions = await req.body;
+    const {context, objective, usePower}: ServiceOptions = await request.json();
+    const supabase = createRouteHandlerClient<Database>({cookies});
 
     const openAiApiKey = process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
@@ -33,7 +35,9 @@ const Service: NextApiHandler = async (req, res) => {
         await moderation.run(objective);
 
         const chain = await makeChain({
-            callbacks: [handlers], usePower
+            callbacks: [handlers],
+            supabase,
+            usePower
         });
 
         handlers.sendData("Thinking...").then();
@@ -49,14 +53,13 @@ const Service: NextApiHandler = async (req, res) => {
             await handlers.sendClear();
             await handlers.sendError(error);
             await handlers.closeStream();
-        })
+        });
 
-        return streamToResponse(stream, res);
+        // Respond with the stream
+        return new StreamingTextResponse(stream)
     } catch (error: any) {
         await handlers.sendClear();
         await handlers.sendError(error);
         await handlers.closeStream();
     }
 }
-
-export default Service;

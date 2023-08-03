@@ -7,6 +7,7 @@ import { CodeWriter } from "@/lib/intelligence/tools/CodeWriter";
 import { PlanAndSolve } from "@/lib/intelligence/tools/PlanAndSolve";
 import { WebBrowser } from "@/lib/intelligence/tools/WebBrowser";
 import { WebSearch } from "@/lib/intelligence/tools/WebSearch";
+import { SupabaseClient } from "@supabase/supabase-js";
 import { Callbacks } from "langchain/callbacks";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
@@ -14,10 +15,11 @@ import { StructuredTool } from "langchain/tools";
 
 type makeChainOptions = {
     callbacks: Callbacks;
+    supabase?: SupabaseClient;
     usePower?: boolean
 }
 
-export const makeChain = async ({callbacks, usePower = false}: makeChainOptions): Promise<ReActExecutor> => {
+export const makeChain = async ({callbacks, supabase, usePower = false}: makeChainOptions): Promise<ReActExecutor> => {
     const openAiApiKey = process.env.OPENAI_API_KEY;
     if (!Boolean(openAiApiKey)) {
         throw new Error("OpenAI API Key not set.");
@@ -73,9 +75,9 @@ export const makeChain = async ({callbacks, usePower = false}: makeChainOptions)
     });
 
     const embeddings = new OpenAIEmbeddings({openAIApiKey: openAiApiKey});
-    const memories = await MemoryStore.makeDurableStore("memories", embeddings);
-    const knowledge = await MemoryStore.makeDurableStore("knowledge", embeddings);
-    const code = await MemoryStore.makeDurableStore("code", embeddings);
+    const memories = await MemoryStore.makeDurableStore("memories", embeddings, supabase);
+    const knowledge = await MemoryStore.makeDurableStore("knowledge", embeddings, supabase);
+    const code = await MemoryStore.makeDurableStore("code", embeddings, supabase);
 
     const tools: StructuredTool[] = [
         new WebBrowser({callbacks, embeddings, model: capable, store: knowledge}),

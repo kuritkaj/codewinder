@@ -67,7 +67,7 @@ Code:
 
 export interface CodeExecutorParams extends ToolParams {
     model: BaseLanguageModel;
-    store: MemoryStore;
+    store?: MemoryStore;
 }
 
 export class CodeEvaluator extends StructuredTool {
@@ -79,7 +79,7 @@ export class CodeEvaluator extends StructuredTool {
     }).transform((obj) => obj.input);
 
     private readonly llmChain: LLMChain;
-    private readonly store: MemoryStore;
+    private readonly store?: MemoryStore;
 
     constructor({model, store, verbose, callbacks}: CodeExecutorParams) {
         super({verbose, callbacks});
@@ -108,7 +108,7 @@ export class CodeEvaluator extends StructuredTool {
         const vmEnvironmentKeys = Object.keys(vmEnvironmentVariables).join(", ");
 
         // Retrieve a similar example from memory.
-        const memory = await this.store.retrieve(specification, 1);
+        const memory = this.store && await this.store.retrieve(specification, 1);
         const example = memory && memory.length > 0 ? memory[0].pageContent : "No example found.";
 
         // Generate JavaScript code from the natural language description.
@@ -134,16 +134,20 @@ export class CodeEvaluator extends StructuredTool {
             const result = await output;
 
             // store this program for future reference
-            await this.store.storeTexts([code], {
-                specification: specification
-            }); // async
+            if (this.store) {
+                await this.store.storeTexts([code], {
+                    specification: specification
+                });
+            }
 
             return result || "No results returned.";
         } catch (error) {
             // store this program for future reference
-            await this.store.storeTexts([`${code}\n\nThe prior code errored with this message: ${error.message}`], {
-                specification: specification
-            })
+            if (this.store) {
+                await this.store.storeTexts([`${code}\n\nThe prior code errored with this message: ${error.message}`], {
+                    specification: specification
+                })
+            }
 
             return JSON.stringify({error: error.message});
         }
