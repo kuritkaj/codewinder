@@ -2,6 +2,7 @@ export const CodeSandboxDependencies = [
     ["axios", "^1.4.0"],
     ["brain.js", "^2.0.0-beta.23"],
     ["chart.js", "^4.3.3"],
+    ["cheerio", "^1.0.0-rc.12"],
     ["d3", "^7.8.5"],
     ["exceljs", "^4.3.0"],
     ["jest", "^29.6.2"],
