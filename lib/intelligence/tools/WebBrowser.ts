@@ -26,7 +26,7 @@ const getContent = async (
     headers["Host"] = domain;
     headers["Alt-Used"] = domain;
 
-    let response;
+    let response: Response;
     try {
         response = await fetch(baseUrl, {
             method: "GET",
@@ -40,9 +40,9 @@ const getContent = async (
     }
 
     const contentType = response.headers.get("content-type");
-    if (contentType.includes("text/html")) {
+    if (contentType?.includes("text/html")) {
         return await response.text();
-    } else if (contentType.includes("application/pdf")) {
+    } else if (contentType?.includes("application/pdf")) {
         return await response.blob();
     } else {
         throw new Error("Unsupported content type.");
@@ -55,7 +55,7 @@ async function getPdf(content: Blob): Promise<{ text: string, title: string }> {
         const buffer = Buffer.from(arrayBuffer);
         const pdfData = await pdf(buffer);
         const pdfExtract = pdfData.text;
-        const pdfTitle = pdfData.info.Title || "Untitled";
+        const pdfTitle = pdfData.info.title || "Untitled";
 
         return {
             title: pdfTitle,
@@ -171,8 +171,8 @@ export class WebBrowser extends StructuredTool {
 
         const doSummary = !task;
 
-        let text;
-        let title;
+        let text: string;
+        let title: string;
         try {
             const content = await getContent(baseUrl, this.headers);
             if (content instanceof Blob) {
@@ -201,7 +201,7 @@ export class WebBrowser extends StructuredTool {
         const texts = await textSplitter.splitText(text);
 
         const limit = 10;
-        let context;
+        let context: string;
         // if we want a summary grab first 6
         if (doSummary) {
             context = texts.slice(0, limit).join("\n");
