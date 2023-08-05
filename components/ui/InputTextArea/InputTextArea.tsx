@@ -34,7 +34,7 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
             if (!e.shiftKey && userInput) {
                 e.preventDefault();
                 isSubmitting.current = true;
-                await handleSubmit(userInput);
+                handleSubmit(userInput);
                 isSubmitting.current = false;
             }
         } else if (e.key === "Enter") {
@@ -43,7 +43,7 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
     };
 
     return (
-        <form className={styles.form}>
+        <form className={styles.inputform}>
             <TextareaAutosize
                 className={styles.textarea}
                 disabled={loading}
@@ -67,7 +67,7 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({
                     disabled={loading}
                     onClick={async () => {
                         isSubmitting.current = true;
-                        await handleSubmit(userInput);
+                        handleSubmit(userInput);
                         isSubmitting.current = false;
                     }}
                 >

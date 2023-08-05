@@ -35,7 +35,7 @@ const Search = ({handleSubmit}: SearchProps) => {
     };
 
     return (
-        <form className={styles.searchcontainer}>
+        <form className={styles.searchform}>
             <TextareaAutosize
                 className={styles.searchinput}
                 autoFocus={true}
