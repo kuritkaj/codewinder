@@ -5,6 +5,7 @@ import useNotebook from "@/components/context/useNotebook";
 import { REACTIVE_NOTEBOOK_TRANSFORMERS } from "@/components/ui/ReactiveBlock/plugins/MarkdownTransformers/MarkdownTransformers";
 import { $convertFromMarkdownString, $convertToMarkdownString } from "@lexical/markdown";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { LexicalEditor } from "lexical";
 import { useEffect, useLayoutEffect } from "react";
 
 const StreamingPlugin = () => {
@@ -12,7 +13,7 @@ const StreamingPlugin = () => {
     const {namespace} = useNamespace();
     const {getBlock, replaceBlock, subscribeToBlock} = useNotebook();
 
-    function updateEditor(editor, markdown) {
+    function updateEditor(editor: LexicalEditor, markdown: string) {
         editor.update(() => {
             $convertFromMarkdownString(markdown, REACTIVE_NOTEBOOK_TRANSFORMERS);
         });
