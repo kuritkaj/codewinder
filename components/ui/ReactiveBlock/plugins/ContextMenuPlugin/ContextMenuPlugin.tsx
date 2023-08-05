@@ -1,17 +1,16 @@
 import useNamespace from "@/components/context/useNamespace";
 import useNotebook from "@/components/context/useNotebook";
-import useSettings from "@/components/context/useSettings";
 import Button from "@/components/ui/common/Button";
 import DropdownMenu from "@/components/ui/common/DropDownMenu";
-import { streamIntelligence } from "@/lib/intelligence/streamIntelligence";
 import { MessageType } from "@/lib/types/MessageType";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import styles from "./ContextMenuPlugin.module.css";
 
 const ContextMenuPlugin = () => {
+    const {addBlock, generateBlock, getBlock, removeBlock} = useNotebook();
+    const [editor] = useLexicalComposerContext();
     const {namespace} = useNamespace();
-    const {addBlock, appendToBlock, getBlock, getContents, removeBlock, replaceBlock} = useNotebook();
-    const {usePower} = useSettings();
 
     const handleOnDelete = () => {
         removeBlock(namespace);
@@ -37,44 +36,9 @@ const ContextMenuPlugin = () => {
         const block = getBlock(namespace);
         if (!block) return;
 
-        await streamIntelligence({
-            context: getContents(block.namespace),
-            objective: block.markdown,
-            onError: (error) => {
-                replaceBlock({
-                    editable: block.editable,
-                    namespace: block.namespace,
-                    markdown: error.message,
-                    type: MessageType.ApiMessage,
-                });
-            },
-            onOpen: () => {
-                replaceBlock({
-                    editable: block.editable,
-                    namespace: block.namespace,
-                    markdown: "",
-                    type: MessageType.ApiMessage,
-                });
-            },
-            onMessage: (message) => {
-                if (message.includes("{clear}")) {
-                    replaceBlock({
-                        editable: block.editable,
-                        namespace: block.namespace,
-                        markdown: message.split("{clear}").pop() || "",
-                        type: MessageType.ApiMessage,
-                    });
-                } else {
-                    appendToBlock({
-                        namespace: block.namespace,
-                        markdown: message,
-                    });
-                }
-            },
-            usePower
-        })
+        editor.setEditable(false); // Without setting to false, this spins the browser into an infinite loop
+        await generateBlock(block.markdown, block.namespace);
     }
-
 
     const menuItems = [
         {

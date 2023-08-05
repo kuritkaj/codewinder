@@ -1,5 +1,7 @@
+import { streamIntelligence } from "@/lib/intelligence/streamIntelligence";
 import { BlockData, PartialBlockData, PersistableBlockData } from "@/lib/types/BlockData";
 import { NotebookData } from "@/lib/types/DatabaseData";
+import { MessageType } from "@/lib/types/MessageType";
 import { debounce } from "@/lib/util/debounce";
 import { generateRandomString } from "@/lib/util/random";
 import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from "react";
@@ -10,6 +12,7 @@ type NotebookContextProps = {
     addBlock: (addition: PersistableBlockData, target?: string, before?: boolean) => void;
     appendToBlock: (partial: PartialBlockData) => void;
     blocks: BlockData[];
+    generateBlock: (command: string, namespace?: string | null, onClose?: () => void) => Promise<void>;
     getBlock: (target: string) => BlockData | undefined;
     getContents: (until?: string) => string[][];
     moveBlock: (source: string, destination: string) => void;
@@ -28,6 +31,9 @@ const defaultImplementation = {
         throw new Error('Method not implemented.')
     },
     blocks: [],
+    generateBlock: () => {
+        throw new Error('Method not implemented.')
+    },
     getBlock: () => {
         throw new Error('Method not implemented.')
     },
@@ -68,7 +74,7 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const saveBlocks = useCallback(
-        debounce((newBlocks, onChange) => {
+        debounce((newBlocks: BlockData[], onChange: (newBlocks: BlockData[]) => void) => {
             console.log("Saving blocks...", newBlocks);
             onChange(newBlocks);
         }, 750) as (newBlocks: BlockData[], onChange: (newBlocks: BlockData[]) => void) => void, []);
@@ -209,9 +215,84 @@ export function NotebookProvider({children, initBlocks, notebook, onChange}: Not
         };
     }, []);
 
+    /**
+     *  Generates a new block using the provided command to send to an AI.
+     *  @param command The command to send to the intelligence.
+     *  @param replacement An optional block to replace
+     *  @param onClose A callback to invoke when the block is closed.
+     */
+    const generateBlock = useCallback(async (command: string, replacement: string, onClose = () => {
+    }) => {
+        if (!replacement) {
+            addBlock({
+                editable: false,
+                markdown: command,
+                type: MessageType.UserMessage
+            });
+        }
+
+        const onError = (partial: PartialBlockData) => {
+            replaceBlock({
+                editable: false,
+                namespace: partial.namespace,
+                markdown: partial.markdown,
+                type: MessageType.ApiMessage,
+            });
+        }
+
+        const onMessage = (partial: PartialBlockData) => {
+            if (partial.markdown.includes("{clear}")) {
+                replaceBlock({
+                    editable: false,
+                    namespace: partial.namespace,
+                    markdown: partial.markdown.split("{clear}").pop() || "",
+                    type: MessageType.ApiMessage,
+                });
+            } else {
+                appendToBlock(partial);
+            }
+        }
+
+        const onOpen = (partial: PartialBlockData) => {
+            if (replacement) {
+                replaceBlock({...partial, editable: false, type: MessageType.ApiMessage});
+            } else {
+                addBlock({...partial, editable: false, type: MessageType.ApiMessage});
+            }
+        }
+
+        const context = getContents(replacement);
+        const namespace = replacement || generateRandomString(10);
+        await streamIntelligence({
+            context,
+            objective: command,
+            onClose,
+            onError: (error) => {
+                onError({markdown: error.message, namespace});
+            },
+            onOpen: () => {
+                onOpen({markdown: "", namespace});
+            },
+            onMessage: (message) => {
+                onMessage({markdown: message, namespace});
+            }
+        });
+    }, [addBlock, appendToBlock, getContents, replaceBlock]);
+
     return (
         <NotebookContext.Provider value={{
-            addBlock, appendToBlock, blocks, getBlock, getContents, moveBlock, notebook, removeBlock, replaceBlock, resetBlocks, subscribeToBlock
+            addBlock,
+            appendToBlock,
+            blocks,
+            generateBlock,
+            getBlock,
+            getContents,
+            moveBlock,
+            notebook,
+            removeBlock,
+            replaceBlock,
+            resetBlocks,
+            subscribeToBlock
         }}>
             {children}
         </NotebookContext.Provider>
