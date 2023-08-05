@@ -29,8 +29,9 @@ export const INSTRUCTIONS = `Instructions:
 * Use CommonMark to format the response (plus markdown tables).
 * Always search for a relavent and current answer instead of using your own knowledge.
 * Be brief in your responses.
+* Try more tools if the prior ones are not working.
 * The response should include inline sources from functions, but you should never make up a url or link.
-* Examples of code should always be formatted as a code block with the language specified.`;
+* Examples of code should always be formatted as a code block with javascript specified.`;
 
 interface ReActAgentInput {
     callbacks?: Callbacks;

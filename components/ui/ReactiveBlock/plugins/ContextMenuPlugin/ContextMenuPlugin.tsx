@@ -46,12 +46,17 @@ const ContextMenuPlugin = () => {
             onSelect: handleRegenerateBlock
         },
         {
-            label: "Insert block above",
-            onSelect: handleOnInsertAbove
-        },
-        {
-            label: "Insert block below",
-            onSelect: handleOnInsertBelow
+            label: "Insert block",
+            subItems: [
+                {
+                    label: "Insert block above",
+                    onSelect: handleOnInsertAbove
+                },
+                {
+                    label: "Insert block below",
+                    onSelect: handleOnInsertBelow
+                }
+            ]
         },
         {
             label: "Delete block",
