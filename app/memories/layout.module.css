@@ -1,0 +1,25 @@
+.fullscreen {
+    height: 100dvh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.main {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    overflow-x: scroll;
+    justify-content: flex-start;
+    align-content: space-between;
+    padding: 1rem 2rem 2rem 2rem;
+    gap: 2rem;
+}
+
+/* Mobile optimization */
+@media (max-width: 600px) {
+    .main {
+        padding: 1rem;
+        gap: 1rem;
+    }
+}

@@ -13,7 +13,6 @@ export const DESCRIPTION = `a search engine. Useful to answer questions about cu
 export interface WebSearchParams extends ToolParams {
     apiKey: string | undefined;
     embeddings: Embeddings;
-    params?: Record<string, string>;
     store?: MemoryStore;
 }
 
@@ -26,10 +25,9 @@ export class WebSearch extends Tool {
 
     private readonly embeddings: Embeddings;
     private readonly key: string;
-    private readonly params?: Record<string, string>;
     private readonly store?: MemoryStore;
 
-    constructor({apiKey, params, store, embeddings, verbose, callbacks}: WebSearchParams) {
+    constructor({apiKey, store, embeddings, verbose, callbacks}: WebSearchParams) {
         super({verbose, callbacks});
 
         if (!apiKey) {
@@ -40,7 +38,6 @@ export class WebSearch extends Tool {
 
         this.embeddings = embeddings;
         this.key = apiKey;
-        this.params = params;
         this.store = store;
     }
 
@@ -63,8 +60,8 @@ export class WebSearch extends Tool {
             throw new Error(`HTTP error ${response.status}`);
         }
 
-        const res = await response.json();
-        const results: { name: string, snippet: string, url: string }[] = res?.webPages ? res.webPages.value : [];
+        const res: { webPages: { value: { name: string, snippet: string, url: string }[] } } = await response.json();
+        const results = res.webPages?.value || [];
 
         if (results.length === 0) {
             await runManager?.handleText("No useful results found.");

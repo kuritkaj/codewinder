@@ -20,6 +20,8 @@ const Stack = ({stacks}: StacksProps) => {
     const router = useRouter();
 
     const createStack = async (userInput: string) => {
+        if (!userInput) return;
+
         const {data: stack, error: e1} = await supabase.from("stacks").insert({name: userInput}).select().maybeSingle();
         if (e1) logError(e1.message, e1);
         if (stack) {
@@ -33,7 +35,7 @@ const Stack = ({stacks}: StacksProps) => {
         }
     }
 
-    const deleteStack = async (target) => {
+    const deleteStack = async (target: StackData) => {
         if (target) {
             const {error: e1} = await supabase.from("stacks").delete().eq("id", target.id);
             if (e1) logError(e1.message, e1);
@@ -41,7 +43,7 @@ const Stack = ({stacks}: StacksProps) => {
         }
     }
 
-    const renameStack = async (target, newName) => {
+    const renameStack = async (target: StackData, newName: string) => {
         if (target) {
             const {error: e1} = await supabase.from("stacks").update({name: newName}).eq("id", target.id);
             if (e1) logError(e1.message, e1);

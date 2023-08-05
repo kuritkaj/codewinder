@@ -9,12 +9,10 @@ import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 
 export class MemoryStore {
-    private readonly index: string;
     private readonly memory: VectorStore;
     private readonly textSplitter: TextSplitter;
 
-    constructor(memory: VectorStore, index: string) {
-        this.index = index;
+    constructor(memory: VectorStore) {
         this.memory = memory;
 
         const chunkSize = getEmbeddingContextSize(
@@ -37,28 +35,33 @@ export class MemoryStore {
                 queryName: `match_${index}`,
             });
 
-            return new MemoryStore(vectorStore, index);
+            return new MemoryStore(vectorStore);
         } else {
-            console.log("No Supabase API Key or URL found.");
-            return this.makeTransientStore(index, embeddings);
+            return this.makeTransientStore(embeddings);
         }
     }
 
-    public static async makeTransientStore(index: string, embeddings: OpenAIEmbeddings) {
-        const memory = await new MemoryVectorStore(embeddings);
-        return new MemoryStore(memory, index);
+    public static async makeTransientStore(embeddings: OpenAIEmbeddings) {
+        const memory = new MemoryVectorStore(embeddings);
+        return new MemoryStore(memory);
     }
 
     public isDurable(): boolean {
         return this.memory instanceof SupabaseVectorStore;
     }
 
+    /**
+     *  This retrieves the whole document stored, that best matches the supplied query.
+     */
     public async retrieve(query: string, k?: number, filter?: VectorStore["FilterType"] | undefined): Promise<Document[]> {
         if (!query) throw new Error("A query is required.");
         return await this.memory.similaritySearch(query, k, filter);
     }
 
-    public async retrieveSnippets(query: string, threshold, k: number = 1): Promise<Document[]> {
+    /**
+     * This retrieves the part of a document that best matches the supplied query.
+     */
+    public async retrieveSnippets(query: string, threshold: number, k: number = 1): Promise<Document[]> {
         if (!query) throw new Error("A query is required.");
 
         // search the memory for the top 1 document that matches the query
@@ -92,8 +95,6 @@ export class MemoryStore {
 
             // search the vector store for the best single match
             const snippet = await vectorStore.similaritySearch(query, 1);
-
-            // We shouldn't have to do this, but the whole url is not preserved from the MemoryVectorStore.
             if (snippet.length > 0) snippets.push(snippet[0]);
         }
 
