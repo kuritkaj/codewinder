@@ -42,7 +42,7 @@ async function calculateMaxTokens({
     // fallback to approximate calculation if tiktoken is not available
     let numTokens = Math.ceil(prompt.length / 4);
     try {
-        numTokens = (await encodingForModel(tiktokenName)).encode(prompt).length;
+        numTokens = encodingForModel(tiktokenName).encode(prompt).length;
     } catch (error) {
         console.warn(
             "Failed to calculate number of tokens, falling back to approximate count"

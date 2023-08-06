@@ -4,8 +4,15 @@ import { AIMessage, BaseMessage, HumanMessage, InputValues } from "langchain/sch
 
 export class ChatHistoryPlaceholder extends MessagesPlaceholder {
 
+    private readonly limit: number;
+
+    constructor(variableName: string, tokenLimit: number) {
+        super(variableName);
+        this.limit = tokenLimit * 4; // Rough approximation of characters per token.
+    }
+
     public formatMessages(values: InputValues): Promise<BaseMessage[]> {
-        const messages: BaseMessage[] = [];
+        let messages: BaseMessage[] = [];
 
         let history = values[this.variableName];
 
@@ -31,6 +38,15 @@ export class ChatHistoryPlaceholder extends MessagesPlaceholder {
                 }
             }
         }
+
+        let currentLength = messages.reduce((acc, message) => acc + message.content.length, 0);
+        while (currentLength > this.limit && messages.length > 0) {
+            currentLength -= messages[0].content.length;
+            messages.shift();
+        }
+
+        // Remove the first messages that exceed the limit
+
 
         return Promise.resolve(messages);
     }

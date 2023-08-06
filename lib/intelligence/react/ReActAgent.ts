@@ -63,7 +63,7 @@ export class ReActAgent extends BaseSingleActionAgent {
         return ChatPromptTemplate.fromPromptMessages([
             SystemMessagePromptTemplate.fromTemplate(SYSTEM),
             HumanMessagePromptTemplate.fromTemplate(INSTRUCTIONS),
-            new ChatHistoryPlaceholder(CONTEXT_INPUT),
+            new ChatHistoryPlaceholder(CONTEXT_INPUT, 3000),
             new CachedPlaceholder(MEMORY),
             HumanMessagePromptTemplate.fromTemplate(`{${OBJECTIVE_INPUT}}`),
             new MessagesPlaceholder(SCRATCHPAD),
