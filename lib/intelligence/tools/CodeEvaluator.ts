@@ -7,6 +7,7 @@ import { BaseLanguageModel } from "langchain/base_language";
 import { PromptTemplate } from "langchain/prompts";
 import { StructuredTool, ToolParams } from "langchain/tools";
 import * as vm from "node:vm";
+import { Simulate } from "react-dom/test-utils";
 import { z } from "zod";
 
 export const NAME = "code-evaluator";
@@ -135,7 +136,7 @@ export class CodeEvaluator extends StructuredTool {
 
             // store this program for future reference
             if (this.store) {
-                await this.store.storeTexts([code], {
+                await this.store.storeTexts([`${code}\n\nThe prior code successfully returned this result: ${result}`], {
                     specification: specification
                 });
             }
