@@ -105,7 +105,8 @@ export const makeChain = async ({callbacks, supabase, usePower = false}: makeCha
 
     const agent = ReActAgent.fromLLMAndTools({
         callbacks,
-        model: predictable,
+        creative,
+        predictable,
         store: memories,
         tools: [...tools, ...toolkit],
         verbose: true,

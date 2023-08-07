@@ -35,6 +35,7 @@ export const INSTRUCTIONS = `Instructions:
 
 interface ReActAgentInput {
     callbacks?: Callbacks;
+    creative: ChatOpenAI;
     llmChain: FunctionChain;
     store: MemoryStore;
     verbose?: boolean;
@@ -44,13 +45,15 @@ export class ReActAgent extends BaseSingleActionAgent {
 
     public lc_namespace = ["langchain", "agents", "react"];
 
+    private readonly creative: ChatOpenAI;
     private readonly llmChain: FunctionChain;
     private readonly store: MemoryStore;
     private readonly parser = new ReActAgentOutputParser();
 
-    constructor({callbacks, llmChain, store, verbose}: ReActAgentInput) {
+    constructor({callbacks, creative, llmChain, store, verbose}: ReActAgentInput) {
         super({callbacks, verbose});
 
+        this.creative = creative;
         this.llmChain = llmChain;
         this.store = store;
     }
@@ -70,16 +73,17 @@ export class ReActAgent extends BaseSingleActionAgent {
         ]);
     }
 
-    public static fromLLMAndTools = ({callbacks, function_call, model, store, tools, verbose}: {
+    public static fromLLMAndTools = ({callbacks, creative, function_call, predictable, store, tools, verbose}: {
         callbacks?: Callbacks,
+        creative: ChatOpenAI,
         function_call?: Tool,
-        model: ChatOpenAI,
+        predictable: ChatOpenAI,
         store: MemoryStore,
         tools: StructuredTool[],
         verbose?: boolean,
     }) => {
         this.validateTools(tools);
-        if (model._modelType() !== "base_chat_model" || model._llmType() !== "openai") {
+        if (predictable._modelType() !== "base_chat_model" || predictable._llmType() !== "openai") {
             throw new Error("OpenAIAgent requires an OpenAI chat model");
         }
 
@@ -87,13 +91,14 @@ export class ReActAgent extends BaseSingleActionAgent {
         const chain = new FunctionChain({
             callbacks,
             function_call,
-            llm: model,
+            llm: predictable,
             prompt,
             tools
         });
 
         return new ReActAgent({
             callbacks,
+            creative,
             llmChain: chain,
             store,
             verbose
@@ -187,7 +192,7 @@ export class ReActAgent extends BaseSingleActionAgent {
             const formattedSteps = _steps.map(step => `{"action": "${step.action.tool}", "action_input": "${JSON.stringify(step.action.toolInput)}"}`).join(",\n");
 
             if (this.store.isDurable()) {
-                const condenser = MemoryCondenser.makeChain({model: this.llmChain.llm});
+                const condenser = MemoryCondenser.makeChain({model: this.creative});
                 await condenser.predict({
                     actions: formattedSteps,
                     response: formattedPlan
