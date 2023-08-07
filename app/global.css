@@ -53,8 +53,8 @@
   /** App Backgrounds */
   --start-color: var(--slate-1);
   --end-color: var(--gray-2);
-  --app-background: var(--slate-2);
-  --card-background: var(--slate-1);
+  --app-background: var(--slate-4);
+  --card-background: var(--gray-4);
   --card-border: var(--slate-7);
   --card-focus-border: var(--black-a8);
   --card-box-shadow: var(--black-a5);

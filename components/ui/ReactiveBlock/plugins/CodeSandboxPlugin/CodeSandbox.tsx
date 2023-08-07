@@ -70,8 +70,8 @@ export const CodeSandbox = ({code: init, editor, language, onCodeChange}: CodeSa
 
     useEffect(() => {
         // Read the value of the CSS custom property from the root element
-        const colorMode = getComputedStyle(document.documentElement).getPropertyValue('--initial-color-mode');
-        setTheme(colorMode === "dark" ? "dark" : "light");
+        const darkMode = document.body.classList.contains("dark-theme");
+        setTheme(darkMode ? "dark" : "light");
     }, []);
 
     useLayoutEffect(() => {

@@ -23,8 +23,8 @@ function setInitialColorMode() {
         if (hasImplicitPreference) {
             return mql.matches ? "dark" : "light";
         }
-        // default to 'dark'.
-        return "dark";
+        // default to "light".
+        return "light";
     }
 
     const colorMode = getInitialColorMode();
@@ -52,10 +52,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: { children: ReactNode }) {
     return (
-        <html lang="en">
-        <body className="light-theme">
+        <html lang="en" style={{background: "#000"}}>
+        <body className="light-theme" suppressHydrationWarning>
         {children}
-        {/*<script dangerouslySetInnerHTML={{__html: blockingSetInitialColorMode}}/>*/}
+        <script dangerouslySetInnerHTML={{__html: blockingSetInitialColorMode}}/>
         </body>
         </html>
     );
