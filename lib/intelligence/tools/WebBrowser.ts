@@ -4,12 +4,12 @@ import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
 import * as cheerio from "cheerio";
 import { BaseLanguageModel } from "langchain/base_language";
 import { CallbackManagerForToolRun } from "langchain/callbacks";
+import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { Embeddings } from "langchain/embeddings";
 import { StringPromptValue } from "langchain/prompts";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { StructuredTool, ToolParams } from "langchain/tools";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import * as pdf from "pdf-parse/lib/pdf.js/v1.10.100/build/pdf.js";
 import { z } from "zod";
 
 export const NAME = "browser";
@@ -50,16 +50,16 @@ const getContent = async (
 };
 
 async function getPdf(content: Blob): Promise<{ text: string, title: string }> {
+    const pdf = new PDFLoader(content, {splitPages: false});
     try {
-        const arrayBuffer = await content.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const pdfData = await pdf(buffer);
-        const pdfExtract = pdfData.text;
-        const pdfTitle = pdfData.info.title || "Untitled";
+        const pdfData = await pdf.load();
+        const pdfExtract = pdfData.shift();
+        const pdfText = pdfExtract?.pageContent || "Empty document";
+        const pdfTitle = pdfExtract?.metadata?.title || "Untitled";
 
         return {
             title: pdfTitle,
-            text: pdfExtract
+            text: pdfText
         };
     } catch (error) {
         // Handle any parsing errors
@@ -200,7 +200,7 @@ export class WebBrowser extends StructuredTool {
         });
         const texts = await textSplitter.splitText(text);
 
-        const limit = 10;
+        const limit = 20;
         let context: string;
         // if we want a summary grab first 6
         if (doSummary) {
@@ -220,7 +220,7 @@ export class WebBrowser extends StructuredTool {
 
         const prompt = `Text:${context}\n\nPlease ${
             doSummary ? "summarize" : task
-        } the provided text. Limit to 150 words.
+        } the provided text. Be succinct and only include information that's relevant to the task.
         Include up to 5 links from within that would be of interest (always including url and text).
         Links should be provided, if present, in markdown syntax as a list under the heading "Relevant Links:".`;
 

@@ -51,7 +51,6 @@ export const makeChain = async ({callbacks, supabase, usePower = false}: makeCha
         streaming: Boolean(callbacks),
         callbacks,
         maxRetries: 2,
-        maxTokens: 300
     });
 
     // This should represent intelligence that is great at writing code.
