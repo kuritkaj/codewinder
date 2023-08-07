@@ -7,7 +7,6 @@ import { BaseLanguageModel } from "langchain/base_language";
 import { PromptTemplate } from "langchain/prompts";
 import { StructuredTool, ToolParams } from "langchain/tools";
 import * as vm from "node:vm";
-import { Simulate } from "react-dom/test-utils";
 import { z } from "zod";
 
 export const NAME = "code-evaluator";
