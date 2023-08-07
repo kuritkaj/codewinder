@@ -221,8 +221,7 @@ export class WebBrowser extends StructuredTool {
         const prompt = `Text:${context}\n\nPlease ${
             doSummary ? "summarize" : task
         } the provided text. Be succinct and only include information that's relevant to the task.
-        Include up to 5 links from within that would be of interest (always including url and text).
-        Links should be provided, if present, in markdown syntax as a list under the heading "Relevant Links:".`;
+        If present in the provided text, include relevant formatted markdown links to support your answer.`;
 
         const completion = await this.model.generatePrompt(
             [new StringPromptValue(prompt)],
