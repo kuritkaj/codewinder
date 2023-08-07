@@ -212,7 +212,7 @@ export class WebBrowser extends StructuredTool {
             const vectorStore = await MemoryVectorStore.fromTexts(
                 texts,
                 [],
-                this.embeddings
+                this.embeddings,
             );
             const similar = await vectorStore.similaritySearch(task, limit);
             context = similar.map((res) => res.pageContent).join("\n");
@@ -220,7 +220,9 @@ export class WebBrowser extends StructuredTool {
 
         const prompt = `Text:${context}\n\nPlease ${
             doSummary ? "summarize" : task
-        } the provided text. Limit to 150 words.`;
+        } the provided text. Limit to 150 words.
+        Include up to 5 links from within that would be of interest (always including url and text).
+        Links should be provided, if present, in markdown syntax as a list under the heading "Relevant Links:".`;
 
         const completion = await this.model.generatePrompt(
             [new StringPromptValue(prompt)],
