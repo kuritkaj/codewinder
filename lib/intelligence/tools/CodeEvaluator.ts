@@ -2,11 +2,11 @@
 
 import { GuardChain } from "@/lib/intelligence/chains/GuardChain";
 import { MemoryStore } from "@/lib/intelligence/memory/MemoryStore";
+import { SupabaseClient } from "@supabase/supabase-js";
 import { LLMChain } from "langchain";
 import { BaseLanguageModel } from "langchain/base_language";
 import { PromptTemplate } from "langchain/prompts";
 import { StructuredTool, ToolParams } from "langchain/tools";
-import * as vm from "node:vm";
 import { z } from "zod";
 
 export const NAME = "code-evaluator";
@@ -68,6 +68,7 @@ Code:
 export interface CodeExecutorParams extends ToolParams {
     model: BaseLanguageModel;
     store?: MemoryStore;
+    supabase: SupabaseClient;
 }
 
 export class CodeEvaluator extends StructuredTool {
@@ -80,8 +81,9 @@ export class CodeEvaluator extends StructuredTool {
 
     private readonly llmChain: LLMChain;
     private readonly store?: MemoryStore;
+    private readonly supabase: SupabaseClient;
 
-    constructor({model, store, verbose, callbacks}: CodeExecutorParams) {
+    constructor({callbacks, model, store, supabase, verbose}: CodeExecutorParams) {
         super({verbose, callbacks});
 
         const prompt = PromptTemplate.fromTemplate(GUIDANCE);
@@ -93,6 +95,7 @@ export class CodeEvaluator extends StructuredTool {
         });
 
         this.store = store;
+        this.supabase = supabase;
     }
 
     /** @ignore */
@@ -123,15 +126,50 @@ export class CodeEvaluator extends StructuredTool {
         const code = matches?.pop() || completion;
 
         try {
-            // Evaluate the generated JavaScript code.
-            const output = vm.runInNewContext(code, {
-                console,
-                fetch,
-                process: {
-                    env: vmEnvironmentVariables
-                }
-            }, {timeout: 3000});
-            const result = await output;
+            // this enables communication between the server and the client to execute code as needed
+            const comms = this.supabase.channel("code-evaluator", {
+                config: {
+                    broadcast: {
+                        ack: true,
+                    },
+                },
+            });
+            // Channel is removed in chat -> finally.
+
+            const waitForEvent = (): Promise<string> => {
+                const timeoutms = 10000;
+
+                return new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error("Timeout: Event not triggered within the specified time."));
+                    }, timeoutms);
+
+
+                    comms?.on("broadcast", {event: "eval-result"}, (payload) => {
+                        clearTimeout(timeout);
+                        resolve(payload.result);
+                    });
+                });
+            }
+
+            comms.subscribe();
+            await comms.send({
+                type: "broadcast",
+                event: "eval-code",
+                payload: {code}
+            });
+
+            const result = await waitForEvent();
+
+            // // Evaluate the generated JavaScript code.
+            // const output = vm.runInNewContext(code, {
+            //     console,
+            //     fetch,
+            //     process: {
+            //         env: vmEnvironmentVariables
+            //     }
+            // }, {timeout: 3000});
+            // const result = await output;
 
             // store this program for future reference
             if (this.store) {

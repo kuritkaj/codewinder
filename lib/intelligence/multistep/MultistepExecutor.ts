@@ -52,7 +52,8 @@ export class MultistepExecutor extends BaseChain {
     ): Promise<ChainValues> {
         const agent = ReActAgent.fromLLMAndTools({
             callbacks: runManager?.getChild(),
-            model: this.predictable,
+            creative: this.creative,
+            predictable: this.predictable,
             store: this.store,
             tools: this.tools,
             verbose: true,

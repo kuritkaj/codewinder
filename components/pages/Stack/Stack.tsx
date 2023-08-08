@@ -1,5 +1,6 @@
 "use client";
 
+import { CodeEvaluatorProvider } from "@/components/context/CodeEvaluatorContext";
 import { NotebookProvider } from "@/components/context/NotebookContext";
 import { SettingsProvider } from "@/components/context/SettingsContext";
 import styles from "@/components/pages/Stack/Stack.module.css";
@@ -37,7 +38,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
         }
     }, [stack]);
 
-    const clearNotebook = async (notebook) => {
+    const clearNotebook = async (notebook: NotebookData) => {
         if (notebook && stack) {
             const {error: e1} = await supabase.from("notebooks").update({blocks: []}).eq("id", notebook.id);
             if (e1) logError(e1.message, e1);
@@ -59,7 +60,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
         }
     };
 
-    const deleteNotebook = async (notebook) => {
+    const deleteNotebook = async (notebook: NotebookData) => {
         if (notebook && stack) {
             const {error: e1} = await supabase.from("notebooks").delete().eq("id", notebook.id);
             if (e1) logError(e1.message, e1);
@@ -70,7 +71,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
         }
     };
 
-    const deleteStack = async (target) => {
+    const deleteStack = async (target: StackData) => {
         if (target && stack) {
             const {error: e1} = await supabase.from("stacks").delete().eq("id", target.id);
             if (e1) logError(e1.message, e1);
@@ -83,7 +84,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
         }
     }
 
-    const renameStack = async (target, newName) => {
+    const renameStack = async (target: StackData, newName: string) => {
         if (target && stack) {
             const {error: e1} = await supabase.from("stacks").update({name: newName}).eq("id", target.id);
             if (e1) logError(e1.message, e1);
@@ -91,7 +92,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
         }
     }
 
-    const saveNotebook = async (notebook, blocks) => {
+    const saveNotebook = async (notebook: NotebookData, blocks: BlockData[]) => {
         if (notebook && stack) {
             const json = blocks as unknown as Json[];
             const {error: e1} = await supabase.from("notebooks").update({blocks: json}).eq("id", notebook.id);
@@ -100,7 +101,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
     }
 
     return stack ? (
-        <>
+        <CodeEvaluatorProvider supabase={supabase}>
             <div className={styles.stacks}>
                 <StackPanel onDelete={deleteStack} onRename={renameStack} stack={stack} stacks={stacks}/>
             </div>
@@ -140,7 +141,7 @@ const Stack = ({notebooks, stack, stacks}: NotesProps) => {
                     </Button>
                 </div>
             </div>
-        </>
+        </CodeEvaluatorProvider>
     ) : "Stack not found.";
 }
 

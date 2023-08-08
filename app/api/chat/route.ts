@@ -53,10 +53,12 @@ export async function POST(request: NextRequest) {
             await handlers.sendClear();
             await handlers.sendError(error);
             await handlers.closeStream();
+        }).finally(async () => {
+            await supabase.removeAllChannels();
         });
 
         // Respond with the stream
-        return new StreamingTextResponse(stream)
+        return new StreamingTextResponse(stream);
     } catch (error: any) {
         await handlers.sendClear();
         await handlers.sendError(error);

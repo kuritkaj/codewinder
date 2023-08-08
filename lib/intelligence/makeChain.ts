@@ -15,7 +15,7 @@ import { StructuredTool } from "langchain/tools";
 
 type makeChainOptions = {
     callbacks: Callbacks;
-    supabase?: SupabaseClient;
+    supabase: SupabaseClient;
     usePower?: boolean
 }
 
@@ -81,7 +81,7 @@ export const makeChain = async ({callbacks, supabase, usePower = false}: makeCha
     const tools: StructuredTool[] = [
         new WebBrowser({callbacks, embeddings, model: capable, store: knowledge}),
         new CodeWriter({callbacks, model: coder}),
-        new CodeEvaluator({callbacks, model: coder, store: code}),
+        new CodeEvaluator({callbacks, model: coder, store: code, supabase}),
     ];
     if (Boolean(bingApiKey)) {
         tools.push(new WebSearch({apiKey: bingApiKey, callbacks, embeddings, store: knowledge}));
